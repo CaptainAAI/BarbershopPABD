@@ -48,15 +48,15 @@
             // 
             // panel1
             // 
-            this.panel1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panel1.Controls.Add(this.panelContent);
             this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Controls.Add(this.tableLayoutPanel1);
             this.panel1.Controls.Add(this.groupBox3);
-            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1874, 1000);
+            this.panel1.Size = new System.Drawing.Size(1898, 1024);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -74,7 +74,7 @@
             this.groupBox2.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.groupBox2.Location = new System.Drawing.Point(3, 939);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1882, 75);
+            this.groupBox2.Size = new System.Drawing.Size(1895, 85);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             // 
@@ -108,6 +108,7 @@
             // button2
             // 
             this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button2.Dock = System.Windows.Forms.DockStyle.Left;
             this.button2.Location = new System.Drawing.Point(3, 143);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(271, 69);
@@ -118,9 +119,10 @@
             // button7
             // 
             this.button7.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button7.Dock = System.Windows.Forms.DockStyle.Left;
             this.button7.Location = new System.Drawing.Point(3, 518);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(271, 74);
+            this.button7.Size = new System.Drawing.Size(271, 75);
             this.button7.TabIndex = 11;
             this.button7.Text = "LAPORAN OPERASIONAL";
             this.button7.UseVisualStyleBackColor = true;
@@ -128,6 +130,7 @@
             // button3
             // 
             this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button3.Dock = System.Windows.Forms.DockStyle.Left;
             this.button3.Location = new System.Drawing.Point(3, 218);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(271, 69);
@@ -139,6 +142,7 @@
             // button6
             // 
             this.button6.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button6.Dock = System.Windows.Forms.DockStyle.Left;
             this.button6.Location = new System.Drawing.Point(3, 443);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(271, 69);
@@ -150,6 +154,7 @@
             // button4
             // 
             this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button4.Dock = System.Windows.Forms.DockStyle.Left;
             this.button4.Location = new System.Drawing.Point(3, 293);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(271, 69);
@@ -160,6 +165,7 @@
             // button5
             // 
             this.button5.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button5.Dock = System.Windows.Forms.DockStyle.Left;
             this.button5.Location = new System.Drawing.Point(3, 368);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(271, 69);
@@ -171,9 +177,10 @@
             // button1
             // 
             this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.Dock = System.Windows.Forms.DockStyle.Left;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(271, 126);
+            this.button1.Size = new System.Drawing.Size(271, 134);
             this.button1.TabIndex = 5;
             this.button1.Text = "DASHBOARD";
             this.button1.UseVisualStyleBackColor = true;
@@ -206,7 +213,10 @@
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1898, 1024);
             this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.panel1.ResumeLayout(false);

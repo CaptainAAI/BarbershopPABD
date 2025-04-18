@@ -30,37 +30,35 @@
         {
             this.components = new System.ComponentModel.Container();
             this.cmbNamaKaryawan = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnUpdate = new System.Windows.Forms.Button();
+            this.btnReset = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.comboBox15 = new System.Windows.Forms.ComboBox();
-            this.comboBox14 = new System.Windows.Forms.ComboBox();
-            this.comboBox13 = new System.Windows.Forms.ComboBox();
-            this.comboBox12 = new System.Windows.Forms.ComboBox();
-            this.comboBox11 = new System.Windows.Forms.ComboBox();
-            this.comboBox10 = new System.Windows.Forms.ComboBox();
-            this.comboBox9 = new System.Windows.Forms.ComboBox();
-            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.checkBox6 = new System.Windows.Forms.CheckBox();
-            this.checkBox7 = new System.Windows.Forms.CheckBox();
-            this.checkBox8 = new System.Windows.Forms.CheckBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
-            this.comboBox6 = new System.Windows.Forms.ComboBox();
-            this.comboBox7 = new System.Windows.Forms.ComboBox();
-            this.comboBox8 = new System.Windows.Forms.ComboBox();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tableLayoutPanel1.SuspendLayout();
+            this.cmbFromSunday = new System.Windows.Forms.ComboBox();
+            this.cmbFromSaturday = new System.Windows.Forms.ComboBox();
+            this.cmbFromFriday = new System.Windows.Forms.ComboBox();
+            this.cmbFromThursday = new System.Windows.Forms.ComboBox();
+            this.cmbFromWednesday = new System.Windows.Forms.ComboBox();
+            this.cmbFromTuesday = new System.Windows.Forms.ComboBox();
+            this.cmbFromMonday = new System.Windows.Forms.ComboBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.chkSunday = new System.Windows.Forms.CheckBox();
+            this.chkSaturday = new System.Windows.Forms.CheckBox();
+            this.chkFriday = new System.Windows.Forms.CheckBox();
+            this.chkThursday = new System.Windows.Forms.CheckBox();
+            this.chkWednesday = new System.Windows.Forms.CheckBox();
+            this.chkTuesday = new System.Windows.Forms.CheckBox();
+            this.chkMonday = new System.Windows.Forms.CheckBox();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
+            this.cmbToMonday = new System.Windows.Forms.ComboBox();
+            this.cmbToTuesday = new System.Windows.Forms.ComboBox();
+            this.cmbToWednesday = new System.Windows.Forms.ComboBox();
+            this.cmbToThursday = new System.Windows.Forms.ComboBox();
+            this.cmbToFriday = new System.Windows.Forms.ComboBox();
+            this.cmbToSaturday = new System.Windows.Forms.ComboBox();
+            this.cmbToSunday = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cmbNamaKaryawan
@@ -72,23 +70,24 @@
             this.cmbNamaKaryawan.Size = new System.Drawing.Size(741, 45);
             this.cmbNamaKaryawan.TabIndex = 0;
             // 
-            // button1
+            // btnUpdate
             // 
-            this.button1.Location = new System.Drawing.Point(28, 27);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 125);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "UPDATE";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnUpdate.Location = new System.Drawing.Point(28, 27);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(125, 125);
+            this.btnUpdate.TabIndex = 1;
+            this.btnUpdate.Text = "UPDATE";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
-            // button2
+            // btnReset
             // 
-            this.button2.Location = new System.Drawing.Point(159, 27);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(125, 125);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "RESET ";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnReset.Location = new System.Drawing.Point(159, 27);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(125, 125);
+            this.btnReset.TabIndex = 2;
+            this.btnReset.Text = "RESET ";
+            this.btnReset.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -106,301 +105,279 @@
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.15909F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.84091F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 389F));
-            this.tableLayoutPanel1.Controls.Add(this.comboBox15, 2, 7);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox14, 2, 6);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox13, 2, 5);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox12, 2, 4);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox11, 2, 3);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox10, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox9, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.richTextBox3, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.richTextBox2, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox3, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox4, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox5, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox6, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox7, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.checkBox8, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.richTextBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox2, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox3, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox4, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox5, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox6, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox7, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.comboBox8, 1, 7);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(56, 233);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 8;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1288, 642);
-            this.tableLayoutPanel1.TabIndex = 5;
-            // 
-            // comboBox15
-            // 
-            this.comboBox15.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox15.FormattingEnabled = true;
-            this.comboBox15.Location = new System.Drawing.Point(901, 565);
-            this.comboBox15.Name = "comboBox15";
-            this.comboBox15.Size = new System.Drawing.Size(380, 72);
-            this.comboBox15.TabIndex = 23;
-            // 
-            // comboBox14
-            // 
-            this.comboBox14.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox14.FormattingEnabled = true;
-            this.comboBox14.Location = new System.Drawing.Point(901, 485);
-            this.comboBox14.Name = "comboBox14";
-            this.comboBox14.Size = new System.Drawing.Size(380, 72);
-            this.comboBox14.TabIndex = 22;
-            // 
-            // comboBox13
-            // 
-            this.comboBox13.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox13.FormattingEnabled = true;
-            this.comboBox13.Location = new System.Drawing.Point(901, 405);
-            this.comboBox13.Name = "comboBox13";
-            this.comboBox13.Size = new System.Drawing.Size(380, 72);
-            this.comboBox13.TabIndex = 21;
-            // 
-            // comboBox12
-            // 
-            this.comboBox12.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox12.FormattingEnabled = true;
-            this.comboBox12.Location = new System.Drawing.Point(901, 325);
-            this.comboBox12.Name = "comboBox12";
-            this.comboBox12.Size = new System.Drawing.Size(380, 72);
-            this.comboBox12.TabIndex = 20;
-            // 
-            // comboBox11
-            // 
-            this.comboBox11.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox11.FormattingEnabled = true;
-            this.comboBox11.Location = new System.Drawing.Point(901, 245);
-            this.comboBox11.Name = "comboBox11";
-            this.comboBox11.Size = new System.Drawing.Size(380, 72);
-            this.comboBox11.TabIndex = 19;
-            // 
-            // comboBox10
-            // 
-            this.comboBox10.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox10.FormattingEnabled = true;
-            this.comboBox10.Location = new System.Drawing.Point(901, 165);
-            this.comboBox10.Name = "comboBox10";
-            this.comboBox10.Size = new System.Drawing.Size(380, 72);
-            this.comboBox10.TabIndex = 18;
-            // 
-            // comboBox9
-            // 
-            this.comboBox9.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox9.FormattingEnabled = true;
-            this.comboBox9.Location = new System.Drawing.Point(901, 85);
-            this.comboBox9.Name = "comboBox9";
-            this.comboBox9.Size = new System.Drawing.Size(380, 72);
-            this.comboBox9.TabIndex = 17;
-            // 
-            // richTextBox3
-            // 
-            this.richTextBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox3.Location = new System.Drawing.Point(901, 3);
-            this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(381, 76);
-            this.richTextBox3.TabIndex = 2;
-            this.richTextBox3.Text = "TO";
-            // 
-            // richTextBox2
-            // 
-            this.richTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox2.Location = new System.Drawing.Point(516, 3);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(379, 76);
-            this.richTextBox2.TabIndex = 1;
-            this.richTextBox2.Text = "FROM";
-            // 
-            // checkBox2
-            // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox2.Location = new System.Drawing.Point(3, 85);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(339, 74);
-            this.checkBox2.TabIndex = 3;
-            this.checkBox2.Text = "MONDAY";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            // 
-            // checkBox3
-            // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox3.Location = new System.Drawing.Point(3, 165);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(361, 74);
-            this.checkBox3.TabIndex = 4;
-            this.checkBox3.Text = "TUESDAY";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            // 
-            // checkBox4
-            // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox4.Location = new System.Drawing.Point(3, 245);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(471, 74);
-            this.checkBox4.TabIndex = 5;
-            this.checkBox4.Text = "WEDNESDAY";
-            this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // checkBox5
-            // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox5.Location = new System.Drawing.Point(3, 325);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(410, 74);
-            this.checkBox5.TabIndex = 6;
-            this.checkBox5.Text = "THURSDAY";
-            this.checkBox5.UseVisualStyleBackColor = true;
-            // 
-            // checkBox6
-            // 
-            this.checkBox6.AutoSize = true;
-            this.checkBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox6.Location = new System.Drawing.Point(3, 405);
-            this.checkBox6.Name = "checkBox6";
-            this.checkBox6.Size = new System.Drawing.Size(293, 74);
-            this.checkBox6.TabIndex = 7;
-            this.checkBox6.Text = "FRIDAY";
-            this.checkBox6.UseVisualStyleBackColor = true;
-            // 
-            // checkBox7
-            // 
-            this.checkBox7.AutoSize = true;
-            this.checkBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox7.Location = new System.Drawing.Point(3, 485);
-            this.checkBox7.Name = "checkBox7";
-            this.checkBox7.Size = new System.Drawing.Size(407, 74);
-            this.checkBox7.TabIndex = 8;
-            this.checkBox7.Text = "SATURDAY";
-            this.checkBox7.UseVisualStyleBackColor = true;
-            // 
-            // checkBox8
-            // 
-            this.checkBox8.AutoSize = true;
-            this.checkBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox8.Location = new System.Drawing.Point(3, 565);
-            this.checkBox8.Name = "checkBox8";
-            this.checkBox8.Size = new System.Drawing.Size(325, 74);
-            this.checkBox8.TabIndex = 9;
-            this.checkBox8.Text = "SUNDAY";
-            this.checkBox8.UseVisualStyleBackColor = true;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(497, 76);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "DAY";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(516, 85);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(379, 72);
-            this.comboBox2.TabIndex = 10;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(516, 165);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(379, 72);
-            this.comboBox3.TabIndex = 11;
-            // 
-            // comboBox4
-            // 
-            this.comboBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(516, 245);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(379, 72);
-            this.comboBox4.TabIndex = 12;
-            // 
-            // comboBox5
-            // 
-            this.comboBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(516, 325);
-            this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(379, 72);
-            this.comboBox5.TabIndex = 13;
-            // 
-            // comboBox6
-            // 
-            this.comboBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox6.FormattingEnabled = true;
-            this.comboBox6.Location = new System.Drawing.Point(516, 405);
-            this.comboBox6.Name = "comboBox6";
-            this.comboBox6.Size = new System.Drawing.Size(379, 72);
-            this.comboBox6.TabIndex = 14;
-            // 
-            // comboBox7
-            // 
-            this.comboBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(516, 485);
-            this.comboBox7.Name = "comboBox7";
-            this.comboBox7.Size = new System.Drawing.Size(379, 72);
-            this.comboBox7.TabIndex = 15;
-            // 
-            // comboBox8
-            // 
-            this.comboBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 28F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox8.FormattingEnabled = true;
-            this.comboBox8.Location = new System.Drawing.Point(516, 565);
-            this.comboBox8.Name = "comboBox8";
-            this.comboBox8.Size = new System.Drawing.Size(379, 72);
-            this.comboBox8.TabIndex = 16;
-            // 
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip2.Name = "contextMenuStrip2";
             this.contextMenuStrip2.Size = new System.Drawing.Size(61, 4);
             // 
+            // cmbFromSunday
+            // 
+            this.cmbFromSunday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromSunday.FormattingEnabled = true;
+            this.cmbFromSunday.Location = new System.Drawing.Point(531, 770);
+            this.cmbFromSunday.Name = "cmbFromSunday";
+            this.cmbFromSunday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromSunday.TabIndex = 16;
+            // 
+            // cmbFromSaturday
+            // 
+            this.cmbFromSaturday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromSaturday.FormattingEnabled = true;
+            this.cmbFromSaturday.Location = new System.Drawing.Point(531, 691);
+            this.cmbFromSaturday.Name = "cmbFromSaturday";
+            this.cmbFromSaturday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromSaturday.TabIndex = 15;
+            // 
+            // cmbFromFriday
+            // 
+            this.cmbFromFriday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromFriday.FormattingEnabled = true;
+            this.cmbFromFriday.Location = new System.Drawing.Point(531, 603);
+            this.cmbFromFriday.Name = "cmbFromFriday";
+            this.cmbFromFriday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromFriday.TabIndex = 14;
+            // 
+            // cmbFromThursday
+            // 
+            this.cmbFromThursday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromThursday.FormattingEnabled = true;
+            this.cmbFromThursday.Location = new System.Drawing.Point(531, 520);
+            this.cmbFromThursday.Name = "cmbFromThursday";
+            this.cmbFromThursday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromThursday.TabIndex = 13;
+            // 
+            // cmbFromWednesday
+            // 
+            this.cmbFromWednesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromWednesday.FormattingEnabled = true;
+            this.cmbFromWednesday.Location = new System.Drawing.Point(531, 438);
+            this.cmbFromWednesday.Name = "cmbFromWednesday";
+            this.cmbFromWednesday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromWednesday.TabIndex = 12;
+            // 
+            // cmbFromTuesday
+            // 
+            this.cmbFromTuesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromTuesday.FormattingEnabled = true;
+            this.cmbFromTuesday.Location = new System.Drawing.Point(531, 353);
+            this.cmbFromTuesday.Name = "cmbFromTuesday";
+            this.cmbFromTuesday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromTuesday.TabIndex = 11;
+            // 
+            // cmbFromMonday
+            // 
+            this.cmbFromMonday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbFromMonday.FormattingEnabled = true;
+            this.cmbFromMonday.Location = new System.Drawing.Point(531, 270);
+            this.cmbFromMonday.Name = "cmbFromMonday";
+            this.cmbFromMonday.Size = new System.Drawing.Size(379, 37);
+            this.cmbFromMonday.TabIndex = 10;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox1.Location = new System.Drawing.Point(28, 175);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(497, 76);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "DAY";
+            // 
+            // chkSunday
+            // 
+            this.chkSunday.AutoSize = true;
+            this.chkSunday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkSunday.Location = new System.Drawing.Point(28, 755);
+            this.chkSunday.Name = "chkSunday";
+            this.chkSunday.Size = new System.Drawing.Size(325, 77);
+            this.chkSunday.TabIndex = 9;
+            this.chkSunday.Text = "SUNDAY";
+            this.chkSunday.UseVisualStyleBackColor = true;
+            // 
+            // chkSaturday
+            // 
+            this.chkSaturday.AutoSize = true;
+            this.chkSaturday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkSaturday.Location = new System.Drawing.Point(28, 672);
+            this.chkSaturday.Name = "chkSaturday";
+            this.chkSaturday.Size = new System.Drawing.Size(407, 77);
+            this.chkSaturday.TabIndex = 8;
+            this.chkSaturday.Text = "SATURDAY";
+            this.chkSaturday.UseVisualStyleBackColor = true;
+            // 
+            // chkFriday
+            // 
+            this.chkFriday.AutoSize = true;
+            this.chkFriday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkFriday.Location = new System.Drawing.Point(28, 589);
+            this.chkFriday.Name = "chkFriday";
+            this.chkFriday.Size = new System.Drawing.Size(293, 77);
+            this.chkFriday.TabIndex = 7;
+            this.chkFriday.Text = "FRIDAY";
+            this.chkFriday.UseVisualStyleBackColor = true;
+            // 
+            // chkThursday
+            // 
+            this.chkThursday.AutoSize = true;
+            this.chkThursday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkThursday.Location = new System.Drawing.Point(28, 506);
+            this.chkThursday.Name = "chkThursday";
+            this.chkThursday.Size = new System.Drawing.Size(410, 77);
+            this.chkThursday.TabIndex = 6;
+            this.chkThursday.Text = "THURSDAY";
+            this.chkThursday.UseVisualStyleBackColor = true;
+            // 
+            // chkWednesday
+            // 
+            this.chkWednesday.AutoSize = true;
+            this.chkWednesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkWednesday.Location = new System.Drawing.Point(28, 423);
+            this.chkWednesday.Name = "chkWednesday";
+            this.chkWednesday.Size = new System.Drawing.Size(471, 77);
+            this.chkWednesday.TabIndex = 5;
+            this.chkWednesday.Text = "WEDNESDAY";
+            this.chkWednesday.UseVisualStyleBackColor = true;
+            // 
+            // chkTuesday
+            // 
+            this.chkTuesday.AutoSize = true;
+            this.chkTuesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkTuesday.Location = new System.Drawing.Point(28, 340);
+            this.chkTuesday.Name = "chkTuesday";
+            this.chkTuesday.Size = new System.Drawing.Size(361, 77);
+            this.chkTuesday.TabIndex = 4;
+            this.chkTuesday.Text = "TUESDAY";
+            this.chkTuesday.UseVisualStyleBackColor = true;
+            // 
+            // chkMonday
+            // 
+            this.chkMonday.AutoSize = true;
+            this.chkMonday.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkMonday.Location = new System.Drawing.Point(28, 257);
+            this.chkMonday.Name = "chkMonday";
+            this.chkMonday.Size = new System.Drawing.Size(339, 77);
+            this.chkMonday.TabIndex = 3;
+            this.chkMonday.Text = "MONDAY";
+            this.chkMonday.UseVisualStyleBackColor = true;
+            // 
+            // richTextBox2
+            // 
+            this.richTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox2.Location = new System.Drawing.Point(531, 175);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.Size = new System.Drawing.Size(379, 76);
+            this.richTextBox2.TabIndex = 1;
+            this.richTextBox2.Text = "FROM";
+            // 
+            // richTextBox3
+            // 
+            this.richTextBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 32F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBox3.Location = new System.Drawing.Point(916, 175);
+            this.richTextBox3.Name = "richTextBox3";
+            this.richTextBox3.Size = new System.Drawing.Size(381, 76);
+            this.richTextBox3.TabIndex = 2;
+            this.richTextBox3.Text = "TO";
+            // 
+            // cmbToMonday
+            // 
+            this.cmbToMonday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToMonday.FormattingEnabled = true;
+            this.cmbToMonday.ItemHeight = 29;
+            this.cmbToMonday.Location = new System.Drawing.Point(916, 270);
+            this.cmbToMonday.Name = "cmbToMonday";
+            this.cmbToMonday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToMonday.TabIndex = 17;
+            // 
+            // cmbToTuesday
+            // 
+            this.cmbToTuesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToTuesday.FormattingEnabled = true;
+            this.cmbToTuesday.Location = new System.Drawing.Point(916, 353);
+            this.cmbToTuesday.Name = "cmbToTuesday";
+            this.cmbToTuesday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToTuesday.TabIndex = 18;
+            // 
+            // cmbToWednesday
+            // 
+            this.cmbToWednesday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToWednesday.FormattingEnabled = true;
+            this.cmbToWednesday.Location = new System.Drawing.Point(916, 438);
+            this.cmbToWednesday.Name = "cmbToWednesday";
+            this.cmbToWednesday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToWednesday.TabIndex = 19;
+            // 
+            // cmbToThursday
+            // 
+            this.cmbToThursday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToThursday.FormattingEnabled = true;
+            this.cmbToThursday.Location = new System.Drawing.Point(916, 520);
+            this.cmbToThursday.Name = "cmbToThursday";
+            this.cmbToThursday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToThursday.TabIndex = 20;
+            // 
+            // cmbToFriday
+            // 
+            this.cmbToFriday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToFriday.FormattingEnabled = true;
+            this.cmbToFriday.Location = new System.Drawing.Point(916, 603);
+            this.cmbToFriday.Name = "cmbToFriday";
+            this.cmbToFriday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToFriday.TabIndex = 21;
+            // 
+            // cmbToSaturday
+            // 
+            this.cmbToSaturday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToSaturday.FormattingEnabled = true;
+            this.cmbToSaturday.Location = new System.Drawing.Point(916, 691);
+            this.cmbToSaturday.Name = "cmbToSaturday";
+            this.cmbToSaturday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToSaturday.TabIndex = 22;
+            // 
+            // cmbToSunday
+            // 
+            this.cmbToSunday.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbToSunday.FormattingEnabled = true;
+            this.cmbToSunday.Location = new System.Drawing.Point(916, 770);
+            this.cmbToSunday.Name = "cmbToSunday";
+            this.cmbToSunday.Size = new System.Drawing.Size(380, 37);
+            this.cmbToSunday.TabIndex = 23;
+            // 
             // UcJadwalKaryawan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.cmbToSunday);
+            this.Controls.Add(this.cmbToFriday);
+            this.Controls.Add(this.cmbToSaturday);
+            this.Controls.Add(this.cmbToThursday);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.cmbToWednesday);
+            this.Controls.Add(this.btnReset);
+            this.Controls.Add(this.cmbToTuesday);
+            this.Controls.Add(this.btnUpdate);
+            this.Controls.Add(this.cmbToMonday);
             this.Controls.Add(this.cmbNamaKaryawan);
+            this.Controls.Add(this.cmbFromSunday);
+            this.Controls.Add(this.cmbFromSaturday);
+            this.Controls.Add(this.cmbFromFriday);
+            this.Controls.Add(this.cmbFromThursday);
+            this.Controls.Add(this.cmbFromWednesday);
+            this.Controls.Add(this.cmbFromTuesday);
+            this.Controls.Add(this.cmbFromMonday);
+            this.Controls.Add(this.chkSunday);
+            this.Controls.Add(this.chkSaturday);
+            this.Controls.Add(this.chkFriday);
+            this.Controls.Add(this.chkThursday);
+            this.Controls.Add(this.chkWednesday);
+            this.Controls.Add(this.chkTuesday);
+            this.Controls.Add(this.chkMonday);
+            this.Controls.Add(this.richTextBox3);
+            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.richTextBox2);
             this.Name = "UcJadwalKaryawan";
             this.Size = new System.Drawing.Size(1400, 927);
             this.Load += new System.EventHandler(this.UcJadwalKaryawan_Load);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -409,35 +386,34 @@
         #endregion
 
         private System.Windows.Forms.ComboBox cmbNamaKaryawan;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.RichTextBox richTextBox3;
-        private System.Windows.Forms.RichTextBox richTextBox2;
-        private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox5;
-        private System.Windows.Forms.CheckBox checkBox6;
-        private System.Windows.Forms.CheckBox checkBox7;
-        private System.Windows.Forms.CheckBox checkBox8;
-        private System.Windows.Forms.ComboBox comboBox15;
-        private System.Windows.Forms.ComboBox comboBox14;
-        private System.Windows.Forms.ComboBox comboBox13;
-        private System.Windows.Forms.ComboBox comboBox12;
-        private System.Windows.Forms.ComboBox comboBox11;
-        private System.Windows.Forms.ComboBox comboBox10;
-        private System.Windows.Forms.ComboBox comboBox9;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.ComboBox comboBox4;
-        private System.Windows.Forms.ComboBox comboBox5;
-        private System.Windows.Forms.ComboBox comboBox6;
-        private System.Windows.Forms.ComboBox comboBox7;
-        private System.Windows.Forms.ComboBox comboBox8;
+        private System.Windows.Forms.ComboBox cmbFromSunday;
+        private System.Windows.Forms.ComboBox cmbFromSaturday;
+        private System.Windows.Forms.ComboBox cmbFromFriday;
+        private System.Windows.Forms.ComboBox cmbFromThursday;
+        private System.Windows.Forms.ComboBox cmbFromWednesday;
+        private System.Windows.Forms.ComboBox cmbFromTuesday;
+        private System.Windows.Forms.ComboBox cmbFromMonday;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.CheckBox chkSunday;
+        private System.Windows.Forms.CheckBox chkSaturday;
+        private System.Windows.Forms.CheckBox chkFriday;
+        private System.Windows.Forms.CheckBox chkThursday;
+        private System.Windows.Forms.CheckBox chkWednesday;
+        private System.Windows.Forms.CheckBox chkTuesday;
+        private System.Windows.Forms.CheckBox chkMonday;
+        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.ComboBox cmbToMonday;
+        private System.Windows.Forms.ComboBox cmbToTuesday;
+        private System.Windows.Forms.ComboBox cmbToWednesday;
+        private System.Windows.Forms.ComboBox cmbToThursday;
+        private System.Windows.Forms.ComboBox cmbToFriday;
+        private System.Windows.Forms.ComboBox cmbToSaturday;
+        private System.Windows.Forms.ComboBox cmbToSunday;
     }
 }
