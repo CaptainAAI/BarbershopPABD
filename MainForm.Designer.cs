@@ -145,6 +145,7 @@
             this.button6.TabIndex = 10;
             this.button6.Text = "JADWAL KARYAWAN";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button4
             // 

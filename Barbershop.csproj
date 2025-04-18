@@ -72,6 +72,12 @@
     <Compile Include="UcDashboard.Designer.cs">
       <DependentUpon>UcDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="UcJadwalKaryawan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UcJadwalKaryawan.Designer.cs">
+      <DependentUpon>UcJadwalKaryawan.cs</DependentUpon>
+    </Compile>
     <Compile Include="UcKaryawan.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -98,6 +104,9 @@
     </Compile>
     <EmbeddedResource Include="UcDashboard.resx">
       <DependentUpon>UcDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UcJadwalKaryawan.resx">
+      <DependentUpon>UcJadwalKaryawan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UcKaryawan.resx">
       <DependentUpon>UcKaryawan.cs</DependentUpon>
