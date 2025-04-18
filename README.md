@@ -16,5 +16,8 @@ CRUD Karyawan
 
 ![Screenshot 2025-04-18 154711](https://github.com/user-attachments/assets/8a8dd18f-6cc7-48ce-9cb4-905ebff8f9f6)
 
+CRUD Jadwal Karyawan
+
+![image](https://github.com/user-attachments/assets/557515fe-9bdb-4cbe-8629-c76a845a7c59)
 
 
