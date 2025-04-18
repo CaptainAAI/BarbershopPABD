@@ -1,6 +1,6 @@
 ﻿namespace Barbershop
 {
-    partial class Layanan
+    partial class UcKaryawan
     {
         /// <summary> 
         /// Required designer variable.
@@ -30,12 +30,13 @@
         {
             this.SuspendLayout();
             // 
-            // Layanan
+            // UcKaryawan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "Layanan";
+            this.Name = "UcKaryawan";
             this.Size = new System.Drawing.Size(1400, 927);
+            this.Load += new System.EventHandler(this.UcKaryawan_Load);
             this.ResumeLayout(false);
 
         }

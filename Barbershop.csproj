@@ -72,6 +72,12 @@
     <Compile Include="UcDashboard.Designer.cs">
       <DependentUpon>UcDashboard.cs</DependentUpon>
     </Compile>
+    <Compile Include="UcKaryawan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UcKaryawan.Designer.cs">
+      <DependentUpon>UcKaryawan.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -92,6 +98,9 @@
     </Compile>
     <EmbeddedResource Include="UcDashboard.resx">
       <DependentUpon>UcDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UcKaryawan.resx">
+      <DependentUpon>UcKaryawan.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

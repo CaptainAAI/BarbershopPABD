@@ -76,6 +76,7 @@
             // 
             // btnLogin
             // 
+            this.btnLogin.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnLogin.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnLogin.Location = new System.Drawing.Point(141, 245);
             this.btnLogin.Name = "btnLogin";
@@ -90,11 +91,11 @@
             this.lblMessage.AutoSize = true;
             this.lblMessage.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.lblMessage.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMessage.Font = new System.Drawing.Font("QualityWings787", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMessage.ForeColor = System.Drawing.Color.Red;
             this.lblMessage.Location = new System.Drawing.Point(133, 359);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(0, 46);
+            this.lblMessage.Size = new System.Drawing.Size(0, 34);
             this.lblMessage.TabIndex = 6;
             // 
             // panel1

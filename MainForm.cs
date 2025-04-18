@@ -74,5 +74,10 @@ namespace Barbershop
         {
             LoadUserControl(new Layanan());
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            LoadUserControl(new UcKaryawan());
+        }
     }
 }
