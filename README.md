@@ -12,4 +12,9 @@ Tampilan Utama UI (belum jadi)
 
 ![image](https://github.com/user-attachments/assets/9ed6447b-b34a-4d88-bc13-55ec7cd7ad2d)
 
+CRUD Karyawan
+
+![Screenshot 2025-04-18 154711](https://github.com/user-attachments/assets/8a8dd18f-6cc7-48ce-9cb4-905ebff8f9f6)
+
+
 
