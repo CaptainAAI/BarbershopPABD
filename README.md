@@ -1,5 +1,9 @@
 # Barbershop
 
+Relasi antar table 
+
+![image](https://github.com/user-attachments/assets/92699697-ad48-4f0c-974a-4ff19a73dc25)
+
 Tampilan Login page admin
 
 ![image](https://github.com/user-attachments/assets/23d127c9-4939-4784-82ca-e920fff58944)
