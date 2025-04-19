@@ -178,5 +178,55 @@ namespace Barbershop
             IsiComboJam(cmbFromFriday); IsiComboJam(cmbToFriday);
             IsiComboJam(cmbFromSaturday); IsiComboJam(cmbToSaturday);
         }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            if (cmbNamaKaryawan.SelectedIndex == -1)
+            {
+                MessageBox.Show("Pilih karyawan terlebih dahulu sebelum reset.");
+                return;
+            }
+
+            string empID = cmbNamaKaryawan.SelectedValue.ToString();
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                string deleteAll = "DELETE FROM employees_schedule WHERE employee_id=@emp";
+                SqlCommand cmd = new SqlCommand(deleteAll, conn);
+                cmd.Parameters.AddWithValue("@emp", empID);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+
+            MessageBox.Show("Semua jadwal karyawan berhasil dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            IsiSemuaComboJam();
+            MessageBox.Show("Jam kerja berhasil diperbarui!", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnTampilkanData_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                string query = @"
+            SELECT s.id, s.employee_id, e.first_name + ' ' + e.last_name AS nama, 
+                   s.day_id, s.from_hour, s.to_hour
+            FROM employees_schedule s
+            JOIN employees e ON s.employee_id = e.employee_id
+            ORDER BY s.employee_id, s.day_id";
+
+                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                dgvJadwal.DataSource = dt; // pastikan dgvJadwal sudah ada di form
+            }
+        }
+
+        
     }
 }
