@@ -21,13 +21,7 @@ namespace Barbershop
         {
 
         }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // Menaruh panel1 di tengah saat form pertama kali dibuka
-            panel1.Left = (this.ClientSize.Width - panel1.Width) / 2;
-            panel1.Top = (this.ClientSize.Height - panel1.Height) / 2;
-        }
-
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
 
@@ -83,6 +77,11 @@ namespace Barbershop
         private void button6_Click(object sender, EventArgs e)
         {
             LoadUserControl(new UcJadwalKaryawan());
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
