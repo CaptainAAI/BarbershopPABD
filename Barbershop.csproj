@@ -52,11 +52,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Layanan.cs">
+    <Compile Include="UcLayanan.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Layanan.Designer.cs">
-      <DependentUpon>Layanan.cs</DependentUpon>
+    <Compile Include="UcLayanan.Designer.cs">
+      <DependentUpon>UcLayanan.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -84,11 +84,17 @@
     <Compile Include="UcKaryawan.Designer.cs">
       <DependentUpon>UcKaryawan.cs</DependentUpon>
     </Compile>
+    <Compile Include="UcPelanggan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UcPelanggan.Designer.cs">
+      <DependentUpon>UcPelanggan.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Layanan.resx">
-      <DependentUpon>Layanan.cs</DependentUpon>
+    <EmbeddedResource Include="UcLayanan.resx">
+      <DependentUpon>UcLayanan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UcKaryawan.resx">
       <DependentUpon>UcKaryawan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UcPelanggan.resx">
+      <DependentUpon>UcPelanggan.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

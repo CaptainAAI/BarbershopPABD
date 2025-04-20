@@ -36,6 +36,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
+            this.button8 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button2
@@ -89,6 +90,7 @@
             this.button4.TabIndex = 8;
             this.button4.Text = "PELANGGAN";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
             // 
@@ -125,12 +127,25 @@
             this.panelContent.TabIndex = 16;
             this.panelContent.Paint += new System.Windows.Forms.PaintEventHandler(this.panelContent_Paint);
             // 
+            // button8
+            // 
+            this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button8.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button8.Location = new System.Drawing.Point(12, 954);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(271, 75);
+            this.button8.TabIndex = 12;
+            this.button8.Text = "LOG OUT";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1904, 1041);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button2);
@@ -156,5 +171,6 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panelContent;
+        private System.Windows.Forms.Button button8;
     }
 }

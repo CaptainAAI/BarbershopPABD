@@ -175,5 +175,10 @@ namespace Barbershop
                 txtEmail.Text = row.Cells["email"].Value.ToString();
             }
         }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

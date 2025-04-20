@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Barbershop
 {
-    public partial class Layanan: UserControl
+    public partial class UcPelanggan: UserControl
     {
-        public Layanan()
+        public UcPelanggan()
         {
             InitializeComponent();
         }

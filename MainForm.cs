@@ -29,7 +29,7 @@ namespace Barbershop
 
         private void button4_Click(object sender, EventArgs e)
         {
-
+            LoadUserControl(new UcPelanggan());
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -66,7 +66,7 @@ namespace Barbershop
 
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new Layanan());
+            LoadUserControl(new UcLayanan());
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -83,5 +83,7 @@ namespace Barbershop
         {
 
         }
+
+        
     }
 }
