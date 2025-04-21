@@ -18,12 +18,13 @@ namespace Barbershop
         public UcJadwalKaryawan()
         {
             InitializeComponent();
+            cmbNamaKaryawan.SelectedIndexChanged += CmbNamaKaryawan_SelectedIndexChanged;
         }
 
         private void UcJadwalKaryawan_Load(object sender, EventArgs e)
         {
             LoadKaryawan();
-            IsiSemuaComboJam(); // Isi jam kerja ke semua ComboBox saat load
+            IsiSemuaComboJam();
         }
 
         private void LoadKaryawan()
@@ -161,9 +162,17 @@ namespace Barbershop
             for (int jam = 5; jam <= 23; jam++)
             {
                 combo.Items.Add($"{jam:D2}:00");
+                combo.Items.Add($"{jam:D2}:05");
+                combo.Items.Add($"{jam:D2}:10");
                 combo.Items.Add($"{jam:D2}:15");
+                combo.Items.Add($"{jam:D2}:20");
+                combo.Items.Add($"{jam:D2}:25");
                 combo.Items.Add($"{jam:D2}:30");
+                combo.Items.Add($"{jam:D2}:35");
+                combo.Items.Add($"{jam:D2}:40");
                 combo.Items.Add($"{jam:D2}:45");
+                combo.Items.Add($"{jam:D2}:50");
+                combo.Items.Add($"{jam:D2}:55");
             }
             combo.DropDownStyle = ComboBoxStyle.DropDownList;
         }
@@ -179,45 +188,18 @@ namespace Barbershop
             IsiComboJam(cmbFromSaturday); IsiComboJam(cmbToSaturday);
         }
 
-        private void btnReset_Click(object sender, EventArgs e)
-        {
-            if (cmbNamaKaryawan.SelectedIndex == -1)
-            {
-                MessageBox.Show("Pilih karyawan terlebih dahulu sebelum reset.");
-                return;
-            }
-
-            string empID = cmbNamaKaryawan.SelectedValue.ToString();
-
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                string deleteAll = "DELETE FROM employees_schedule WHERE employee_id=@emp";
-                SqlCommand cmd = new SqlCommand(deleteAll, conn);
-                cmd.Parameters.AddWithValue("@emp", empID);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
-
-            MessageBox.Show("Semua jadwal karyawan berhasil dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            IsiSemuaComboJam();
-            MessageBox.Show("Jam kerja berhasil diperbarui!", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        
 
         private void btnTampilkanData_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = @"
-            SELECT s.id, s.employee_id, e.first_name + ' ' + e.last_name AS nama, 
-                   s.day_id, s.from_hour, s.to_hour
-            FROM employees_schedule s
-            JOIN employees e ON s.employee_id = e.employee_id
-            ORDER BY s.employee_id, s.day_id";
+                SELECT s.id, s.employee_id, e.first_name + ' ' + e.last_name AS nama, 
+                       s.day_id, s.from_hour, s.to_hour
+                FROM employees_schedule s
+                JOIN employees e ON s.employee_id = e.employee_id
+                ORDER BY s.employee_id, s.day_id";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
@@ -227,6 +209,59 @@ namespace Barbershop
             }
         }
 
-        
+        private void CmbNamaKaryawan_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbNamaKaryawan.SelectedIndex != -1)
+            {
+                string empID = cmbNamaKaryawan.SelectedValue.ToString();
+                LoadJadwalKaryawan(empID);
+            }
+        }
+
+        private void LoadJadwalKaryawan(string empID)
+        {
+            string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                string query = @"SELECT day_id, from_hour, to_hour FROM employees_schedule WHERE employee_id = @empID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@empID", empID);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                foreach (string day in days)
+                {
+                    CheckBox chk = FindControlRecursive(this, "chk" + day) as CheckBox;
+                    ComboBox cmbFrom = FindControlRecursive(this, "cmbFrom" + day) as ComboBox;
+                    ComboBox cmbTo = FindControlRecursive(this, "cmbTo" + day) as ComboBox;
+
+                    if (chk != null) chk.Checked = false;
+                    if (cmbFrom != null) cmbFrom.SelectedIndex = -1;
+                    if (cmbTo != null) cmbTo.SelectedIndex = -1;
+                }
+
+                while (reader.Read())
+                {
+                    int dayID = reader.GetByte(0); // karena day_id bertipe TINYINT
+                    string from = reader.GetTimeSpan(1).ToString(@"hh\:mm");
+                    string to = reader.GetTimeSpan(2).ToString(@"hh\:mm");
+
+                    string dayName = days[dayID];
+
+                    CheckBox chk = FindControlRecursive(this, "chk" + dayName) as CheckBox;
+                    ComboBox cmbFrom = FindControlRecursive(this, "cmbFrom" + dayName) as ComboBox;
+                    ComboBox cmbTo = FindControlRecursive(this, "cmbTo" + dayName) as ComboBox;
+
+                    if (chk != null) chk.Checked = true;
+                    if (cmbFrom != null) cmbFrom.SelectedItem = from;
+                    if (cmbTo != null) cmbTo.SelectedItem = to;
+
+                }
+
+                reader.Close();
+            }
+        }
     }
 }
