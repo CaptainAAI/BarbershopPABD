@@ -33,8 +33,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Guna.Charts.WinForms, Version=1.1.0.0, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>packages\Guna.Charts.WinForms.1.1.0\lib\net48\Guna.Charts.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>packages\Guna.UI2.WinForms.2.0.4.7\lib\net48\Guna.UI2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +60,12 @@
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UcKategoriLayanan.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UcKategoriLayanan.Designer.cs">
+      <DependentUpon>UcKategoriLayanan.cs</DependentUpon>
     </Compile>
     <Compile Include="UcLayanan.cs">
       <SubType>UserControl</SubType>
@@ -93,6 +108,9 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UcKategoriLayanan.resx">
+      <DependentUpon>UcKategoriLayanan.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UcLayanan.resx">
       <DependentUpon>UcLayanan.cs</DependentUpon>
     </EmbeddedResource>
@@ -120,6 +138,7 @@
     <EmbeddedResource Include="UcPelanggan.resx">
       <DependentUpon>UcPelanggan.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

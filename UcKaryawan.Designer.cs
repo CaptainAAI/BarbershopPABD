@@ -50,7 +50,7 @@
             // btnAdd
             // 
             this.btnAdd.Location = new System.Drawing.Point(9, 9);
-            this.btnAdd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(83, 81);
             this.btnAdd.TabIndex = 0;
@@ -61,7 +61,7 @@
             // btnDelete
             // 
             this.btnDelete.Location = new System.Drawing.Point(97, 9);
-            this.btnDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(2);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(83, 81);
             this.btnDelete.TabIndex = 1;
@@ -72,7 +72,7 @@
             // btnRefresh
             // 
             this.btnRefresh.Location = new System.Drawing.Point(97, 94);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(83, 81);
             this.btnRefresh.TabIndex = 2;
@@ -83,7 +83,7 @@
             // btnUpdate
             // 
             this.btnUpdate.Location = new System.Drawing.Point(9, 94);
-            this.btnUpdate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnUpdate.Margin = new System.Windows.Forms.Padding(2);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(83, 81);
             this.btnUpdate.TabIndex = 3;
@@ -98,7 +98,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvEmployees.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvEmployees.Location = new System.Drawing.Point(9, 203);
-            this.dgvEmployees.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvEmployees.Margin = new System.Windows.Forms.Padding(2);
             this.dgvEmployees.Name = "dgvEmployees";
             this.dgvEmployees.RowHeadersWidth = 62;
             this.dgvEmployees.RowTemplate.Height = 28;
@@ -113,7 +113,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtID.Location = new System.Drawing.Point(293, 16);
-            this.txtID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtID.Margin = new System.Windows.Forms.Padding(2);
             this.txtID.Name = "txtID";
             this.txtID.Size = new System.Drawing.Size(766, 20);
             this.txtID.TabIndex = 5;
@@ -125,10 +125,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFirstName.Location = new System.Drawing.Point(293, 46);
-            this.txtFirstName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtFirstName.Margin = new System.Windows.Forms.Padding(2);
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(766, 20);
             this.txtFirstName.TabIndex = 6;
+            this.txtFirstName.TextChanged += new System.EventHandler(this.txtFirstName_TextChanged);
             // 
             // txtLastName
             // 
@@ -136,10 +137,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLastName.Location = new System.Drawing.Point(293, 76);
-            this.txtLastName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtLastName.Margin = new System.Windows.Forms.Padding(2);
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(766, 20);
             this.txtLastName.TabIndex = 7;
+            this.txtLastName.TextChanged += new System.EventHandler(this.txtLastName_TextChanged);
             // 
             // txtPhone
             // 
@@ -147,10 +149,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPhone.Location = new System.Drawing.Point(293, 108);
-            this.txtPhone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPhone.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhone.Name = "txtPhone";
             this.txtPhone.Size = new System.Drawing.Size(766, 20);
             this.txtPhone.TabIndex = 8;
+            this.txtPhone.TextChanged += new System.EventHandler(this.txtPhone_TextChanged);
             // 
             // txtEmail
             // 
@@ -158,10 +161,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEmail.Location = new System.Drawing.Point(293, 140);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(2);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(766, 20);
             this.txtEmail.TabIndex = 9;
+            this.txtEmail.TextChanged += new System.EventHandler(this.txtEmail_TextChanged);
             // 
             // label1
             // 
@@ -176,6 +180,7 @@
             this.label1.Size = new System.Drawing.Size(87, 17);
             this.label1.TabIndex = 10;
             this.label1.Text = "ID Karyawan";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -190,6 +195,7 @@
             this.label2.Size = new System.Drawing.Size(76, 17);
             this.label2.TabIndex = 11;
             this.label2.Text = "First Name";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
@@ -204,6 +210,7 @@
             this.label3.Size = new System.Drawing.Size(76, 17);
             this.label3.TabIndex = 12;
             this.label3.Text = "Last Name";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
@@ -218,6 +225,7 @@
             this.label4.Size = new System.Drawing.Size(82, 17);
             this.label4.TabIndex = 13;
             this.label4.Text = "No Telepon";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
             // 
@@ -270,7 +278,7 @@
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnAdd);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "UcKaryawan";
             this.Size = new System.Drawing.Size(1069, 661);
             this.Load += new System.EventHandler(this.UcKaryawan_Load);

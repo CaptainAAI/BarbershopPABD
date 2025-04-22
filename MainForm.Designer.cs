@@ -29,93 +29,101 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.button2 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnKategoriLayanan = new System.Windows.Forms.Button();
+            this.btnLaporanOperasional = new System.Windows.Forms.Button();
+            this.btnListLayanan = new System.Windows.Forms.Button();
+            this.btnJadwalKaryawan = new System.Windows.Forms.Button();
+            this.btnPelanggan = new System.Windows.Forms.Button();
+            this.btnKaryawan = new System.Windows.Forms.Button();
+            this.btnDashboard = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
             this.button8 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // button2
+            // btnKategoriLayanan
             // 
-            this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button2.Location = new System.Drawing.Point(12, 364);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(271, 69);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "KATEGORI LAYANAN";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnKategoriLayanan.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnKategoriLayanan.Location = new System.Drawing.Point(8, 237);
+            this.btnKategoriLayanan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKategoriLayanan.Name = "btnKategoriLayanan";
+            this.btnKategoriLayanan.Size = new System.Drawing.Size(181, 45);
+            this.btnKategoriLayanan.TabIndex = 6;
+            this.btnKategoriLayanan.Text = "KATEGORI LAYANAN";
+            this.btnKategoriLayanan.UseVisualStyleBackColor = true;
+            this.btnKategoriLayanan.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button7
+            // btnLaporanOperasional
             // 
-            this.button7.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button7.Location = new System.Drawing.Point(12, 739);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(271, 75);
-            this.button7.TabIndex = 11;
-            this.button7.Text = "LAPORAN OPERASIONAL";
-            this.button7.UseVisualStyleBackColor = true;
+            this.btnLaporanOperasional.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLaporanOperasional.Location = new System.Drawing.Point(8, 480);
+            this.btnLaporanOperasional.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLaporanOperasional.Name = "btnLaporanOperasional";
+            this.btnLaporanOperasional.Size = new System.Drawing.Size(181, 49);
+            this.btnLaporanOperasional.TabIndex = 11;
+            this.btnLaporanOperasional.Text = "LAPORAN OPERASIONAL";
+            this.btnLaporanOperasional.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // btnListLayanan
             // 
-            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button3.Location = new System.Drawing.Point(12, 439);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(271, 69);
-            this.button3.TabIndex = 7;
-            this.button3.Text = "LIST LAYANAN";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.btnListLayanan.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnListLayanan.Location = new System.Drawing.Point(8, 285);
+            this.btnListLayanan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnListLayanan.Name = "btnListLayanan";
+            this.btnListLayanan.Size = new System.Drawing.Size(181, 45);
+            this.btnListLayanan.TabIndex = 7;
+            this.btnListLayanan.Text = "LIST LAYANAN";
+            this.btnListLayanan.UseVisualStyleBackColor = true;
+            this.btnListLayanan.Click += new System.EventHandler(this.button3_Click);
             // 
-            // button6
+            // btnJadwalKaryawan
             // 
-            this.button6.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button6.Location = new System.Drawing.Point(12, 664);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(271, 69);
-            this.button6.TabIndex = 10;
-            this.button6.Text = "JADWAL KARYAWAN";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.btnJadwalKaryawan.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnJadwalKaryawan.Location = new System.Drawing.Point(8, 432);
+            this.btnJadwalKaryawan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnJadwalKaryawan.Name = "btnJadwalKaryawan";
+            this.btnJadwalKaryawan.Size = new System.Drawing.Size(181, 45);
+            this.btnJadwalKaryawan.TabIndex = 10;
+            this.btnJadwalKaryawan.Text = "JADWAL KARYAWAN";
+            this.btnJadwalKaryawan.UseVisualStyleBackColor = true;
+            this.btnJadwalKaryawan.Click += new System.EventHandler(this.button6_Click);
             // 
-            // button4
+            // btnPelanggan
             // 
-            this.button4.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button4.Location = new System.Drawing.Point(12, 514);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(271, 69);
-            this.button4.TabIndex = 8;
-            this.button4.Text = "PELANGGAN";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.btnPelanggan.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPelanggan.Location = new System.Drawing.Point(8, 334);
+            this.btnPelanggan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnPelanggan.Name = "btnPelanggan";
+            this.btnPelanggan.Size = new System.Drawing.Size(181, 45);
+            this.btnPelanggan.TabIndex = 8;
+            this.btnPelanggan.Text = "PELANGGAN";
+            this.btnPelanggan.UseVisualStyleBackColor = true;
+            this.btnPelanggan.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
+            // btnKaryawan
             // 
-            this.button5.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button5.Location = new System.Drawing.Point(12, 589);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(271, 69);
-            this.button5.TabIndex = 9;
-            this.button5.Text = "KARYAWAN";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.btnKaryawan.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnKaryawan.Location = new System.Drawing.Point(8, 383);
+            this.btnKaryawan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKaryawan.Name = "btnKaryawan";
+            this.btnKaryawan.Size = new System.Drawing.Size(181, 45);
+            this.btnKaryawan.TabIndex = 9;
+            this.btnKaryawan.Text = "KARYAWAN";
+            this.btnKaryawan.UseVisualStyleBackColor = true;
+            this.btnKaryawan.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button1
+            // btnDashboard
             // 
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.Location = new System.Drawing.Point(12, 289);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(271, 69);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "DASHBOARD";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnDashboard.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDashboard.Location = new System.Drawing.Point(8, 188);
+            this.btnDashboard.Margin = new System.Windows.Forms.Padding(2);
+            this.btnDashboard.Name = "btnDashboard";
+            this.btnDashboard.Size = new System.Drawing.Size(181, 45);
+            this.btnDashboard.TabIndex = 5;
+            this.btnDashboard.Text = "DASHBOARD";
+            this.btnDashboard.UseVisualStyleBackColor = true;
+            this.btnDashboard.Click += new System.EventHandler(this.button1_Click);
             // 
             // panelContent
             // 
@@ -124,9 +132,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelContent.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panelContent.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panelContent.Location = new System.Drawing.Point(289, 12);
+            this.panelContent.Location = new System.Drawing.Point(193, 8);
+            this.panelContent.Margin = new System.Windows.Forms.Padding(2);
             this.panelContent.Name = "panelContent";
-            this.panelContent.Size = new System.Drawing.Size(1603, 1017);
+            this.panelContent.Size = new System.Drawing.Size(1070, 662);
             this.panelContent.TabIndex = 16;
             this.panelContent.Paint += new System.Windows.Forms.PaintEventHandler(this.panelContent_Paint);
             // 
@@ -134,9 +143,10 @@
             // 
             this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button8.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button8.Location = new System.Drawing.Point(12, 954);
+            this.button8.Location = new System.Drawing.Point(8, 620);
+            this.button8.Margin = new System.Windows.Forms.Padding(2);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(271, 75);
+            this.button8.Size = new System.Drawing.Size(181, 49);
             this.button8.TabIndex = 12;
             this.button8.Text = "LOG OUT";
             this.button8.UseVisualStyleBackColor = true;
@@ -145,30 +155,32 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(8, 8);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(271, 271);
+            this.pictureBox1.Size = new System.Drawing.Size(181, 176);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 17;
             this.pictureBox1.TabStop = false;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1904, 1041);
+            this.ClientSize = new System.Drawing.Size(1269, 677);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.panelContent);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnLaporanOperasional);
+            this.Controls.Add(this.btnKategoriLayanan);
+            this.Controls.Add(this.btnJadwalKaryawan);
+            this.Controls.Add(this.btnListLayanan);
+            this.Controls.Add(this.btnKaryawan);
+            this.Controls.Add(this.btnPelanggan);
+            this.Controls.Add(this.btnDashboard);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";
@@ -179,13 +191,13 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnLaporanOperasional;
+        private System.Windows.Forms.Button btnJadwalKaryawan;
+        private System.Windows.Forms.Button btnKaryawan;
+        private System.Windows.Forms.Button btnPelanggan;
+        private System.Windows.Forms.Button btnListLayanan;
+        private System.Windows.Forms.Button btnKategoriLayanan;
+        private System.Windows.Forms.Button btnDashboard;
         private System.Windows.Forms.Panel panelContent;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.PictureBox pictureBox1;
