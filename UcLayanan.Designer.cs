@@ -143,7 +143,6 @@
             this.txtDuration.Name = "txtDuration";
             this.txtDuration.Size = new System.Drawing.Size(709, 20);
             this.txtDuration.TabIndex = 25;
-            this.txtDuration.TextChanged += new System.EventHandler(this.txtDuration_TextChanged);
             // 
             // txtPrice
             // 
@@ -155,7 +154,6 @@
             this.txtPrice.Name = "txtPrice";
             this.txtPrice.Size = new System.Drawing.Size(709, 20);
             this.txtPrice.TabIndex = 24;
-            this.txtPrice.TextChanged += new System.EventHandler(this.txtPrice_TextChanged);
             // 
             // txtServiceDescription
             // 
@@ -167,7 +165,6 @@
             this.txtServiceDescription.Name = "txtServiceDescription";
             this.txtServiceDescription.Size = new System.Drawing.Size(709, 20);
             this.txtServiceDescription.TabIndex = 23;
-            this.txtServiceDescription.TextChanged += new System.EventHandler(this.txtServiceDescription_TextChanged);
             // 
             // txtServiceName
             // 
@@ -179,7 +176,6 @@
             this.txtServiceName.Name = "txtServiceName";
             this.txtServiceName.Size = new System.Drawing.Size(709, 20);
             this.txtServiceName.TabIndex = 22;
-            this.txtServiceName.TextChanged += new System.EventHandler(this.txtServiceName_TextChanged);
             // 
             // txtID
             // 
@@ -191,7 +187,6 @@
             this.txtID.Name = "txtID";
             this.txtID.Size = new System.Drawing.Size(709, 20);
             this.txtID.TabIndex = 21;
-            this.txtID.TextChanged += new System.EventHandler(this.txtID_TextChanged);
             // 
             // dgvLayanan
             // 
@@ -206,7 +201,7 @@
             this.dgvLayanan.RowTemplate.Height = 28;
             this.dgvLayanan.Size = new System.Drawing.Size(1048, 414);
             this.dgvLayanan.TabIndex = 20;
-            this.dgvLayanan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLayanan_CellContentClick);
+            this.dgvLayanan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLayanan_CellClick);
             // 
             // btnUpdate
             // 
@@ -273,7 +268,7 @@
             this.cmbCategoryName.Name = "cmbCategoryName";
             this.cmbCategoryName.Size = new System.Drawing.Size(707, 21);
             this.cmbCategoryName.TabIndex = 34;
-            this.cmbCategoryName.SelectedIndexChanged += new System.EventHandler(this.cmbCategoryName_SelectedIndexChanged);
+            this.cmbCategoryName.Click += new System.EventHandler(this.cmbCategoryName_DropDown);
             // 
             // UcLayanan
             // 
@@ -297,7 +292,7 @@
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnAdd);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "UcLayanan";
             this.Size = new System.Drawing.Size(1069, 661);
             ((System.ComponentModel.ISupportInitialize)(this.dgvLayanan)).EndInit();

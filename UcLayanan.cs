@@ -18,17 +18,13 @@ namespace Barbershop
         public UcLayanan()
         {
             InitializeComponent();
-            txtID.ReadOnly = true; // Disable manual input
-            LoadData();
         }
 
         private void LoadData()
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "SELECT s.service_id, s.service_name, s.service_description, s.service_price, s.service_duration, c.category_name " +
-                               "FROM services s JOIN service_categories c ON s.category_id = c.category_id";
-                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM services", conn);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
                 dgvLayanan.DataSource = dt;
@@ -39,101 +35,102 @@ namespace Barbershop
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                SqlCommand cmd = new SqlCommand("SELECT category_id, category_name FROM service_categories", conn);
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
+                string query = "SELECT category_id, category_name FROM service_categories";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
-                dt.Load(reader);
+                adapter.Fill(dt);
 
-                cmbCategoryName.DataSource = dt;
                 cmbCategoryName.DisplayMember = "category_name";
                 cmbCategoryName.ValueMember = "category_id";
-
-                conn.Close();
+                cmbCategoryName.DataSource = dt;
+                cmbCategoryName.SelectedIndex = -1;
             }
-        }
-
-        private void cmbCategoryName_Click(object sender, EventArgs e)
-        {
-            LoadCategories(); // Refresh kategori setiap klik
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            if (cmbCategoryName.SelectedValue == null)
+            {
+                MessageBox.Show("Silakan pilih kategori!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string id = Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper(); // Generate ID otomatis
-
-                string query = "INSERT INTO services (service_id, service_name, service_description, service_price, service_duration, category_id) " +
-                               "VALUES (@id, @name, @desc, @price, @duration, @catid)";
+                string query = "INSERT INTO services (service_id, service_name, service_description, service_price, service_duration, category_id) VALUES (@id, @name, @desc, @price, @duration, @category)";
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@id", txtID.Text);
                 cmd.Parameters.AddWithValue("@name", txtServiceName.Text);
                 cmd.Parameters.AddWithValue("@desc", txtServiceDescription.Text);
-                cmd.Parameters.AddWithValue("@price", Convert.ToDecimal(txtPrice.Text));
-                cmd.Parameters.AddWithValue("@duration", Convert.ToInt32(txtDuration.Text));
-                cmd.Parameters.AddWithValue("@catid", cmbCategoryName.SelectedValue);
+                cmd.Parameters.AddWithValue("@price", txtPrice.Text);
+                cmd.Parameters.AddWithValue("@duration", txtDuration.Text);
+                cmd.Parameters.AddWithValue("@category", cmbCategoryName.SelectedValue);
 
                 conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-
-                LoadData();
-                ClearFields();
-                MessageBox.Show("Layanan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Data berhasil ditambahkan!");
+                    LoadData();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Gagal menambahkan data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (cmbCategoryName.SelectedValue == null)
+            {
+                MessageBox.Show("Silakan pilih kategori!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "UPDATE services SET service_name = @name, service_description = @desc, " +
-                               "service_price = @price, service_duration = @duration, category_id = @catid " +
-                               "WHERE service_id = @id";
+                string query = "UPDATE services SET service_name = @name, service_description = @desc, service_price = @price, service_duration = @duration, category_id = @category WHERE service_id = @id";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", txtID.Text);
                 cmd.Parameters.AddWithValue("@name", txtServiceName.Text);
                 cmd.Parameters.AddWithValue("@desc", txtServiceDescription.Text);
-                cmd.Parameters.AddWithValue("@price", Convert.ToDecimal(txtPrice.Text));
-                cmd.Parameters.AddWithValue("@duration", Convert.ToInt32(txtDuration.Text));
-                cmd.Parameters.AddWithValue("@catid", cmbCategoryName.SelectedValue);
+                cmd.Parameters.AddWithValue("@price", txtPrice.Text);
+                cmd.Parameters.AddWithValue("@duration", txtDuration.Text);
+                cmd.Parameters.AddWithValue("@category", cmbCategoryName.SelectedValue);
 
                 conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-
-                LoadData();
-                ClearFields();
-                MessageBox.Show("Layanan berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Data berhasil diperbarui!");
+                    LoadData();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Gagal memperbarui data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (txtID.Text == "")
+            using (SqlConnection conn = new SqlConnection(connString))
             {
-                MessageBox.Show("Pilih layanan yang ingin dihapus terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                string query = "DELETE FROM services WHERE service_id = @id";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", txtID.Text);
 
-            var confirm = MessageBox.Show("Yakin ingin menghapus layanan ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm == DialogResult.Yes)
-            {
-                using (SqlConnection conn = new SqlConnection(connString))
+                conn.Open();
+                try
                 {
-                    string query = "DELETE FROM services WHERE service_id = @id";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", txtID.Text);
-
-                    conn.Open();
                     cmd.ExecuteNonQuery();
-                    conn.Close();
-
+                    MessageBox.Show("Data berhasil dihapus!");
                     LoadData();
-                    ClearFields();
-                    MessageBox.Show("Layanan berhasil dihapus!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -141,7 +138,6 @@ namespace Barbershop
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadData();
-            ClearFields();
         }
 
         private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -154,18 +150,19 @@ namespace Barbershop
                 txtServiceDescription.Text = row.Cells["service_description"].Value.ToString();
                 txtPrice.Text = row.Cells["service_price"].Value.ToString();
                 txtDuration.Text = row.Cells["service_duration"].Value.ToString();
-                cmbCategoryName.Text = row.Cells["category_name"].Value.ToString();
+                cmbCategoryName.SelectedValue = row.Cells["category_id"].Value;
             }
         }
 
-        private void ClearFields()
+        private void cmbCategoryName_DropDown(object sender, EventArgs e)
         {
-            txtID.Clear();
-            txtServiceName.Clear();
-            txtServiceDescription.Clear();
-            txtPrice.Clear();
-            txtDuration.Clear();
-            cmbCategoryName.SelectedIndex = -1;
+            LoadCategories();
+        }
+
+        private void UcLayanan_Load(object sender, EventArgs e)
+        {
+            LoadData();
+            LoadCategories();
         }
     }
 }
