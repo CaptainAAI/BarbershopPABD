@@ -20,4 +20,9 @@ CRUD Jadwal Karyawan
 
 ![image](https://github.com/user-attachments/assets/557515fe-9bdb-4cbe-8629-c76a845a7c59)
 
+CRUD Pelanggan
+
+![image](https://github.com/user-attachments/assets/1308f411-33b0-4127-8ef3-0fddc73b538c)
+
+
 

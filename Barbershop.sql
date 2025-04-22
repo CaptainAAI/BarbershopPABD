@@ -3,8 +3,11 @@ CREATE TABLE clients (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     phone_number VARCHAR(13) UNIQUE NOT NULL CHECK (LEN(phone_number) BETWEEN 10 AND 13),
-    client_email VARCHAR(50) UNIQUE NOT NULL
+    client_email VARCHAR(50)
 );
+
+ALTER TABLE clients
+ALTER COLUMN client_email VARCHAR(50) NULL;
 
 -- Employees Table
 CREATE TABLE employees (
@@ -30,6 +33,9 @@ CREATE TABLE appointments (
     FOREIGN KEY (employee_id) REFERENCES employees(employee_id) ON DELETE SET NULL,
     FOREIGN KEY (service_id) REFERENCES services(service_id) ON DELETE CASCADE
 );
+
+
+
 
 -- Service Categories Table
 CREATE TABLE service_categories (
@@ -76,6 +82,9 @@ VALUES (
     'omkegas' 
 );
 
+
+ALTER TABLE barber_admin
+ALTER COLUMN username VARCHAR(50) COLLATE Latin1_General_CS_AS NOT NULL;
 
 CREATE TABLE transaction_history (
     transaction_id CHAR(10) PRIMARY KEY,
@@ -166,4 +175,4 @@ BEGIN
     END
 END;
 
-
+select*from employees_schedule
