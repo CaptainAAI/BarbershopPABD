@@ -90,17 +90,17 @@ namespace Barbershop
             {
                 conn.Open();
 
-                // 🔄 Update status booking berdasarkan waktu & canceled
+                // 🔄 Update StatusBooking: Completed duluan, baru Ongoing, Pending, dll
                 string updateStatusQuery = @"
             UPDATE appointments
             SET StatusBooking = 
-                CASE
-                    WHEN canceled = 1 THEN 'Canceled'
-                    WHEN GETDATE() < start_time THEN 'Pending'
-                    WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected THEN 'Ongoing'
-                    WHEN GETDATE() >= end_time_expected THEN 'Completed'
-                    ELSE 'Need Approval'
-                END";
+            CASE
+                WHEN canceled = 1 THEN 'Canceled'
+                WHEN GETDATE() >= end_time_expected THEN 'Completed'
+                WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected THEN 'Ongoing'
+                WHEN GETDATE() < start_time THEN 'Pending'
+                ELSE 'Need Approval'
+            END";
 
                 using (SqlCommand updateCmd = new SqlCommand(updateStatusQuery, conn))
                 {
@@ -115,6 +115,9 @@ namespace Barbershop
                 dataGridView1.DataSource = dt;
             }
         }
+
+
+
 
 
         private string GenerateAppointmentID()
