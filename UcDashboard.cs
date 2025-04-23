@@ -78,16 +78,16 @@ namespace Barbershop
                 conn.Open();
 
                 string updateStatusQuery = @"
-                    UPDATE appointments
-                    SET StatusBooking = 
-                        CASE
-                            WHEN StatusBooking = 'Need Approval' AND GETDATE() >= start_time THEN 'Canceled'
-                            WHEN StatusBooking = 'Need Approval' THEN 'Need Approval'
-                            WHEN GETDATE() >= end_time_expected THEN 'Completed'
-                            WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected THEN 'Ongoing'
-                            WHEN GETDATE() < start_time THEN 'Pending'
-                            ELSE StatusBooking
-                        END";
+                UPDATE appointments
+                SET StatusBooking = 
+                CASE
+                WHEN StatusBooking = 'Need Approval' AND GETDATE() >= start_time THEN 'Canceled'
+                WHEN GETDATE() >= end_time_expected AND StatusBooking != 'Canceled' THEN 'Completed'
+                WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Ongoing'
+                WHEN GETDATE() < start_time AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Pending'
+                ELSE StatusBooking
+                END";
+
 
                 using (SqlCommand updateCmd = new SqlCommand(updateStatusQuery, conn))
                 {
