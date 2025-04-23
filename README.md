@@ -36,6 +36,10 @@ CRU Booking
 
 ![image](https://github.com/user-attachments/assets/9e2872a5-800f-4865-a89b-f543a83418d3)
 
+Client Side
+
+![Screenshot 2025-04-24 012335](https://github.com/user-attachments/assets/29c27ba1-4180-4db3-8dbc-0a028df67316)
+
 Log/Transaction History Report
 
 _( Coming soon ..... )_
