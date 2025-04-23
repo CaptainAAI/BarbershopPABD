@@ -40,7 +40,7 @@ namespace Barbershop
         private void button8_Click(object sender, EventArgs e)
         {
             // Tampilkan form login kembali
-            Form1 loginForm = new Form1();
+            LoginForm loginForm = new LoginForm();
             loginForm.Show();
 
             // Sembunyikan (atau tutup) form ini
@@ -61,7 +61,7 @@ namespace Barbershop
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcDashboard());
+            LoadUserControl(new UcBooking());
         }
 
         private void button3_Click(object sender, EventArgs e)

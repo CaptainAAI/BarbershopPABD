@@ -1,6 +1,6 @@
 ﻿namespace Barbershop
 {
-    partial class UcDashboard
+    partial class UcBooking
     {
         /// <summary> 
         /// Required designer variable.

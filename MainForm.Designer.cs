@@ -121,7 +121,7 @@
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Size = new System.Drawing.Size(181, 45);
             this.btnDashboard.TabIndex = 5;
-            this.btnDashboard.Text = "DASHBOARD";
+            this.btnDashboard.Text = "BOOKING";
             this.btnDashboard.UseVisualStyleBackColor = true;
             this.btnDashboard.Click += new System.EventHandler(this.button1_Click);
             // 

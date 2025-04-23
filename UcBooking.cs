@@ -11,11 +11,11 @@ using System.Data.SqlClient;
 
 namespace Barbershop
 {
-    public partial class UcDashboard : UserControl
+    public partial class UcBooking : UserControl
     {
         private string connString = "Data Source=LEGIONSLIM5\\SQLEXPRESS;Initial Catalog=Barbershop;Integrated Security=True";
 
-        public UcDashboard()
+        public UcBooking()
         {
             InitializeComponent();
             txtAppointmentID.ReadOnly = true;
@@ -30,8 +30,8 @@ namespace Barbershop
 
         private void LoadComboBoxes()
         {
-            LoadComboBox("SELECT client_id, first_name + ' ' + last_name AS name FROM clients", cmbClientID);
-            LoadComboBox("SELECT employee_id, first_name + ' ' + last_name AS name FROM employees", cmbEmployeeID);
+            LoadComboBox("SELECT client_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM clients", cmbClientID);
+            LoadComboBox("SELECT employee_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM employees", cmbEmployeeID);
             LoadComboBox("SELECT service_id, service_name FROM services", cmbServiceID);
 
             cmbClientID.SelectedIndex = -1;
@@ -63,7 +63,7 @@ namespace Barbershop
             cmbStartTime.Items.Clear();
             for (int jam = 9; jam <= 23; jam++)
             {
-                for (int menit = 0; menit < 60; menit += 5)
+                for (int menit = 0; menit < 60; menit += 1)
                 {
                     cmbStartTime.Items.Add(new TimeSpan(jam, menit, 0).ToString(@"hh\:mm"));
                 }
@@ -277,20 +277,27 @@ namespace Barbershop
 
             DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
 
-            txtAppointmentID.Text = row.Cells["appointment_id"].Value.ToString();
-            cmbClientID.SelectedValue = row.Cells["client_id"].Value.ToString();
+            txtAppointmentID.Text = row.Cells["appointment_id"].Value?.ToString();
+            cmbClientID.SelectedValue = row.Cells["client_id"].Value?.ToString();
 
             object empValue = row.Cells["employee_id"].Value;
-            cmbEmployeeID.SelectedValue = empValue == DBNull.Value ? null : empValue.ToString();
+            if (empValue != DBNull.Value && empValue != null)
+                cmbEmployeeID.SelectedValue = empValue.ToString();
+            else
+                cmbEmployeeID.SelectedIndex = -1; // kosongkan pilihan jika null
 
-            cmbServiceID.SelectedValue = row.Cells["service_id"].Value.ToString();
+            cmbServiceID.SelectedValue = row.Cells["service_id"].Value?.ToString();
 
-            DateTime startTime = Convert.ToDateTime(row.Cells["start_time"].Value);
-            dtpTanggal.Value = startTime.Date;
-            cmbStartTime.SelectedItem = startTime.ToString("HH:mm");
+            if (row.Cells["start_time"].Value != DBNull.Value)
+            {
+                DateTime startTime = Convert.ToDateTime(row.Cells["start_time"].Value);
+                dtpTanggal.Value = startTime.Date;
+                cmbStartTime.SelectedItem = startTime.ToString("HH:mm");
+            }
 
             txtCancellationReason.Text = row.Cells["cancellation_reason"].Value?.ToString();
             cmbStatusBooking.SelectedItem = row.Cells["StatusBooking"].Value?.ToString();
         }
+
     }
 }

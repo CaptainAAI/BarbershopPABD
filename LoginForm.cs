@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace Barbershop
 {
-    public partial class Form1 : Form
+    public partial class LoginForm : Form
     {
-        public Form1()
+        public LoginForm()
         {
             InitializeComponent();
         }
@@ -73,6 +73,13 @@ namespace Barbershop
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void btnClient_Click(object sender, EventArgs e)
+        {
+            FormClientAppointments clientForm = new FormClientAppointments(); // versi tanpa client_id
+            clientForm.Show();
+            this.Hide(); //sembunyikan form login
         }
     }
 }
