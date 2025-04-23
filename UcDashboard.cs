@@ -18,6 +18,7 @@ namespace Barbershop
         public UcDashboard()
         {
             InitializeComponent();
+            txtAppointmentID.ReadOnly = true;
         }
 
         private void UcDashboard_Load(object sender, EventArgs e)
@@ -36,11 +37,6 @@ namespace Barbershop
             cmbClientID.SelectedIndex = -1;
             cmbEmployeeID.SelectedIndex = -1;
             cmbServiceID.SelectedIndex = -1;
-
-            cmbCanceled.Items.Clear();
-            cmbCanceled.Items.Add("0 - Active");
-            cmbCanceled.Items.Add("1 - Canceled");
-            cmbCanceled.SelectedIndex = -1;
 
             cmbStatusBooking.Items.Clear();
             cmbStatusBooking.Items.AddRange(new string[] {
@@ -65,21 +61,12 @@ namespace Barbershop
         private void LoadStartTimeCombo()
         {
             cmbStartTime.Items.Clear();
-            for (int jam = 9; jam <= 20; jam++)
+            for (int jam = 9; jam <= 23; jam++)
             {
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":00");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":05");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":10");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":15");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":20");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":25");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":30");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":35");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":40");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":45");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":50");
-                cmbStartTime.Items.Add(jam.ToString("D2") + ":55");
-
+                for (int menit = 0; menit < 60; menit += 5)
+                {
+                    cmbStartTime.Items.Add(new TimeSpan(jam, menit, 0).ToString(@"hh\:mm"));
+                }
             }
             cmbStartTime.SelectedIndex = -1;
         }
@@ -90,35 +77,29 @@ namespace Barbershop
             {
                 conn.Open();
 
-                // 🔄 Update StatusBooking: Completed duluan, baru Ongoing, Pending, dll
                 string updateStatusQuery = @"
-            UPDATE appointments
-            SET StatusBooking = 
-            CASE
-                WHEN canceled = 1 THEN 'Canceled'
-                WHEN GETDATE() >= end_time_expected THEN 'Completed'
-                WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected THEN 'Ongoing'
-                WHEN GETDATE() < start_time THEN 'Pending'
-                ELSE 'Need Approval'
-            END";
+                    UPDATE appointments
+                    SET StatusBooking = 
+                        CASE
+                            WHEN StatusBooking = 'Need Approval' AND GETDATE() >= start_time THEN 'Canceled'
+                            WHEN StatusBooking = 'Need Approval' THEN 'Need Approval'
+                            WHEN GETDATE() >= end_time_expected THEN 'Completed'
+                            WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected THEN 'Ongoing'
+                            WHEN GETDATE() < start_time THEN 'Pending'
+                            ELSE StatusBooking
+                        END";
 
                 using (SqlCommand updateCmd = new SqlCommand(updateStatusQuery, conn))
                 {
                     updateCmd.ExecuteNonQuery();
                 }
 
-                // 🔽 Load data ke DataGridView
-                string query = "SELECT * FROM appointments";
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM appointments", conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridView1.DataSource = dt;
             }
         }
-
-
-
-
 
         private string GenerateAppointmentID()
         {
@@ -169,9 +150,9 @@ namespace Barbershop
                     conn.Open();
                     string query = @"
                         INSERT INTO appointments
-                        (appointment_id, client_id, employee_id, service_id, start_time, end_time_expected, canceled, cancellation_reason, StatusBooking)
+                        (appointment_id, client_id, employee_id, service_id, start_time, end_time_expected, cancellation_reason, StatusBooking)
                         VALUES
-                        (@id, @client, @employee, @service, @start, @end, @canceled, @reason, @status)";
+                        (@id, @client, @employee, @service, @start, @end, @reason, @status)";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -186,7 +167,6 @@ namespace Barbershop
                     int durasi = GetServiceDuration(service);
                     DateTime end = start.AddMinutes(durasi);
 
-                    int canceled = cmbCanceled.SelectedItem != null && cmbCanceled.SelectedItem.ToString().StartsWith("1") ? 1 : 0;
                     string status = cmbStatusBooking.SelectedItem?.ToString() ?? "Need Approval";
 
                     cmd.Parameters.AddWithValue("@id", id);
@@ -195,7 +175,6 @@ namespace Barbershop
                     cmd.Parameters.AddWithValue("@service", service);
                     cmd.Parameters.AddWithValue("@start", start);
                     cmd.Parameters.AddWithValue("@end", end);
-                    cmd.Parameters.AddWithValue("@canceled", canceled);
                     cmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? DBNull.Value : (object)txtCancellationReason.Text);
                     cmd.Parameters.AddWithValue("@status", status);
 
@@ -229,7 +208,6 @@ namespace Barbershop
                             service_id = @service,
                             start_time = @start,
                             end_time_expected = @end,
-                            canceled = @canceled,
                             cancellation_reason = @reason,
                             StatusBooking = @status
                         WHERE appointment_id = @id";
@@ -244,7 +222,7 @@ namespace Barbershop
                     DateTime start = tanggal + jamMulai;
                     int durasi = GetServiceDuration(service);
                     DateTime end = start.AddMinutes(durasi);
-                    int canceled = cmbCanceled.SelectedItem != null && cmbCanceled.SelectedItem.ToString().StartsWith("1") ? 1 : 0;
+
                     string status = cmbStatusBooking.SelectedItem?.ToString() ?? "Need Approval";
 
                     cmd.Parameters.AddWithValue("@id", id);
@@ -253,7 +231,6 @@ namespace Barbershop
                     cmd.Parameters.AddWithValue("@service", service);
                     cmd.Parameters.AddWithValue("@start", start);
                     cmd.Parameters.AddWithValue("@end", end);
-                    cmd.Parameters.AddWithValue("@canceled", canceled);
                     cmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? DBNull.Value : (object)txtCancellationReason.Text);
                     cmd.Parameters.AddWithValue("@status", status);
 
@@ -284,7 +261,6 @@ namespace Barbershop
             cmbEmployeeID.SelectedIndex = -1;
             cmbServiceID.SelectedIndex = -1;
             cmbStartTime.SelectedIndex = -1;
-            cmbCanceled.SelectedIndex = -1;
             cmbStatusBooking.SelectedIndex = -1;
             txtCancellationReason.Clear();
             dtpTanggal.Value = DateTime.Now;
@@ -313,10 +289,8 @@ namespace Barbershop
             dtpTanggal.Value = startTime.Date;
             cmbStartTime.SelectedItem = startTime.ToString("HH:mm");
 
-            cmbCanceled.SelectedIndex = Convert.ToInt32(row.Cells["canceled"].Value);
             txtCancellationReason.Text = row.Cells["cancellation_reason"].Value?.ToString();
             cmbStatusBooking.SelectedItem = row.Cells["StatusBooking"].Value?.ToString();
         }
-
     }
 }

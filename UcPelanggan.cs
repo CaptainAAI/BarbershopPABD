@@ -77,14 +77,30 @@ namespace Barbershop
                 cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
                 cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@email", txtEmail.Text);
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
+                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
 
-            MessageBox.Show("Pelanggan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadClient();
-            ClearFields();
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Pelanggan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadClient();
+                    ClearFields();
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Number == 2627 || ex.Number == 2601) // duplicate key
+                    {
+                        MessageBox.Show("Gagal menambahkan! ID, Nomor telepon atau email sudah digunakan.",
+                                        "Data Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         private void dgvClient_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -121,15 +137,32 @@ namespace Barbershop
                 cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
                 cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@email", txtEmail.Text);
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
+                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
 
-            MessageBox.Show("Data Pelanggan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadClient();
-            ClearFields();
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Data Pelanggan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadClient();
+                    ClearFields();
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Number == 2627 || ex.Number == 2601)
+                    {
+                        MessageBox.Show("Gagal update! ID, Nomor telepon atau email sudah digunakan.",
+                                        "Data Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
+
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
