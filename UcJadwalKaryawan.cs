@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class UcJadwalKaryawan : UserControl
     {
-        private string connString = @"Data Source=LEGIONSLIM5\SQLEXPRESS;Initial Catalog=Barbershop;Integrated Security=True";
+        private string connString = "Data Source=LEGIONSLIM5\\SQLEXPRESS;Initial Catalog=Barbershop;Integrated Security=True";
 
         public UcJadwalKaryawan()
         {

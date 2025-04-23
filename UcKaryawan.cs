@@ -72,19 +72,37 @@ namespace Barbershop
                 string query = "INSERT INTO employees (employee_id, first_name, last_name, phone_number, email) " +
                                "VALUES (@id, @fname, @lname, @phone, @email)";
                 SqlCommand cmd = new SqlCommand(query, conn);
+
                 cmd.Parameters.AddWithValue("@id", txtID.Text);
                 cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
                 cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@email", txtEmail.Text);
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
+                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
 
-            MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadEmployees();
-            ClearFields();
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadEmployees();
+                    ClearFields();
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Message.Contains("UNIQUE KEY") || ex.Number == 2627 || ex.Number == 2601)
+                    {
+                        MessageBox.Show("Gagal menambahkan! Data duplikat ditemukan (ID, email, atau nomor telepon mungkin sudah ada).",
+                            "Duplikat Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Terjadi kesalahan saat menyimpan data:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
+
 
         private void dgvEmployees_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
