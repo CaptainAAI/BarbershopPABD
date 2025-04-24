@@ -49,6 +49,7 @@
             this.dtpTanggal = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.cmbLayanan = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,7 +67,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(929, 238);
+            this.label1.Location = new System.Drawing.Point(913, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(233, 29);
             this.label1.TabIndex = 1;
@@ -75,10 +76,10 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(629, 506);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(641, 279);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(863, 29);
+            this.label2.Size = new System.Drawing.Size(673, 24);
             this.label2.TabIndex = 2;
             this.label2.Text = "SILAHKAN ISI DATA BERIKUT JIKA SUDAH MENGISI UNTUK MEM-BOOKING";
             // 
@@ -89,7 +90,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(629, 373);
+            this.label5.Location = new System.Drawing.Point(613, 147);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(42, 17);
@@ -103,7 +104,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(629, 341);
+            this.label4.Location = new System.Drawing.Point(613, 115);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(82, 17);
@@ -117,7 +118,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(629, 309);
+            this.label3.Location = new System.Drawing.Point(613, 83);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(76, 17);
@@ -131,7 +132,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(629, 279);
+            this.label6.Location = new System.Drawing.Point(613, 53);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(76, 17);
@@ -143,10 +144,10 @@
             this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEmail.Location = new System.Drawing.Point(726, 372);
+            this.txtEmail.Location = new System.Drawing.Point(710, 146);
             this.txtEmail.Margin = new System.Windows.Forms.Padding(2);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(766, 20);
+            this.txtEmail.Size = new System.Drawing.Size(602, 20);
             this.txtEmail.TabIndex = 34;
             // 
             // txtPhone
@@ -154,10 +155,10 @@
             this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhone.Location = new System.Drawing.Point(726, 341);
+            this.txtPhone.Location = new System.Drawing.Point(710, 115);
             this.txtPhone.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(766, 20);
+            this.txtPhone.Size = new System.Drawing.Size(602, 20);
             this.txtPhone.TabIndex = 33;
             // 
             // txtLastName
@@ -165,10 +166,10 @@
             this.txtLastName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLastName.Location = new System.Drawing.Point(726, 309);
+            this.txtLastName.Location = new System.Drawing.Point(710, 83);
             this.txtLastName.Margin = new System.Windows.Forms.Padding(2);
             this.txtLastName.Name = "txtLastName";
-            this.txtLastName.Size = new System.Drawing.Size(766, 20);
+            this.txtLastName.Size = new System.Drawing.Size(602, 20);
             this.txtLastName.TabIndex = 32;
             // 
             // txtFirstName
@@ -176,16 +177,16 @@
             this.txtFirstName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFirstName.Location = new System.Drawing.Point(726, 278);
+            this.txtFirstName.Location = new System.Drawing.Point(710, 52);
             this.txtFirstName.Margin = new System.Windows.Forms.Padding(2);
             this.txtFirstName.Name = "txtFirstName";
-            this.txtFirstName.Size = new System.Drawing.Size(766, 20);
+            this.txtFirstName.Size = new System.Drawing.Size(602, 20);
             this.txtFirstName.TabIndex = 31;
             // 
             // btnRegister
             // 
             this.btnRegister.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRegister.Location = new System.Drawing.Point(934, 406);
+            this.btnRegister.Location = new System.Drawing.Point(918, 180);
             this.btnRegister.Name = "btnRegister";
             this.btnRegister.Size = new System.Drawing.Size(234, 49);
             this.btnRegister.TabIndex = 39;
@@ -196,7 +197,7 @@
             // btnBook
             // 
             this.btnBook.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBook.Location = new System.Drawing.Point(934, 694);
+            this.btnBook.Location = new System.Drawing.Point(918, 468);
             this.btnBook.Name = "btnBook";
             this.btnBook.Size = new System.Drawing.Size(234, 49);
             this.btnBook.TabIndex = 40;
@@ -211,7 +212,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(629, 550);
+            this.label7.Location = new System.Drawing.Point(613, 324);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(98, 17);
@@ -223,10 +224,10 @@
             this.txtPhoneBooking.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhoneBooking.Location = new System.Drawing.Point(747, 550);
+            this.txtPhoneBooking.Location = new System.Drawing.Point(731, 324);
             this.txtPhoneBooking.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhoneBooking.Name = "txtPhoneBooking";
-            this.txtPhoneBooking.Size = new System.Drawing.Size(745, 20);
+            this.txtPhoneBooking.Size = new System.Drawing.Size(581, 20);
             this.txtPhoneBooking.TabIndex = 41;
             // 
             // label8
@@ -236,7 +237,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(627, 593);
+            this.label8.Location = new System.Drawing.Point(611, 367);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(72, 17);
@@ -246,18 +247,18 @@
             // cmbJam
             // 
             this.cmbJam.FormattingEnabled = true;
-            this.cmbJam.Location = new System.Drawing.Point(1113, 635);
+            this.cmbJam.Location = new System.Drawing.Point(971, 410);
             this.cmbJam.Name = "cmbJam";
-            this.cmbJam.Size = new System.Drawing.Size(379, 21);
+            this.cmbJam.Size = new System.Drawing.Size(341, 21);
             this.cmbJam.TabIndex = 65;
             // 
             // dtpTanggal
             // 
             this.dtpTanggal.CustomFormat = "dd/MM/yyyy ";
             this.dtpTanggal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.4F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dtpTanggal.Location = new System.Drawing.Point(747, 636);
+            this.dtpTanggal.Location = new System.Drawing.Point(731, 410);
             this.dtpTanggal.Name = "dtpTanggal";
-            this.dtpTanggal.Size = new System.Drawing.Size(360, 20);
+            this.dtpTanggal.Size = new System.Drawing.Size(234, 20);
             this.dtpTanggal.TabIndex = 64;
             this.dtpTanggal.Value = new System.DateTime(2025, 4, 23, 13, 28, 44, 0);
             // 
@@ -268,7 +269,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(631, 636);
+            this.label9.Location = new System.Drawing.Point(615, 410);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(58, 17);
@@ -278,16 +279,33 @@
             // cmbLayanan
             // 
             this.cmbLayanan.FormattingEnabled = true;
-            this.cmbLayanan.Location = new System.Drawing.Point(747, 589);
+            this.cmbLayanan.Location = new System.Drawing.Point(731, 363);
             this.cmbLayanan.Name = "cmbLayanan";
-            this.cmbLayanan.Size = new System.Drawing.Size(745, 21);
+            this.cmbLayanan.Size = new System.Drawing.Size(581, 21);
             this.cmbLayanan.TabIndex = 66;
+            // 
+            // label10
+            // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.Red;
+            this.label10.Location = new System.Drawing.Point(642, 534);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(633, 17);
+            this.label10.TabIndex = 67;
+            this.label10.Text = "Jika ingin melakakukan booking, gunakan waktu UTC, Current Hour - 7, Buka Jam 5 U" +
+    "TC - 23 UTC ";
             // 
             // FormClientAppointments
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1904, 1161);
+            this.ClientSize = new System.Drawing.Size(1350, 1161);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.cmbLayanan);
             this.Controls.Add(this.cmbJam);
             this.Controls.Add(this.dtpTanggal);
@@ -338,5 +356,6 @@
         private System.Windows.Forms.DateTimePicker dtpTanggal;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox cmbLayanan;
+        private System.Windows.Forms.Label label10;
     }
 }

@@ -126,7 +126,7 @@ namespace Barbershop
         private void LoadJam()
         {
             cmbJam.Items.Clear();
-            for (int jam = 9; jam <= 21; jam++)
+            for (int jam = 5; jam <= 23; jam++)
             {
                 for (int menit = 0; menit < 60; menit += 5)
                 {
