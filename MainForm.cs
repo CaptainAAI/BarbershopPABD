@@ -29,7 +29,7 @@ namespace Barbershop
 
         private void button4_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcPelanggan());
+            LoadUserControl(new UcClients());
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -61,29 +61,29 @@ namespace Barbershop
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcBooking());
+            LoadUserControl(new UcAppointments());
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcLayanan());
+            LoadUserControl(new UcServices());
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcKaryawan());
+            LoadUserControl(new UcEmployee());
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcJadwalKaryawan());
+            LoadUserControl(new UcEmployeeSchedule());
         }
 
         
 
         private void button2_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcKategoriLayanan());
+            LoadUserControl(new UcServiceCategories());
         }
     }
 }

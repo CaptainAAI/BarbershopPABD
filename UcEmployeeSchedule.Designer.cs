@@ -1,6 +1,6 @@
 ﻿namespace Barbershop
 {
-    partial class UcJadwalKaryawan
+    partial class UcEmployeeSchedule
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UcJadwalKaryawan));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UcEmployeeSchedule));
             this.cmbNamaKaryawan = new System.Windows.Forms.ComboBox();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.cmbFromSunday = new System.Windows.Forms.ComboBox();
@@ -412,7 +412,7 @@
             this.btnTampilkanData.Name = "btnTampilkanData";
             this.btnTampilkanData.Size = new System.Drawing.Size(171, 43);
             this.btnTampilkanData.TabIndex = 32;
-            this.btnTampilkanData.Text = "TAMPILKAN DATA";
+            this.btnTampilkanData.Text = "REFRESH";
             this.btnTampilkanData.UseVisualStyleBackColor = true;
             this.btnTampilkanData.Click += new System.EventHandler(this.btnTampilkanData_Click);
             // 
@@ -449,7 +449,7 @@
             this.pictureBox1.TabIndex = 35;
             this.pictureBox1.TabStop = false;
             // 
-            // UcJadwalKaryawan
+            // UcEmployeeSchedule
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -491,7 +491,7 @@
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.richTextBox2);
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "UcJadwalKaryawan";
+            this.Name = "UcEmployeeSchedule";
             this.Size = new System.Drawing.Size(1069, 661);
             this.Load += new System.EventHandler(this.UcJadwalKaryawan_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvJadwal)).EndInit();

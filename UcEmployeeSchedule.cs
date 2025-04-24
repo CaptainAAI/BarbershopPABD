@@ -11,11 +11,11 @@ using System.Data.SqlClient;
 
 namespace Barbershop
 {
-    public partial class UcJadwalKaryawan : UserControl
+    public partial class UcEmployeeSchedule : UserControl
     {
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=:4GuNg210105182040;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        public UcJadwalKaryawan()
+        public UcEmployeeSchedule()
         {
             InitializeComponent();
             cmbNamaKaryawan.SelectedIndexChanged += CmbNamaKaryawan_SelectedIndexChanged;

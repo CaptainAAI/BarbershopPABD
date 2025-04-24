@@ -67,17 +67,17 @@
     <Compile Include="LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UcKategoriLayanan.cs">
+    <Compile Include="UcServiceCategories.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcKategoriLayanan.Designer.cs">
-      <DependentUpon>UcKategoriLayanan.cs</DependentUpon>
+    <Compile Include="UcServiceCategories.Designer.cs">
+      <DependentUpon>UcServiceCategories.cs</DependentUpon>
     </Compile>
-    <Compile Include="UcLayanan.cs">
+    <Compile Include="UcServices.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcLayanan.Designer.cs">
-      <DependentUpon>UcLayanan.cs</DependentUpon>
+    <Compile Include="UcServices.Designer.cs">
+      <DependentUpon>UcServices.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -87,29 +87,29 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UcBooking.cs">
+    <Compile Include="UcAppointments.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcBooking.Designer.cs">
-      <DependentUpon>UcBooking.cs</DependentUpon>
+    <Compile Include="UcAppointments.Designer.cs">
+      <DependentUpon>UcAppointments.cs</DependentUpon>
     </Compile>
-    <Compile Include="UcJadwalKaryawan.cs">
+    <Compile Include="UcEmployeeSchedule.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcJadwalKaryawan.Designer.cs">
-      <DependentUpon>UcJadwalKaryawan.cs</DependentUpon>
+    <Compile Include="UcEmployeeSchedule.Designer.cs">
+      <DependentUpon>UcEmployeeSchedule.cs</DependentUpon>
     </Compile>
-    <Compile Include="UcKaryawan.cs">
+    <Compile Include="UcEmployee.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcKaryawan.Designer.cs">
-      <DependentUpon>UcKaryawan.cs</DependentUpon>
+    <Compile Include="UcEmployee.Designer.cs">
+      <DependentUpon>UcEmployee.cs</DependentUpon>
     </Compile>
-    <Compile Include="UcPelanggan.cs">
+    <Compile Include="UcClients.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UcPelanggan.Designer.cs">
-      <DependentUpon>UcPelanggan.cs</DependentUpon>
+    <Compile Include="UcClients.Designer.cs">
+      <DependentUpon>UcClients.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="FormClientAppointments.resx">
       <DependentUpon>FormClientAppointments.cs</DependentUpon>
@@ -117,11 +117,11 @@
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UcKategoriLayanan.resx">
-      <DependentUpon>UcKategoriLayanan.cs</DependentUpon>
+    <EmbeddedResource Include="UcServiceCategories.resx">
+      <DependentUpon>UcServiceCategories.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UcLayanan.resx">
-      <DependentUpon>UcLayanan.cs</DependentUpon>
+    <EmbeddedResource Include="UcServices.resx">
+      <DependentUpon>UcServices.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -135,17 +135,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UcBooking.resx">
-      <DependentUpon>UcBooking.cs</DependentUpon>
+    <EmbeddedResource Include="UcAppointments.resx">
+      <DependentUpon>UcAppointments.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UcJadwalKaryawan.resx">
-      <DependentUpon>UcJadwalKaryawan.cs</DependentUpon>
+    <EmbeddedResource Include="UcEmployeeSchedule.resx">
+      <DependentUpon>UcEmployeeSchedule.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UcKaryawan.resx">
-      <DependentUpon>UcKaryawan.cs</DependentUpon>
+    <EmbeddedResource Include="UcEmployee.resx">
+      <DependentUpon>UcEmployee.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UcPelanggan.resx">
-      <DependentUpon>UcPelanggan.cs</DependentUpon>
+    <EmbeddedResource Include="UcClients.resx">
+      <DependentUpon>UcClients.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

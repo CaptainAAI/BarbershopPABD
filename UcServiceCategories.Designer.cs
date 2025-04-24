@@ -1,6 +1,6 @@
 ﻿namespace Barbershop
 {
-    partial class UcKategoriLayanan
+    partial class UcServiceCategories
     {
         /// <summary> 
         /// Required designer variable.

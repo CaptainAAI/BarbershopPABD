@@ -9,33 +9,34 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
-
-
 namespace Barbershop
 {
-    public partial class UcKaryawan : UserControl
+    public partial class UcClients : UserControl
     {
+
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=:4GuNg210105182040;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        public UcKaryawan()
+        public UcClients()
         {
             InitializeComponent();
         }
 
-        private void UcKaryawan_Load(object sender, EventArgs e)
+
+
+        private void UcPelanggan_Load(object sender, EventArgs e)
         {
-            LoadEmployees();
+            LoadClient();
         }
 
-        private void LoadEmployees()
+        private void LoadClient()
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "SELECT * FROM employees";
+                string query = "SELECT * FROM clients";
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
-                dgvEmployees.DataSource = dt;
+                dgvClient.DataSource = dt;
             }
         }
 
@@ -44,8 +45,8 @@ namespace Barbershop
             return !string.IsNullOrWhiteSpace(txtID.Text)
                 && !string.IsNullOrWhiteSpace(txtFirstName.Text)
                 && !string.IsNullOrWhiteSpace(txtLastName.Text)
-                && !string.IsNullOrWhiteSpace(txtPhone.Text)
-                && !string.IsNullOrWhiteSpace(txtEmail.Text);
+                && !string.IsNullOrWhiteSpace(txtPhone.Text);
+                
         }
 
         private void ClearFields()
@@ -69,10 +70,9 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "INSERT INTO employees (employee_id, first_name, last_name, phone_number, email) " +
+                string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
                                "VALUES (@id, @fname, @lname, @phone, @email)";
                 SqlCommand cmd = new SqlCommand(query, conn);
-
                 cmd.Parameters.AddWithValue("@id", txtID.Text);
                 cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
@@ -84,27 +84,26 @@ namespace Barbershop
                     conn.Open();
                     cmd.ExecuteNonQuery();
 
-                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadEmployees();
+                    MessageBox.Show("Pelanggan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadClient();
                     ClearFields();
                 }
                 catch (SqlException ex)
                 {
-                    if (ex.Message.Contains("UNIQUE KEY") || ex.Number == 2627 || ex.Number == 2601)
+                    if (ex.Number == 2627 || ex.Number == 2601) // duplicate key
                     {
-                        MessageBox.Show("Gagal menambahkan! Data duplikat ditemukan (ID, email, atau nomor telepon mungkin sudah ada).",
-                            "Duplikat Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Gagal menambahkan! ID, Nomor telepon atau email sudah digunakan.",
+                                        "Data Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                     else
                     {
-                        MessageBox.Show("Terjadi kesalahan saat menyimpan data:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-
-        private void dgvEmployees_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvClient_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // Bisa kosong jika tidak digunakan
         }
@@ -131,8 +130,8 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "UPDATE employees SET first_name=@fname, last_name=@lname, phone_number=@phone, email=@email " +
-                               "WHERE employee_id=@id";
+                string query = "UPDATE clients SET first_name=@fname, last_name=@lname, phone_number=@phone, client_email=@email " +
+                               "WHERE client_id=@id";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", txtID.Text);
                 cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
@@ -145,8 +144,8 @@ namespace Barbershop
                     conn.Open();
                     cmd.ExecuteNonQuery();
 
-                    MessageBox.Show("Data karyawan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadEmployees();
+                    MessageBox.Show("Data Pelanggan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadClient();
                     ClearFields();
                 }
                 catch (SqlException ex)
@@ -178,7 +177,7 @@ namespace Barbershop
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
-                    string query = "DELETE FROM employees WHERE employee_id=@id";
+                    string query = "DELETE FROM clients WHERE client_id=@id";
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@id", txtID.Text);
                     conn.Open();
@@ -186,79 +185,29 @@ namespace Barbershop
                 }
 
                 MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadEmployees();
+                LoadClient();
                 ClearFields();
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadEmployees();
+            LoadClient();
             ClearFields();
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void dgvEmployees_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvClient_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
-                DataGridViewRow row = dgvEmployees.Rows[e.RowIndex];
-                txtID.Text = row.Cells["employee_id"].Value.ToString();
+                DataGridViewRow row = dgvClient.Rows[e.RowIndex];
+                txtID.Text = row.Cells["client_id"].Value.ToString();
                 txtFirstName.Text = row.Cells["first_name"].Value.ToString();
                 txtLastName.Text = row.Cells["last_name"].Value.ToString();
                 txtPhone.Text = row.Cells["phone_number"].Value.ToString();
-                txtEmail.Text = row.Cells["email"].Value.ToString();
+                txtEmail.Text = row.Cells["client_email"].Value.ToString();
             }
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtID_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtFirstName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtLastName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPhone_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtEmail_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

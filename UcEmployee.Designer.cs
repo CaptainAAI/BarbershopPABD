@@ -1,6 +1,6 @@
 ﻿namespace Barbershop
 {
-    partial class UcKaryawan
+    partial class UcEmployee
     {
         /// <summary> 
         /// Required designer variable.

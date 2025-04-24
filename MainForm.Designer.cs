@@ -50,7 +50,7 @@
             this.btnKategoriLayanan.Name = "btnKategoriLayanan";
             this.btnKategoriLayanan.Size = new System.Drawing.Size(181, 45);
             this.btnKategoriLayanan.TabIndex = 6;
-            this.btnKategoriLayanan.Text = "KATEGORI LAYANAN";
+            this.btnKategoriLayanan.Text = "SERVICE CATEGORIES";
             this.btnKategoriLayanan.UseVisualStyleBackColor = true;
             this.btnKategoriLayanan.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -62,7 +62,7 @@
             this.btnLaporanOperasional.Name = "btnLaporanOperasional";
             this.btnLaporanOperasional.Size = new System.Drawing.Size(181, 49);
             this.btnLaporanOperasional.TabIndex = 11;
-            this.btnLaporanOperasional.Text = "LAPORAN OPERASIONAL";
+            this.btnLaporanOperasional.Text = "TRANSACTION HISTORY";
             this.btnLaporanOperasional.UseVisualStyleBackColor = true;
             // 
             // btnListLayanan
@@ -73,7 +73,7 @@
             this.btnListLayanan.Name = "btnListLayanan";
             this.btnListLayanan.Size = new System.Drawing.Size(181, 45);
             this.btnListLayanan.TabIndex = 7;
-            this.btnListLayanan.Text = "LIST LAYANAN";
+            this.btnListLayanan.Text = "SERVICE";
             this.btnListLayanan.UseVisualStyleBackColor = true;
             this.btnListLayanan.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -85,7 +85,7 @@
             this.btnJadwalKaryawan.Name = "btnJadwalKaryawan";
             this.btnJadwalKaryawan.Size = new System.Drawing.Size(181, 45);
             this.btnJadwalKaryawan.TabIndex = 10;
-            this.btnJadwalKaryawan.Text = "JADWAL KARYAWAN";
+            this.btnJadwalKaryawan.Text = "EMPLOYEE SCHEDULE";
             this.btnJadwalKaryawan.UseVisualStyleBackColor = true;
             this.btnJadwalKaryawan.Click += new System.EventHandler(this.button6_Click);
             // 
@@ -97,7 +97,7 @@
             this.btnPelanggan.Name = "btnPelanggan";
             this.btnPelanggan.Size = new System.Drawing.Size(181, 45);
             this.btnPelanggan.TabIndex = 8;
-            this.btnPelanggan.Text = "PELANGGAN";
+            this.btnPelanggan.Text = "CLIENTS";
             this.btnPelanggan.UseVisualStyleBackColor = true;
             this.btnPelanggan.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -109,7 +109,7 @@
             this.btnKaryawan.Name = "btnKaryawan";
             this.btnKaryawan.Size = new System.Drawing.Size(181, 45);
             this.btnKaryawan.TabIndex = 9;
-            this.btnKaryawan.Text = "KARYAWAN";
+            this.btnKaryawan.Text = "EMPLOYEE";
             this.btnKaryawan.UseVisualStyleBackColor = true;
             this.btnKaryawan.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -121,7 +121,7 @@
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Size = new System.Drawing.Size(181, 45);
             this.btnDashboard.TabIndex = 5;
-            this.btnDashboard.Text = "BOOKING";
+            this.btnDashboard.Text = "APPOINTMENTS";
             this.btnDashboard.UseVisualStyleBackColor = true;
             this.btnDashboard.Click += new System.EventHandler(this.button1_Click);
             // 
