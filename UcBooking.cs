@@ -74,15 +74,10 @@ namespace Barbershop
         private void LoadAppointments()
         {
 
-            MessageBox.Show("LoadAppointments dijalankan");
+           
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
-
-                SqlCommand debugCmd = new SqlCommand("SELECT GETDATE()", conn);
-                var now = (DateTime)debugCmd.ExecuteScalar();
-                MessageBox.Show("Azure Server Time (GETDATE): " + now.ToString());
-
 
                 string updateStatusQuery = @"
                 UPDATE appointments
