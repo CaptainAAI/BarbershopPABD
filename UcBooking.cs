@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class UcBooking : UserControl
     {
-        private string connString = "Data Source=LEGIONSLIM5\\SQLEXPRESS;Initial Catalog=Barbershop;Integrated Security=True";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=:4GuNg210105182040;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcBooking()
         {
@@ -61,7 +61,7 @@ namespace Barbershop
         private void LoadStartTimeCombo()
         {
             cmbStartTime.Items.Clear();
-            for (int jam = 9; jam <= 23; jam++)
+            for (int jam = 5; jam <= 23; jam++)
             {
                 for (int menit = 0; menit < 60; menit += 1)
                 {
@@ -73,9 +73,16 @@ namespace Barbershop
 
         private void LoadAppointments()
         {
+
+            MessageBox.Show("LoadAppointments dijalankan");
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
+
+                SqlCommand debugCmd = new SqlCommand("SELECT GETDATE()", conn);
+                var now = (DateTime)debugCmd.ExecuteScalar();
+                MessageBox.Show("Azure Server Time (GETDATE): " + now.ToString());
+
 
                 string updateStatusQuery = @"
                 UPDATE appointments

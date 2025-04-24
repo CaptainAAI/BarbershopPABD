@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class FormClientAppointments : Form
     {
-        private string connString = "Data Source=LEGIONSLIM5\\SQLEXPRESS;Initial Catalog=Barbershop;Integrated Security=True";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=:4GuNg210105182040;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public FormClientAppointments()
         {
@@ -30,24 +30,39 @@ namespace Barbershop
             string phone = txtPhone.Text.Trim();
             string email = txtEmail.Text.Trim();
 
-            using (SqlConnection conn = new SqlConnection(connString))
+            try
             {
-                string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
-                               "VALUES (@id, @first, @last, @phone, @mail)";
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
+                                   "VALUES (@id, @first, @last, @phone, @mail)";
 
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", clientId);
-                cmd.Parameters.AddWithValue("@first", firstName);
-                cmd.Parameters.AddWithValue("@last", lastName);
-                cmd.Parameters.AddWithValue("@phone", phone);
-                cmd.Parameters.AddWithValue("@mail", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email);
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id", clientId);
+                    cmd.Parameters.AddWithValue("@first", firstName);
+                    cmd.Parameters.AddWithValue("@last", lastName);
+                    cmd.Parameters.AddWithValue("@phone", phone);
+                    cmd.Parameters.AddWithValue("@mail", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email);
 
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+                MessageBox.Show("Registrasi berhasil. Silakan lanjut isi data booking di bawah.");
             }
-
-            MessageBox.Show("Registrasi berhasil. Silakan lanjut isi data booking di bawah.");
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627 || ex.Number == 2601) // error code untuk duplicate key
+                {
+                    MessageBox.Show("Nomor telepon sudah terdaftar. Gunakan nomor lain atau lanjutkan booking.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("Terjadi kesalahan saat registrasi: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
+
 
         private void btnBook_Click(object sender, EventArgs e)
         {
