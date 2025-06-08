@@ -7,28 +7,32 @@ namespace Barbershop
 {
     public partial class previewForm : Form
     {
+        // String koneksi ke database SQL Azure
         private DataTable previewData;
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor form preview, menerima DataTable hasil import Excel
         public previewForm(DataTable dt)
         {
             InitializeComponent();
             previewData = dt;
-            dgvPreview.DataSource = previewData;
+            dgvPreview.DataSource = previewData; // Tampilkan data ke DataGridView
         }
 
-
+        // Event saat form dimuat, pastikan data tetap tampil
         private void previewForm_Load(object sender, EventArgs e)
         {
             dgvPreview.DataSource = previewData;
         }
 
+        // Event klik tombol Import, validasi dan simpan data ke database
         private void btnImport_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
+                // Loop setiap baris data yang di-preview
                 foreach (DataRow row in previewData.Rows)
                 {
                     string empId = row["employee_id"].ToString().Trim();
@@ -36,13 +40,14 @@ namespace Barbershop
                     string svcName = row["service_name"].ToString().Trim();
                     string svcPriceStr = row["service_price"].ToString().Trim();
 
+                    // Validasi harga layanan harus numerik
                     if (!decimal.TryParse(svcPriceStr, out decimal svcPrice))
                     {
                         MessageBox.Show($"Baris dengan harga tidak valid: {svcPriceStr}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
-                    // Cek employee
+                    // Validasi employee harus ada di database
                     string empQuery = @"SELECT COUNT(*) FROM employees WHERE employee_id = @id AND first_name + ' ' + last_name = @name";
                     using (SqlCommand cmd = new SqlCommand(empQuery, conn))
                     {
@@ -55,7 +60,7 @@ namespace Barbershop
                         }
                     }
 
-                    // Cek service
+                    // Validasi service harus ada di database
                     string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name AND service_price = @price";
                     using (SqlCommand cmd = new SqlCommand(svcQuery, conn))
                     {
@@ -68,7 +73,7 @@ namespace Barbershop
                         }
                     }
 
-                    // Insert ke transaction_history
+                    // Insert data ke tabel transaction_history
                     string insertQuery = @"
                 INSERT INTO transaction_history (
                     appointment_id, client_name, phone_number,
@@ -93,6 +98,7 @@ namespace Barbershop
                         cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString()));
                         cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString()));
                         cmd.Parameters.AddWithValue("@status", row["status"]);
+                        // Kolom cancellation_reason opsional
                         cmd.Parameters.AddWithValue("@cancellation_reason", row.Table.Columns.Contains("cancellation_reason") ? row["cancellation_reason"]?.ToString() : DBNull.Value.ToString());
                         cmd.ExecuteNonQuery();
                     }
@@ -103,10 +109,11 @@ namespace Barbershop
             }
         }
 
-
+        // Event klik tombol Cancel, menutup form preview tanpa import
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
     }
 }
+

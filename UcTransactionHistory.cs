@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-
 namespace Barbershop
 {
     public partial class UcTransactionHistory : UserControl
@@ -145,6 +144,7 @@ namespace Barbershop
             LoadTransactionData();
         }
 
+        // Event kosong untuk DataGridView (bisa diisi jika ingin handle klik cell)
         private void dgvTransactionHistory_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
         private void cmbStatus_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbClient_SelectedIndexChanged(object sender, EventArgs e) { }
@@ -152,6 +152,8 @@ namespace Barbershop
         private void cmbService_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbDateUntil_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbDateFrom_SelectedIndexChanged(object sender, EventArgs e) { }
+
+        // Event klik tombol Import Data, membaca file Excel dan preview data
         private void btnImportData_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -170,10 +172,10 @@ namespace Barbershop
 
                 // Cek apakah kolom wajib ada
                 string[] requiredCols = {
-            "client_name", "phone_number", "employee_id", "employee_name",
-            "service_name", "service_price", "appointment_date",
-            "start_time", "end_time", "status"
-        };
+                    "client_name", "phone_number", "employee_id", "employee_name",
+                    "service_name", "service_price", "appointment_date",
+                    "start_time", "end_time", "status"
+                };
 
                 foreach (string col in requiredCols)
                 {
@@ -190,6 +192,7 @@ namespace Barbershop
             }
         }
 
+        // Membaca file Excel dan mengubahnya menjadi DataTable
         private DataTable ReadExcelToDataTable(string filePath)
         {
             DataTable dt = new DataTable();
@@ -235,9 +238,10 @@ namespace Barbershop
             return dt;
         }
 
-
-
+        // Event kosong untuk generate PDF (belum diimplementasi)
         private void btnGenerateDataPdf_Click(object sender, EventArgs e) { }
+        // Event kosong untuk generate Excel (belum diimplementasi)
         private void btnGenerateDataExcel_Click(object sender, EventArgs e) { }
-        }
+    }
 }
+

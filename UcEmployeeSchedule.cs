@@ -13,20 +13,25 @@ namespace Barbershop
 {
     public partial class UcEmployeeSchedule : UserControl
     {
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor UserControl
         public UcEmployeeSchedule()
         {
             InitializeComponent();
+            // Event handler untuk perubahan pilihan karyawan
             cmbNamaKaryawan.SelectedIndexChanged += CmbNamaKaryawan_SelectedIndexChanged;
         }
 
+        // Event saat UserControl dimuat
         private void UcJadwalKaryawan_Load(object sender, EventArgs e)
         {
-            LoadKaryawan();
-            IsiSemuaComboJam();
+            LoadKaryawan();         // Memuat data karyawan ke ComboBox
+            IsiSemuaComboJam();     // Mengisi semua ComboBox jam kerja
         }
 
+        // Memuat daftar karyawan ke ComboBox
         private void LoadKaryawan()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -44,10 +49,11 @@ namespace Barbershop
                 cmbNamaKaryawan.DataSource = dt;
                 cmbNamaKaryawan.DisplayMember = "full_name";
                 cmbNamaKaryawan.ValueMember = "employee_id";
-                cmbNamaKaryawan.SelectedIndex = -1;
+                cmbNamaKaryawan.SelectedIndex = -1; // Tidak ada yang dipilih secara default
             }
         }
 
+        // Event klik tombol Update, menyimpan jadwal karyawan ke database
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (cmbNamaKaryawan.SelectedIndex == -1)
@@ -69,6 +75,7 @@ namespace Barbershop
             string empID = cmbNamaKaryawan.SelectedValue.ToString();
             string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
+            // Loop untuk setiap hari, simpan atau hapus jadwal sesuai checkbox
             foreach (string day in days)
             {
                 CheckBox chk = FindControlRecursive(this, "chk" + day) as CheckBox;
@@ -80,6 +87,7 @@ namespace Barbershop
 
                 if (chk != null && chk.Checked)
                 {
+                    // Validasi jam kerja
                     if (cmbFrom.SelectedItem == null || cmbTo.SelectedItem == null)
                     {
                         MessageBox.Show($"Lengkapi jam kerja untuk hari {day}.");
@@ -95,18 +103,20 @@ namespace Barbershop
                         return;
                     }
 
+                    // Simpan jadwal ke database
                     SimpanJadwal(scheduleID, empID, dayID, from, to);
                 }
                 else
                 {
-                    HapusJadwal(empID, dayID); // hapus jika uncheck
+                    // Hapus jadwal jika tidak dicentang
+                    HapusJadwal(empID, dayID);
                 }
             }
 
             MessageBox.Show("Jadwal berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-
+        // Mencari kontrol secara rekursif berdasarkan nama
         private Control FindControlRecursive(Control parent, string name)
         {
             foreach (Control c in parent.Controls)
@@ -121,6 +131,7 @@ namespace Barbershop
             return null;
         }
 
+        // Menyimpan jadwal karyawan ke database (hapus dulu, lalu insert baru)
         private void SimpanJadwal(string id, string empID, int dayID, TimeSpan from, TimeSpan to)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -153,6 +164,7 @@ namespace Barbershop
             }
         }
 
+        // Menghapus jadwal karyawan untuk hari tertentu
         private void HapusJadwal(string empID, int dayID)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -167,6 +179,7 @@ namespace Barbershop
             }
         }
 
+        // Mengisi ComboBox jam kerja (05:00 - 23:55, interval 5 menit)
         private void IsiComboJam(ComboBox combo)
         {
             combo.Items.Clear();
@@ -188,6 +201,7 @@ namespace Barbershop
             combo.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
+        // Mengisi semua ComboBox jam kerja untuk setiap hari
         private void IsiSemuaComboJam()
         {
             IsiComboJam(cmbFromSunday); IsiComboJam(cmbToSunday);
@@ -199,8 +213,7 @@ namespace Barbershop
             IsiComboJam(cmbFromSaturday); IsiComboJam(cmbToSaturday);
         }
 
-        
-
+        // Event klik tombol Tampilkan Data, menampilkan seluruh jadwal karyawan di DataGridView
         private void btnTampilkanData_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -220,6 +233,7 @@ namespace Barbershop
             }
         }
 
+        // Event saat ComboBox karyawan berubah, load jadwal karyawan yang dipilih
         private void CmbNamaKaryawan_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbNamaKaryawan.SelectedIndex != -1)
@@ -229,6 +243,7 @@ namespace Barbershop
             }
         }
 
+        // Memuat jadwal karyawan dari database dan menampilkan ke form
         private void LoadJadwalKaryawan(string empID)
         {
             string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
@@ -242,6 +257,7 @@ namespace Barbershop
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
 
+                // Reset semua checkbox dan combobox
                 foreach (string day in days)
                 {
                     CheckBox chk = FindControlRecursive(this, "chk" + day) as CheckBox;
@@ -253,9 +269,10 @@ namespace Barbershop
                     if (cmbTo != null) cmbTo.SelectedIndex = -1;
                 }
 
+                // Set jadwal yang ada di database
                 while (reader.Read())
                 {
-                    int dayID = reader.GetByte(0); // karena day_id bertipe TINYINT
+                    int dayID = reader.GetByte(0); // day_id bertipe TINYINT
                     string from = reader.GetTimeSpan(1).ToString(@"hh\:mm");
                     string to = reader.GetTimeSpan(2).ToString(@"hh\:mm");
 
@@ -268,16 +285,17 @@ namespace Barbershop
                     if (chk != null) chk.Checked = true;
                     if (cmbFrom != null) cmbFrom.SelectedItem = from;
                     if (cmbTo != null) cmbTo.SelectedItem = to;
-
                 }
 
                 reader.Close();
             }
         }
 
+        // Event perubahan pada richTextBox (tidak digunakan)
         private void richTextBox2_TextChanged(object sender, EventArgs e)
         {
 
         }
     }
 }
+

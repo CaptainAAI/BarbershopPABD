@@ -13,21 +13,22 @@ namespace Barbershop
 {
     public partial class UcClients : UserControl
     {
-
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor UserControl
         public UcClients()
         {
             InitializeComponent();
         }
 
-
-
+        // Event saat UserControl dimuat
         private void UcPelanggan_Load(object sender, EventArgs e)
         {
-            LoadClient();
+            LoadClient(); // Memuat data client ke DataGridView
         }
 
+        // Memuat data client dari database ke DataGridView
         private void LoadClient()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -40,15 +41,16 @@ namespace Barbershop
             }
         }
 
+        // Validasi input form agar tidak ada field yang kosong (kecuali email)
         private bool IsInputValid()
         {
             return !string.IsNullOrWhiteSpace(txtID.Text)
                 && !string.IsNullOrWhiteSpace(txtFirstName.Text)
                 && !string.IsNullOrWhiteSpace(txtLastName.Text)
                 && !string.IsNullOrWhiteSpace(txtPhone.Text);
-                
         }
 
+        // Mengosongkan semua field input
         private void ClearFields()
         {
             txtID.Clear();
@@ -58,8 +60,7 @@ namespace Barbershop
             txtEmail.Clear();
         }
 
-
-
+        // Event klik tombol Add, menambah client baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
         {
             if (!IsInputValid())
@@ -90,7 +91,8 @@ namespace Barbershop
                 }
                 catch (SqlException ex)
                 {
-                    if (ex.Number == 2627 || ex.Number == 2601) // duplicate key
+                    // Tangani error duplikat data (ID, phone, email)
+                    if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal menambahkan! ID, Nomor telepon atau email sudah digunakan.",
                                         "Data Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -103,17 +105,19 @@ namespace Barbershop
             }
         }
 
+        // Event klik pada cell DataGridView (tidak digunakan)
         private void dgvClient_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // Bisa kosong jika tidak digunakan
         }
 
+        // Event klik pada label (tidak digunakan)
         private void label5_Click(object sender, EventArgs e)
         {
             // Bisa dihapus atau kosongkan jika tidak perlu
         }
 
-
+        // Event klik tombol Update, memperbarui data client yang dipilih
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -158,6 +162,7 @@ namespace Barbershop
                 }
                 catch (SqlException ex)
                 {
+                    // Tangani error duplikat data (ID, phone, email)
                     if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal update! ID, Nomor telepon atau email sudah digunakan.",
@@ -171,8 +176,7 @@ namespace Barbershop
             }
         }
 
-
-
+        // Event klik tombol Delete, menghapus client yang dipilih
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -199,6 +203,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadClient();
@@ -206,6 +211,7 @@ namespace Barbershop
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // Event klik pada baris DataGridView, load data ke form input
         private void dgvClient_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)

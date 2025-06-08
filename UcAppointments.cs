@@ -13,23 +13,26 @@ namespace Barbershop
 {
     public partial class UcAppointments : UserControl
     {
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor UserControl
         public UcAppointments()
         {
-
             InitializeComponent();
-            UpdateDateRange();
-            txtAppointmentID.ReadOnly = true;
+            UpdateDateRange(); // Set range tanggal appointment
+            txtAppointmentID.ReadOnly = true; // ID appointment tidak bisa diubah manual
         }
 
+        // Event saat UserControl dimuat
         private void UcDashboard_Load(object sender, EventArgs e)
         {
-            LoadAppointments();
-            LoadComboBoxes();
-            LoadStartTimeCombo();
+            LoadAppointments();   // Load data appointment ke grid
+            LoadComboBoxes();     // Load data ke ComboBox
+            LoadStartTimeCombo(); // Load pilihan jam mulai
         }
 
+        // Load data ke ComboBox client, employee, service, dan status booking
         private void LoadComboBoxes()
         {
             LoadComboBox("SELECT client_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM clients", cmbClientID);
@@ -47,6 +50,7 @@ namespace Barbershop
             cmbStatusBooking.SelectedIndex = -1;
         }
 
+        // Helper untuk load data ke ComboBox dari query SQL
         private void LoadComboBox(string query, ComboBox comboBox)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -60,6 +64,7 @@ namespace Barbershop
             }
         }
 
+        // Load pilihan jam mulai (05:00 - 23:59, tiap menit)
         private void LoadStartTimeCombo()
         {
             cmbStartTime.Items.Clear();
@@ -73,13 +78,14 @@ namespace Barbershop
             cmbStartTime.SelectedIndex = -1;
         }
 
+        // Load data appointment ke DataGridView, sekaligus maintenance data
         private void LoadAppointments()
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
-                // 1. Hapus appointment yang lebih dari 3 bulan lalu
+                // Hapus appointment yang lebih dari 3 bulan lalu
                 string deleteOldQuery = @"
             DELETE FROM appointments
             WHERE start_time < DATEADD(MONTH, -3, GETDATE())";
@@ -89,7 +95,7 @@ namespace Barbershop
                     deleteCmd.ExecuteNonQuery();
                 }
 
-                // 2. Update status booking (seperti sebelumnya)
+                // Update status booking otomatis berdasarkan waktu
                 string updateStatusQuery = @"
             UPDATE appointments
             SET StatusBooking = 
@@ -106,7 +112,7 @@ namespace Barbershop
                     updateCmd.ExecuteNonQuery();
                 }
 
-                // 3. Load data ke grid
+                // Load data appointment ke grid
                 SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM appointments", conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -114,6 +120,7 @@ namespace Barbershop
             }
         }
 
+        // Generate ID appointment baru dengan format AIxxxxxx
         private string GenerateAppointmentID()
         {
             string prefix = "AI";
@@ -136,6 +143,7 @@ namespace Barbershop
             return newID;
         }
 
+        // Ambil durasi layanan (dalam menit) berdasarkan service_id
         private int GetServiceDuration(string serviceID)
         {
             int duration = 30;
@@ -154,6 +162,7 @@ namespace Barbershop
             return duration;
         }
 
+        // Event klik tombol Add, menambah appointment baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -203,6 +212,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Update, memperbarui data appointment yang dipilih
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null) return;
@@ -268,7 +278,7 @@ namespace Barbershop
             }
         }
 
-
+        // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadAppointments();
@@ -277,6 +287,7 @@ namespace Barbershop
             ClearForm();
         }
 
+        // Reset semua input form ke default
         private void ClearForm()
         {
             txtAppointmentID.Clear();
@@ -289,6 +300,7 @@ namespace Barbershop
             dtpTanggal.Value = DateTime.Now;
         }
 
+        // Event klik pada DataGridView, load data ke form input
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || dataGridView1.Rows[e.RowIndex].IsNewRow)
@@ -322,19 +334,20 @@ namespace Barbershop
             cmbStatusBooking.SelectedItem = row.Cells["StatusBooking"].Value?.ToString();
         }
 
+        // Event perubahan tanggal appointment (belum diimplementasi)
         private void dtpTanggal_ValueChanged(object sender, EventArgs e)
         {
 
         }
 
-
-
+        // Set range tanggal appointment (3 bulan sebelum dan sesudah hari ini)
         private void UpdateDateRange()
         {
             dtpTanggal.MinDate = DateTime.Today.AddMonths(-3);
             dtpTanggal.MaxDate = DateTime.Today.AddMonths(3);
         }
 
+        // Event perubahan pilihan employee (belum diimplementasi)
         private void cmbEmployeeID_SelectedIndexChanged(object sender, EventArgs e)
         {
 

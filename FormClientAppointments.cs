@@ -13,16 +13,19 @@ namespace Barbershop
 {
     public partial class FormClientAppointments : Form
     {
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor Form
         public FormClientAppointments()
         {
             InitializeComponent();
-            UpdateDateRange();
-            LoadLayanan();
-            LoadJam();
+            UpdateDateRange(); // Set range tanggal booking
+            LoadLayanan();     // Load data layanan ke ComboBox
+            LoadJam();         // Load pilihan jam ke ComboBox
         }
 
+        // Event klik tombol Register, menambah client baru ke database
         private void btnRegister_Click(object sender, EventArgs e)
         {
             string clientId = GenerateClientID();
@@ -53,7 +56,8 @@ namespace Barbershop
             }
             catch (SqlException ex)
             {
-                if (ex.Number == 2627 || ex.Number == 2601) // error code untuk duplicate key
+                // Tangani error duplikat nomor telepon
+                if (ex.Number == 2627 || ex.Number == 2601)
                 {
                     MessageBox.Show("Nomor telepon sudah terdaftar. Gunakan nomor lain atau lanjutkan booking.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -64,13 +68,14 @@ namespace Barbershop
             }
         }
 
-
+        // Event klik tombol Book, menambah data booking appointment baru
         private void btnBook_Click(object sender, EventArgs e)
         {
             string phone = txtPhoneBooking.Text.Trim();
             string serviceId = cmbLayanan.SelectedValue?.ToString();
             string jamStr = cmbJam.SelectedItem?.ToString();
 
+            // Validasi input booking
             if (string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(serviceId) || string.IsNullOrEmpty(jamStr))
             {
                 MessageBox.Show("Mohon lengkapi semua field untuk booking.");
@@ -81,7 +86,7 @@ namespace Barbershop
             TimeSpan jam = TimeSpan.Parse(jamStr);
             DateTime start = tanggal + jam;
 
-            // Validasi waktu start tidak boleh di masa lalu
+            // Validasi waktu booking tidak boleh di masa lalu
             if (start < DateTime.Now)
             {
                 MessageBox.Show("Waktu booking tidak boleh di masa lalu. Silakan pilih waktu yang valid.", "Waktu Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -117,7 +122,7 @@ namespace Barbershop
             MessageBox.Show("Booking berhasil, menunggu persetujuan admin.");
         }
 
-
+        // Memuat data layanan ke ComboBox
         private void LoadLayanan()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -133,7 +138,7 @@ namespace Barbershop
             }
         }
 
-
+        // Memuat pilihan jam ke ComboBox (interval 5 menit)
         private void LoadJam()
         {
             cmbJam.Items.Clear();
@@ -147,6 +152,7 @@ namespace Barbershop
             cmbJam.SelectedIndex = -1;
         }
 
+        // Generate ID client baru dengan format CIxxxxxx
         private string GenerateClientID()
         {
             string newID = "CI000001";
@@ -168,6 +174,7 @@ namespace Barbershop
             return newID;
         }
 
+        // Generate ID appointment baru dengan format AIxxxxxx
         private string GenerateAppointmentID()
         {
             string newID = "AI000001";
@@ -189,6 +196,7 @@ namespace Barbershop
             return newID;
         }
 
+        // Mendapatkan client_id berdasarkan nomor telepon
         private string GetClientIdByPhone(string phone)
         {
             string query = "SELECT client_id FROM clients WHERE phone_number = @phone";
@@ -203,6 +211,7 @@ namespace Barbershop
             }
         }
 
+        // Mendapatkan durasi layanan (dalam menit) berdasarkan service_id
         private int GetServiceDuration(string serviceID)
         {
             string query = "SELECT service_duration FROM services WHERE service_id = @id";
@@ -216,6 +225,7 @@ namespace Barbershop
             }
         }
 
+        // Memuat status booking berdasarkan nomor telepon client
         private void LoadStatusBookingByPhone()
         {
             string phoneInput = txtCheckStatus.Text.Trim();
@@ -293,37 +303,43 @@ ORDER BY a.date_created DESC";
             return dgv.Columns[columnName].Index;
         }
 
+        // Event klik tombol Lihat Status, menampilkan status booking client
         private void btnLihatStatus_Click(object sender, EventArgs e)
         {
             LoadStatusBookingByPhone();
         }
 
+        // Event klik tombol Lihat Layanan, menampilkan form daftar layanan
         private void btnLihatLayanan_Click(object sender, EventArgs e)
         {
             ListLayanan formLayanan = new ListLayanan();
             formLayanan.Show();
-
         }
 
+        // Event perubahan tanggal booking (belum diimplementasi)
         private void dtpTanggal_ValueChanged(object sender, EventArgs e)
         {
 
         }
 
+        // Set range tanggal booking (mulai hari ini sampai 3 bulan ke depan)
         private void UpdateDateRange()
         {
             dtpTanggal.MinDate = DateTime.Today;
             dtpTanggal.MaxDate = DateTime.Today.AddMonths(3);
         }
 
+        // Event perubahan pilihan jam (belum diimplementasi)
         private void cmbJam_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
 
+        // Event perubahan pilihan layanan (belum diimplementasi)
         private void cmbLayanan_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
     }
 }
+

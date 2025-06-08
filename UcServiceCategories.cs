@@ -13,19 +13,23 @@ namespace Barbershop
 {
     public partial class UcServiceCategories : UserControl
     {
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor UserControl
         public UcServiceCategories()
         {
             InitializeComponent();
         }
 
+        // Event saat UserControl dimuat
         private void UcKategoriLayanan_Load(object sender, EventArgs e)
         {
-            LoadData();
-            txtID.ReadOnly = true;
+            LoadData();           // Memuat data kategori layanan ke DataGridView
+            txtID.ReadOnly = true; // ID kategori tidak bisa diubah manual
         }
 
+        // Memuat data kategori layanan dari database ke DataGridView
         private void LoadData()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -37,6 +41,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Add, menambah kategori layanan baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNamaKategori.Text))
@@ -59,6 +64,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Update, memperbarui data kategori layanan yang dipilih
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text) || string.IsNullOrWhiteSpace(txtNamaKategori.Text))
@@ -93,7 +99,7 @@ namespace Barbershop
             }
         }
 
-
+        // Event klik tombol Delete, menghapus kategori layanan yang dipilih
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -120,6 +126,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadData();
@@ -127,8 +134,7 @@ namespace Barbershop
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-
-
+        // Event klik pada cell DataGridView, load data ke form input
         private void dgvKategoriLayanan_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -139,19 +145,24 @@ namespace Barbershop
             }
         }
 
+        // Mengosongkan semua field input
         private void ClearFields()
         {
             txtID.Clear();
             txtNamaKategori.Clear();
         }
 
+        // Event perubahan pada txtID (tidak digunakan)
         private void txtID_TextChanged(object sender, EventArgs e) { }
 
+        // Event perubahan pada txtNamaKategori (tidak digunakan)
         private void txtNamaKategori_TextChanged(object sender, EventArgs e) { }
 
+        // Event klik pada label (tidak digunakan)
         private void label3_Click(object sender, EventArgs e)
         {
 
         }
     }
 }
+

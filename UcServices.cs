@@ -13,13 +13,16 @@ namespace Barbershop
 {
     public partial class UcServices : UserControl
     {
+        // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Konstruktor UserControl
         public UcServices()
         {
             InitializeComponent();
         }
 
+        // Memuat data layanan dari database ke DataGridView
         private void LoadData()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -31,6 +34,7 @@ namespace Barbershop
             }
         }
 
+        // Memuat data kategori layanan ke ComboBox
         private void LoadCategories()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -43,10 +47,11 @@ namespace Barbershop
                 cmbCategoryName.DisplayMember = "category_name";
                 cmbCategoryName.ValueMember = "category_id";
                 cmbCategoryName.DataSource = dt;
-                cmbCategoryName.SelectedIndex = -1;
+                cmbCategoryName.SelectedIndex = -1; // Tidak ada yang dipilih secara default
             }
         }
 
+        // Event klik tombol Add, menambah layanan baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
         {
             if (cmbCategoryName.SelectedValue == null)
@@ -80,6 +85,7 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Update, memperbarui data layanan yang dipilih
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (cmbCategoryName.SelectedValue == null)
@@ -123,7 +129,7 @@ namespace Barbershop
             }
         }
 
-
+        // Event klik tombol Delete, menghapus layanan yang dipilih
         private void btnDelete_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -146,11 +152,13 @@ namespace Barbershop
             }
         }
 
+        // Event klik tombol Refresh, reload data layanan
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadData();
         }
 
+        // Event klik pada baris DataGridView, load data ke form input
         private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -165,11 +173,13 @@ namespace Barbershop
             }
         }
 
+        // Event saat ComboBox kategori drop down, reload data kategori
         private void cmbCategoryName_DropDown(object sender, EventArgs e)
         {
             LoadCategories();
         }
 
+        // Event saat UserControl dimuat, load data layanan dan kategori
         private void UcLayanan_Load(object sender, EventArgs e)
         {
             LoadData();
