@@ -211,6 +211,9 @@
             // 
             // cmbServiceID
             // 
+            this.cmbServiceID.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbServiceID.FormattingEnabled = true;
             this.cmbServiceID.Location = new System.Drawing.Point(349, 97);
             this.cmbServiceID.Name = "cmbServiceID";
@@ -219,14 +222,21 @@
             // 
             // cmbEmployeeID
             // 
+            this.cmbEmployeeID.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbEmployeeID.FormattingEnabled = true;
             this.cmbEmployeeID.Location = new System.Drawing.Point(349, 66);
             this.cmbEmployeeID.Name = "cmbEmployeeID";
             this.cmbEmployeeID.Size = new System.Drawing.Size(707, 21);
             this.cmbEmployeeID.TabIndex = 58;
+            this.cmbEmployeeID.SelectedIndexChanged += new System.EventHandler(this.cmbEmployeeID_SelectedIndexChanged);
             // 
             // cmbClientID
             // 
+            this.cmbClientID.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbClientID.FormattingEnabled = true;
             this.cmbClientID.Location = new System.Drawing.Point(349, 37);
             this.cmbClientID.Name = "cmbClientID";
@@ -235,16 +245,23 @@
             // 
             // dtpTanggal
             // 
+            this.dtpTanggal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.dtpTanggal.CustomFormat = "dd/MM/yyyy ";
             this.dtpTanggal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.4F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtpTanggal.Location = new System.Drawing.Point(349, 133);
+            this.dtpTanggal.MinDate = new System.DateTime(2025, 5, 21, 0, 0, 0, 0);
             this.dtpTanggal.Name = "dtpTanggal";
             this.dtpTanggal.Size = new System.Drawing.Size(322, 20);
             this.dtpTanggal.TabIndex = 60;
-            this.dtpTanggal.Value = new System.DateTime(2025, 4, 23, 13, 28, 44, 0);
+            this.dtpTanggal.Value = new System.DateTime(2025, 5, 21, 0, 0, 0, 0);
+            this.dtpTanggal.ValueChanged += new System.EventHandler(this.dtpTanggal_ValueChanged);
             // 
             // cmbStatusBooking
             // 
+            this.cmbStatusBooking.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbStatusBooking.FormattingEnabled = true;
             this.cmbStatusBooking.Location = new System.Drawing.Point(349, 192);
             this.cmbStatusBooking.Name = "cmbStatusBooking";
@@ -253,6 +270,8 @@
             // 
             // cmbStartTime
             // 
+            this.cmbStartTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbStartTime.FormattingEnabled = true;
             this.cmbStartTime.Location = new System.Drawing.Point(677, 132);
             this.cmbStartTime.Name = "cmbStartTime";
@@ -284,7 +303,7 @@
             this.label9.TabIndex = 64;
             this.label9.Text = "Appointment ID";
             // 
-            // UcDashboard
+            // UcAppointments
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -309,7 +328,7 @@
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnAdd);
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "UcDashboard";
+            this.Name = "UcAppointments";
             this.Size = new System.Drawing.Size(1069, 661);
             this.Load += new System.EventHandler(this.UcDashboard_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

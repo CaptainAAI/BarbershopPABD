@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class UcServices : UserControl
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcServices()
         {
@@ -88,6 +88,16 @@ namespace Barbershop
                 return;
             }
 
+            // Konfirmasi sebelum update layanan
+            DialogResult confirm = MessageBox.Show($"Apakah Anda yakin ingin memperbarui layanan \"{txtServiceName.Text}\"?",
+                                                   "Konfirmasi Update Layanan",
+                                                   MessageBoxButtons.YesNo,
+                                                   MessageBoxIcon.Question);
+            if (confirm == DialogResult.No)
+            {
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = "UPDATE services SET service_name = @name, service_description = @desc, service_price = @price, service_duration = @duration, category_id = @category WHERE service_id = @id";
@@ -103,7 +113,7 @@ namespace Barbershop
                 try
                 {
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Data berhasil diperbarui!");
+                    MessageBox.Show("Data berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadData();
                 }
                 catch (SqlException ex)
@@ -112,6 +122,7 @@ namespace Barbershop
                 }
             }
         }
+
 
         private void btnDelete_Click(object sender, EventArgs e)
         {

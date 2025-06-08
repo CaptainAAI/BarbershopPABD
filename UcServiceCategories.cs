@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class UcServiceCategories : UserControl
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcServiceCategories()
         {
@@ -67,6 +67,16 @@ namespace Barbershop
                 return;
             }
 
+            // Konfirmasi sebelum update kategori
+            DialogResult confirm = MessageBox.Show($"Apakah Anda yakin ingin memperbarui kategori menjadi \"{txtNamaKategori.Text}\"?",
+                                                   "Konfirmasi Update Kategori",
+                                                   MessageBoxButtons.YesNo,
+                                                   MessageBoxIcon.Question);
+            if (confirm == DialogResult.No)
+            {
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = "UPDATE service_categories SET category_name = @nama WHERE category_id = @id";
@@ -76,11 +86,13 @@ namespace Barbershop
                 conn.Open();
                 cmd.ExecuteNonQuery();
                 conn.Close();
+
                 LoadData();
                 ClearFields();
                 MessageBox.Show("Kategori berhasil diperbarui.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private void btnDelete_Click(object sender, EventArgs e)
         {

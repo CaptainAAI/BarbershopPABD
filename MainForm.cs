@@ -85,5 +85,10 @@ namespace Barbershop
         {
             LoadUserControl(new UcServiceCategories());
         }
+
+        private void btnLaporanOperasional_Click(object sender, EventArgs e)
+        {
+            LoadUserControl(new UcTransactionHistory());
+        }
     }
 }

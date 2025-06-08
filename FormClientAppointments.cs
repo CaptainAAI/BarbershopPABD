@@ -13,11 +13,12 @@ namespace Barbershop
 {
     public partial class FormClientAppointments : Form
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public FormClientAppointments()
         {
             InitializeComponent();
+            UpdateDateRange();
             LoadLayanan();
             LoadJam();
         }
@@ -79,6 +80,14 @@ namespace Barbershop
             DateTime tanggal = dtpTanggal.Value.Date;
             TimeSpan jam = TimeSpan.Parse(jamStr);
             DateTime start = tanggal + jam;
+
+            // Validasi waktu start tidak boleh di masa lalu
+            if (start < DateTime.Now)
+            {
+                MessageBox.Show("Waktu booking tidak boleh di masa lalu. Silakan pilih waktu yang valid.", "Waktu Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             DateTime end = start.AddMinutes(GetServiceDuration(serviceId));
 
             string clientId = GetClientIdByPhone(phone);
@@ -92,7 +101,7 @@ namespace Barbershop
             {
                 string id = GenerateAppointmentID();
                 string query = @"INSERT INTO appointments (appointment_id, client_id, service_id, start_time, end_time_expected, StatusBooking)
-                                 VALUES (@id, @client, @service, @start, @end, 'Need Approval')";
+                         VALUES (@id, @client, @service, @start, @end, 'Need Approval')";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@id", id);
@@ -108,11 +117,12 @@ namespace Barbershop
             MessageBox.Show("Booking berhasil, menunggu persetujuan admin.");
         }
 
+
         private void LoadLayanan()
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "SELECT service_id, service_name FROM services";
+                string query = "SELECT service_id, service_name, service_price FROM services";
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -123,10 +133,11 @@ namespace Barbershop
             }
         }
 
+
         private void LoadJam()
         {
             cmbJam.Items.Clear();
-            for (int jam = 5; jam <= 23; jam++)
+            for (int jam = 0; jam <= 24; jam++)
             {
                 for (int menit = 0; menit < 60; menit += 5)
                 {
@@ -203,6 +214,116 @@ namespace Barbershop
                 var result = cmd.ExecuteScalar();
                 return result != null ? Convert.ToInt32(result) : 30;
             }
+        }
+
+        private void LoadStatusBookingByPhone()
+        {
+            string phoneInput = txtCheckStatus.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(phoneInput))
+            {
+                MessageBox.Show("Masukkan nomor telepon untuk melihat status booking.");
+                return;
+            }
+
+            string query = @"
+SELECT 
+    a.appointment_id, 
+    a.date_created, 
+    a.client_id, 
+    c.phone_number AS client_phone,
+    a.employee_id, 
+    a.service_id,
+    s.service_name,          -- tambahkan kolom service_name
+    a.start_time, 
+    a.end_time_expected, 
+    a.StatusBooking,
+    s.service_price
+FROM 
+    appointments a
+JOIN 
+    clients c ON a.client_id = c.client_id
+JOIN 
+    services s ON a.service_id = s.service_id
+WHERE 
+    c.phone_number = @Phone
+    AND a.StatusBooking IN ('Need Approval', 'Pending', 'Ongoing')
+ORDER BY a.date_created DESC";
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Phone", phoneInput);
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                // Hilangkan kolom cancellation_reason karena sudah dihapus dari query
+
+                dgvStatusBooking.DataSource = dt;
+
+                // Format tanggal dan waktu
+                dgvStatusBooking.Columns["start_time"].DefaultCellStyle.Format = "MM/dd/yyyy hh:mm tt";
+                dgvStatusBooking.Columns["end_time_expected"].DefaultCellStyle.Format = "MM/dd/yyyy hh:mm tt";
+
+                // Atur supaya kolom service_name muncul tepat setelah service_id
+                dgvStatusBooking.Columns["service_id"].DisplayIndex = GetColumnIndex(dgvStatusBooking, "service_id");
+                dgvStatusBooking.Columns["service_name"].DisplayIndex = dgvStatusBooking.Columns["service_id"].DisplayIndex + 1;
+
+                dgvStatusBooking.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                // Hitung total harga
+                decimal totalHarga = 0;
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (decimal.TryParse(row["service_price"].ToString(), out decimal price))
+                    {
+                        totalHarga += price;
+                    }
+                }
+
+                txtTotalHarga.Text = "Rp " + totalHarga.ToString("N2"); // Format dengan 2 desimal
+            }
+        }
+
+        // Helper method untuk mendapatkan index kolom berdasarkan nama
+        private int GetColumnIndex(DataGridView dgv, string columnName)
+        {
+            return dgv.Columns[columnName].Index;
+        }
+
+        private void btnLihatStatus_Click(object sender, EventArgs e)
+        {
+            LoadStatusBookingByPhone();
+        }
+
+        private void btnLihatLayanan_Click(object sender, EventArgs e)
+        {
+            ListLayanan formLayanan = new ListLayanan();
+            formLayanan.Show();
+
+        }
+
+        private void dtpTanggal_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateDateRange()
+        {
+            dtpTanggal.MinDate = DateTime.Today;
+            dtpTanggal.MaxDate = DateTime.Today.AddMonths(3);
+        }
+
+        private void cmbJam_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbLayanan_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

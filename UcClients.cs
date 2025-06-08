@@ -14,7 +14,7 @@ namespace Barbershop
     public partial class UcClients : UserControl
     {
 
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcClients()
         {
@@ -128,6 +128,14 @@ namespace Barbershop
                 return;
             }
 
+            // Konfirmasi sebelum update
+            DialogResult result = MessageBox.Show("Apakah Anda yakin ingin memperbarui data pelanggan ini?", "Konfirmasi Update",
+                                                  MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = "UPDATE clients SET first_name=@fname, last_name=@lname, phone_number=@phone, client_email=@email " +
@@ -162,6 +170,7 @@ namespace Barbershop
                 }
             }
         }
+
 
 
         private void btnDelete_Click(object sender, EventArgs e)

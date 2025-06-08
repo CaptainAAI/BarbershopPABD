@@ -13,7 +13,7 @@ namespace Barbershop
 {
     public partial class UcEmployeeSchedule : UserControl
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcEmployeeSchedule()
         {
@@ -56,6 +56,16 @@ namespace Barbershop
                 return;
             }
 
+            // Konfirmasi sebelum update jadwal
+            DialogResult confirm = MessageBox.Show("Apakah Anda yakin ingin memperbarui jadwal karyawan ini?",
+                                                   "Konfirmasi Update Jadwal",
+                                                   MessageBoxButtons.YesNo,
+                                                   MessageBoxIcon.Question);
+            if (confirm == DialogResult.No)
+            {
+                return;
+            }
+
             string empID = cmbNamaKaryawan.SelectedValue.ToString();
             string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
@@ -95,6 +105,7 @@ namespace Barbershop
 
             MessageBox.Show("Jadwal berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
 
         private Control FindControlRecursive(Control parent, string name)
         {
@@ -262,6 +273,11 @@ namespace Barbershop
 
                 reader.Close();
             }
+        }
+
+        private void richTextBox2_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -13,11 +13,13 @@ namespace Barbershop
 {
     public partial class UcAppointments : UserControl
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=ytta;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         public UcAppointments()
         {
+
             InitializeComponent();
+            UpdateDateRange();
             txtAppointmentID.ReadOnly = true;
         }
 
@@ -73,29 +75,38 @@ namespace Barbershop
 
         private void LoadAppointments()
         {
-
-           
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
+                // 1. Hapus appointment yang lebih dari 3 bulan lalu
+                string deleteOldQuery = @"
+            DELETE FROM appointments
+            WHERE start_time < DATEADD(MONTH, -3, GETDATE())";
+
+                using (SqlCommand deleteCmd = new SqlCommand(deleteOldQuery, conn))
+                {
+                    deleteCmd.ExecuteNonQuery();
+                }
+
+                // 2. Update status booking (seperti sebelumnya)
                 string updateStatusQuery = @"
-                UPDATE appointments
-                SET StatusBooking = 
-                CASE
+            UPDATE appointments
+            SET StatusBooking = 
+            CASE
                 WHEN StatusBooking = 'Need Approval' AND GETDATE() >= start_time THEN 'Canceled'
                 WHEN GETDATE() >= end_time_expected AND StatusBooking != 'Canceled' THEN 'Completed'
                 WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Ongoing'
                 WHEN GETDATE() < start_time AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Pending'
                 ELSE StatusBooking
-                END";
-
+            END";
 
                 using (SqlCommand updateCmd = new SqlCommand(updateStatusQuery, conn))
                 {
                     updateCmd.ExecuteNonQuery();
                 }
 
+                // 3. Load data ke grid
                 SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM appointments", conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -196,6 +207,15 @@ namespace Barbershop
         {
             if (dataGridView1.CurrentRow == null) return;
 
+            var result = MessageBox.Show(
+                "Apakah kamu yakin ingin memperbarui appointment ini?",
+                "Konfirmasi Update",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result != DialogResult.Yes) return;
+
             string id = txtAppointmentID.Text;
 
             using (SqlConnection conn = new SqlConnection(connString))
@@ -204,15 +224,15 @@ namespace Barbershop
                 {
                     conn.Open();
                     string query = @"
-                        UPDATE appointments SET 
-                            client_id = @client,
-                            employee_id = @employee,
-                            service_id = @service,
-                            start_time = @start,
-                            end_time_expected = @end,
-                            cancellation_reason = @reason,
-                            StatusBooking = @status
-                        WHERE appointment_id = @id";
+                UPDATE appointments SET 
+                    client_id = @client,
+                    employee_id = @employee,
+                    service_id = @service,
+                    start_time = @start,
+                    end_time_expected = @end,
+                    cancellation_reason = @reason,
+                    StatusBooking = @status
+                WHERE appointment_id = @id";
 
                     SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -237,16 +257,17 @@ namespace Barbershop
                     cmd.Parameters.AddWithValue("@status", status);
 
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Appointment berhasil diperbarui!");
+                    MessageBox.Show("Appointment berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadAppointments();
                     ClearForm();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Gagal update: " + ex.Message);
+                    MessageBox.Show("Gagal update: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
@@ -301,5 +322,22 @@ namespace Barbershop
             cmbStatusBooking.SelectedItem = row.Cells["StatusBooking"].Value?.ToString();
         }
 
+        private void dtpTanggal_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        private void UpdateDateRange()
+        {
+            dtpTanggal.MinDate = DateTime.Today.AddMonths(-3);
+            dtpTanggal.MaxDate = DateTime.Today.AddMonths(3);
+        }
+
+        private void cmbEmployeeID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
