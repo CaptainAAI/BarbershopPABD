@@ -475,7 +475,47 @@ namespace Barbershop
 
         }
 
-
+        private void btnAnalyze_Click(object sender, EventArgs e)
+        {
+            string sqlQuery = @"
+                SELECT 
+                    transaction_id,
+                    appointment_id,
+                    client_name,
+                    phone_number,
+                    employee_id,
+                    employee_name,
+                    service_name,
+                    service_price,
+                    appointment_date,
+                    start_time,
+                    end_time,
+                    status,
+                    cancellation_reason,
+                    recorded_at
+                FROM transaction_history
+                ORDER BY recorded_at DESC;
+            ";
+            AnalyzeQuery(sqlQuery);
+        }
+        private void AnalyzeQuery(string sqlQuery)
+        {
+            using (var conn = new SqlConnection(connString))
+            {
+                conn.InfoMessage += (s, e) => MessageBox.Show(e.Message, "STATISTICS INFO");
+                conn.Open();
+                var wrapped = $@"
+            SET STATISTICS IO ON;
+            SET STATISTICS TIME ON;
+            {sqlQuery}
+            SET STATISTICS IO OFF;
+            SET STATISTICS TIME OFF;";
+                using (var cmd = new SqlCommand(wrapped, conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
 
     }
