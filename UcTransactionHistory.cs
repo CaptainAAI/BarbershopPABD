@@ -36,11 +36,13 @@ namespace Barbershop
         // Event handler saat UserControl dimuat
         private void UcTransactionHistory_Load(object sender, EventArgs e)
         {
+            EnsureTransactionHistoryIndexes(); // Pastikan index IDX sudah ada
             LoadTransactionData(); // Memuat data transaksi
             LoadComboBoxes();      // Memuat data ke ComboBox filter
             dtpDateFrom.Value = DateTime.Today.AddDays(-7); // Set default tanggal filter dari
             dtpDateUntil.Value = DateTime.Today;             // Set default tanggal filter sampai
         }
+
 
         // Memuat data transaksi ke DataGridView, dengan filter opsional
         private void LoadTransactionData(string filterQuery = "")
@@ -91,6 +93,45 @@ namespace Barbershop
                 }
             }
         }
+
+        private void EnsureTransactionHistoryIndexes()
+        {
+            var indexes = new[]
+            {
+                new { Name = "IDX_transaction_history_client_name", Column = "client_name" },
+                new { Name = "IDX_transaction_history_employee_name", Column = "employee_name" },
+                new { Name = "IDX_transaction_history_service_name", Column = "service_name" },
+                new { Name = "IDX_transaction_history_status", Column = "status" },
+                new { Name = "IDX_transaction_history_appointment_date", Column = "appointment_date" }
+            };
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+                foreach (var idx in indexes)
+                {
+                    // Cek apakah index sudah ada
+                    string checkIndexSql = @"
+                SELECT COUNT(*) FROM sys.indexes 
+                WHERE name = @IndexName AND object_id = OBJECT_ID('transaction_history')";
+                    using (SqlCommand cmd = new SqlCommand(checkIndexSql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@IndexName", idx.Name);
+                        int exists = (int)cmd.ExecuteScalar();
+                        if (exists == 0)
+                        {
+                            // Buat index jika belum ada
+                            string createIndexSql = $"CREATE INDEX {idx.Name} ON transaction_history({idx.Column})";
+                            using (SqlCommand createCmd = new SqlCommand(createIndexSql, conn))
+                            {
+                                createCmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
 
         // Memuat data ke ComboBox tertentu dari query SQL
