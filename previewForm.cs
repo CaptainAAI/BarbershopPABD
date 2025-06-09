@@ -42,10 +42,10 @@ namespace Barbershop
                         string svcName = row["service_name"].ToString().Trim();
                         string svcPriceStr = row["service_price"].ToString().Trim();
 
-                        // Validasi harga layanan harus numerik
-                        if (!decimal.TryParse(svcPriceStr, out decimal svcPrice))
+                        // Validasi harga layanan harus numerik dan >= 0
+                        if (!decimal.TryParse(svcPriceStr, out decimal svcPrice) || svcPrice < 0)
                         {
-                            throw new Exception($"Baris dengan harga tidak valid: {svcPriceStr}");
+                            throw new Exception($"Baris dengan harga tidak valid (harus >= 0): {svcPriceStr}");
                         }
 
                         // Validasi employee harus ada di database
@@ -60,17 +60,17 @@ namespace Barbershop
                             }
                         }
 
-                        // Validasi service harus ada di database
-                        string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name AND service_price = @price";
+                        // Validasi service harus ada di database (hanya berdasarkan nama)
+                        string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name";
                         using (SqlCommand cmd = new SqlCommand(svcQuery, conn, transaction))
                         {
                             cmd.Parameters.AddWithValue("@name", svcName);
-                            cmd.Parameters.AddWithValue("@price", svcPrice);
                             if ((int)cmd.ExecuteScalar() == 0)
                             {
-                                throw new Exception($"Layanan tidak valid: {svcName} - {svcPriceStr}");
+                                throw new Exception($"Layanan tidak valid: {svcName}");
                             }
                         }
+
 
                         // Insert data ke tabel transaction_history
                         string insertQuery = @"
