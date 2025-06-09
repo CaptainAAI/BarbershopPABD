@@ -14,10 +14,18 @@ using NPOI.XSSF.UserModel;
 
 namespace Barbershop
 {
+
+
+
     public partial class UcTransactionHistory : UserControl
     {
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+
+        // Caching untuk data transaksi
+        private DataTable cachedTransactionData = null;
+        private DateTime cacheTimestamp = DateTime.MinValue;
+        private readonly TimeSpan cacheDuration = TimeSpan.FromMinutes(20);
 
         // Konstruktor UserControl
         public UcTransactionHistory()
@@ -37,34 +45,53 @@ namespace Barbershop
         // Memuat data transaksi ke DataGridView, dengan filter opsional
         private void LoadTransactionData(string filterQuery = "")
         {
+            // Hanya cache untuk data tanpa filter
+            if (string.IsNullOrEmpty(filterQuery))
+            {
+                // Jika cache masih valid, gunakan cache
+                if (cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
+                {
+                    dgvTransactionHistory.DataSource = cachedTransactionData.Copy();
+                    return;
+                }
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = @"
-                    SELECT 
-                        transaction_id,
-                        appointment_id,
-                        client_name,
-                        phone_number,
-                        employee_id,
-                        employee_name,
-                        service_name,
-                        service_price,
-                        appointment_date,
-                        start_time,
-                        end_time,
-                        status,
-                        cancellation_reason,
-                        recorded_at
-                    FROM transaction_history
-                    WHERE 1=1 " + filterQuery + @"
-                    ORDER BY recorded_at DESC";
+            SELECT 
+                transaction_id,
+                appointment_id,
+                client_name,
+                phone_number,
+                employee_id,
+                employee_name,
+                service_name,
+                service_price,
+                appointment_date,
+                start_time,
+                end_time,
+                status,
+                cancellation_reason,
+                recorded_at
+            FROM transaction_history
+            WHERE 1=1 " + filterQuery + @"
+            ORDER BY recorded_at DESC";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
-                dgvTransactionHistory.DataSource = dt; // Tampilkan data ke DataGridView
+                dgvTransactionHistory.DataSource = dt;
+
+                // Simpan ke cache jika tanpa filter
+                if (string.IsNullOrEmpty(filterQuery))
+                {
+                    cachedTransactionData = dt.Copy();
+                    cacheTimestamp = DateTime.Now;
+                }
             }
         }
+
 
         // Memuat data ke ComboBox tertentu dari query SQL
         private void LoadComboBox(string query, ComboBox cmb, string displayMember, string valueMember)
