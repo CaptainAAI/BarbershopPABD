@@ -16,6 +16,11 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        private DataTable _scheduleCache = null;
+        private DateTime _scheduleCacheTime;
+        private readonly TimeSpan _scheduleCacheDuration = TimeSpan.FromMinutes(5); // cache 5 menit
+
+
         // Konstruktor UserControl
         public UcEmployeeSchedule()
         {
@@ -114,6 +119,8 @@ namespace Barbershop
             }
 
             MessageBox.Show("Jadwal berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LoadAllSchedules(forceRefresh: true);
+
         }
 
         // Mencari kontrol secara rekursif berdasarkan nama
@@ -212,19 +219,33 @@ namespace Barbershop
         }
 
         // Event klik tombol Tampilkan Data, menampilkan seluruh jadwal karyawan di DataGridView
-        private void btnTampilkanData_Click(object sender, EventArgs e)
+        private void LoadAllSchedules(bool forceRefresh = false)
         {
+            if (!forceRefresh && _scheduleCache != null && (DateTime.Now - _scheduleCacheTime) < _scheduleCacheDuration)
+            {
+                dgvJadwal.DataSource = _scheduleCache;
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 SqlDataAdapter da = new SqlDataAdapter("sp_employee_schedule_get_all", conn);
                 da.SelectCommand.CommandType = CommandType.StoredProcedure;
-
                 DataTable dt = new DataTable();
                 da.Fill(dt);
+                dgvJadwal.DataSource = dt;
 
-                dgvJadwal.DataSource = dt; // pastikan dgvJadwal sudah ada di form
+                // Simpan ke cache
+                _scheduleCache = dt;
+                _scheduleCacheTime = DateTime.Now;
             }
         }
+
+        private void btnTampilkanData_Click(object sender, EventArgs e)
+        {
+            LoadAllSchedules();
+        }
+
 
         // Event saat ComboBox karyawan berubah, load jadwal karyawan yang dipilih
         private void CmbNamaKaryawan_SelectedIndexChanged(object sender, EventArgs e)
