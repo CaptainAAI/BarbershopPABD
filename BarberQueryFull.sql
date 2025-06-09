@@ -566,7 +566,7 @@ BEGIN
     INSERT INTO employees (employee_id, first_name, last_name, phone_number, email)
     VALUES (@employee_id, @first_name, @last_name, @phone_number, @email);
 END
-
+---------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_employee_update
     @employee_id CHAR(8),
     @first_name VARCHAR(20),
@@ -598,6 +598,61 @@ BEGIN
     SET NOCOUNT ON;
     SELECT * FROM employees;
 END
+---------------------------------------------------------------------------------------
+CREATE PROCEDURE sp_employee_schedule_get_all
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT s.id, s.employee_id, e.first_name + ' ' + e.last_name AS nama, 
+           s.day_id, s.from_hour, s.to_hour
+    FROM employees_schedule s
+    JOIN employees e ON s.employee_id = e.employee_id
+    ORDER BY s.employee_id, s.day_id;
+END
+
+CREATE PROCEDURE sp_employee_schedule_get_by_employee
+    @employee_id CHAR(8)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT day_id, from_hour, to_hour
+    FROM employees_schedule
+    WHERE employee_id = @employee_id
+    ORDER BY day_id;
+END
+
+CREATE PROCEDURE sp_employee_schedule_upsert
+    @id CHAR(9),
+    @employee_id CHAR(8),
+    @day_id TINYINT,
+    @from_hour TIME,
+    @to_hour TIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM employees_schedule WHERE employee_id = @employee_id AND day_id = @day_id)
+    BEGIN
+        UPDATE employees_schedule
+        SET from_hour = @from_hour, to_hour = @to_hour
+        WHERE employee_id = @employee_id AND day_id = @day_id;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO employees_schedule (id, employee_id, day_id, from_hour, to_hour)
+        VALUES (@id, @employee_id, @day_id, @from_hour, @to_hour);
+    END
+END
+
+CREATE PROCEDURE sp_employee_schedule_delete
+    @employee_id CHAR(8),
+    @day_id TINYINT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DELETE FROM employees_schedule WHERE employee_id = @employee_id AND day_id = @day_id;
+END
+---------------------------------------------------------------------------------------
 
 
 

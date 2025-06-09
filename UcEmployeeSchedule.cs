@@ -138,24 +138,19 @@ namespace Barbershop
             {
                 try
                 {
-                    string deleteQuery = "DELETE FROM employees_schedule WHERE employee_id=@emp AND day_id=@day";
-                    string insertQuery = "INSERT INTO employees_schedule (id, employee_id, day_id, from_hour, to_hour) " +
-                                         "VALUES (@id, @emp, @day, @from, @to)";
+                    using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_upsert", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.Parameters.AddWithValue("@employee_id", empID);
+                        cmd.Parameters.AddWithValue("@day_id", dayID);
+                        cmd.Parameters.AddWithValue("@from_hour", from);
+                        cmd.Parameters.AddWithValue("@to_hour", to);
 
-                    SqlCommand deleteCmd = new SqlCommand(deleteQuery, conn);
-                    deleteCmd.Parameters.AddWithValue("@emp", empID);
-                    deleteCmd.Parameters.AddWithValue("@day", dayID);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
 
-                    SqlCommand insertCmd = new SqlCommand(insertQuery, conn);
-                    insertCmd.Parameters.AddWithValue("@id", id);
-                    insertCmd.Parameters.AddWithValue("@emp", empID);
-                    insertCmd.Parameters.AddWithValue("@day", dayID);
-                    insertCmd.Parameters.AddWithValue("@from", from);
-                    insertCmd.Parameters.AddWithValue("@to", to);
-
-                    conn.Open();
-                    deleteCmd.ExecuteNonQuery();
-                    insertCmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
@@ -169,13 +164,16 @@ namespace Barbershop
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string deleteQuery = "DELETE FROM employees_schedule WHERE employee_id=@emp AND day_id=@day";
-                SqlCommand cmd = new SqlCommand(deleteQuery, conn);
-                cmd.Parameters.AddWithValue("@emp", empID);
-                cmd.Parameters.AddWithValue("@day", dayID);
+                using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_delete", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@employee_id", empID);
+                    cmd.Parameters.AddWithValue("@day_id", dayID);
 
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
             }
         }
 
@@ -183,7 +181,7 @@ namespace Barbershop
         private void IsiComboJam(ComboBox combo)
         {
             combo.Items.Clear();
-            for (int jam = 5; jam <= 23; jam++)
+            for (int jam = 00; jam <= 23; jam++)
             {
                 combo.Items.Add($"{jam:D2}:00");
                 combo.Items.Add($"{jam:D2}:05");
@@ -218,14 +216,9 @@ namespace Barbershop
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = @"
-                SELECT s.id, s.employee_id, e.first_name + ' ' + e.last_name AS nama, 
-                       s.day_id, s.from_hour, s.to_hour
-                FROM employees_schedule s
-                JOIN employees e ON s.employee_id = e.employee_id
-                ORDER BY s.employee_id, s.day_id";
+                SqlDataAdapter da = new SqlDataAdapter("sp_employee_schedule_get_all", conn);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
 
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
@@ -250,9 +243,10 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = @"SELECT day_id, from_hour, to_hour FROM employees_schedule WHERE employee_id = @empID";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@empID", empID);
+                SqlCommand cmd = new SqlCommand("sp_employee_schedule_get_by_employee", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@employee_id", empID);
+
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
