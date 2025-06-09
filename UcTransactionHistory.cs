@@ -261,6 +261,18 @@ namespace Barbershop
             {
                 DataTable dt = (DataTable)dgvTransactionHistory.DataSource;
                 int servicePriceColIndex = dt.Columns.IndexOf("service_price");
+                int statusColIndex = dt.Columns.IndexOf("status");
+
+                // Hitung total pendapatan hanya untuk status "Completed"
+                double totalPendapatan = 0;
+                foreach (DataRow dr in dt.Rows)
+                {
+                    if (statusColIndex >= 0 && dr[statusColIndex]?.ToString() == "Completed" &&
+                        servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
+                    {
+                        totalPendapatan += price;
+                    }
+                }
 
                 using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
@@ -289,48 +301,22 @@ namespace Barbershop
                         table.AddCell(cell);
                     }
 
-                    // Data & hitung total
-                    double totalPendapatan = 0;
+                    // Data
                     foreach (DataRow dr in dt.Rows)
                     {
                         for (int j = 0; j < dt.Columns.Count; j++)
                         {
                             table.AddCell(dr[j]?.ToString() ?? "");
                         }
-                        if (servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
-                        {
-                            totalPendapatan += price;
-                        }
                     }
 
-                    // Baris kosong
-                    for (int i = 0; i < dt.Columns.Count; i++)
-                        table.AddCell(" ");
-
-                    // Baris total pendapatan
-                    var totalCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase($"Total Pendapatan = Rp{totalPendapatan:N0}"))
-                    {
-                        Colspan = 2,
-                        Border = iTextSharp.text.Rectangle.NO_BORDER
-                    };
-                    table.AddCell(totalCell);
-
-                    // Sisanya kosong sampai kolom service_price
-                    for (int i = 2; i < servicePriceColIndex; i++)
-                        table.AddCell(new iTextSharp.text.pdf.PdfPCell { Border = iTextSharp.text.Rectangle.NO_BORDER });
-
-                    // Total di kolom service_price
-                    var totalValueCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase($"Rp{totalPendapatan:N0}"))
-                    {
-                        Border = iTextSharp.text.Rectangle.NO_BORDER
-                    };
-                    table.AddCell(totalValueCell);
-
-                    // Sisanya kosong
-                    for (int i = servicePriceColIndex + 1; i < dt.Columns.Count; i++)
-                        table.AddCell(new iTextSharp.text.pdf.PdfPCell { Border = iTextSharp.text.Rectangle.NO_BORDER });
-
                     doc.Add(table);
+
+                    // Tambahkan total pendapatan di bawah tabel
+                    doc.Add(new iTextSharp.text.Paragraph(" "));
+                    var totalFont = iTextSharp.text.FontFactory.GetFont("Arial", 12, iTextSharp.text.Font.BOLD);
+                    doc.Add(new iTextSharp.text.Paragraph($"Total Pendapatan (Completed): Rp{totalPendapatan:N0}", totalFont));
+
                     doc.Close();
                 }
 
@@ -340,6 +326,7 @@ namespace Barbershop
             {
                 MessageBox.Show("Gagal export ke PDF: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
         // Event kosong untuk generate Excel (belum diimplementasi)
@@ -377,7 +364,8 @@ namespace Barbershop
                 // Data
                 double totalPendapatan = 0;
                 int rowIndex = 1;
-                int servicePriceColIndex = dt.Columns.IndexOf("transaction_id");
+                int servicePriceColIndex = dt.Columns.IndexOf("service_price");
+                int statusColIndex = dt.Columns.IndexOf("status");
 
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -386,18 +374,19 @@ namespace Barbershop
                     {
                         row.CreateCell(j).SetCellValue(dr[j]?.ToString() ?? "");
                     }
-                    // Akumulasi total service_price
-                    if (servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
+                    // Akumulasi total service_price hanya jika status Completed
+                    if (statusColIndex >= 0 && dr[statusColIndex]?.ToString() == "Completed" &&
+                        servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
                     {
                         totalPendapatan += price;
                     }
                 }
 
-                // Baris total pendapatan
-                IRow totalRow = sheet.CreateRow(rowIndex + 1);
-                totalRow.CreateCell(0).SetCellValue("Total Pendapatan = ");
-                if (servicePriceColIndex >= 0)
-                    totalRow.CreateCell(servicePriceColIndex).SetCellValue(totalPendapatan);
+                // Baris kosong
+                rowIndex++;
+                // Baris total pendapatan di bawah tabel
+                IRow totalRow = sheet.CreateRow(rowIndex);
+                totalRow.CreateCell(0).SetCellValue($"Total Pendapatan (Completed): Rp{totalPendapatan:N0}");
 
                 // Autosize kolom
                 for (int i = 0; i < dt.Columns.Count; i++)
@@ -415,6 +404,7 @@ namespace Barbershop
             {
                 MessageBox.Show("Gagal export ke Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
 
