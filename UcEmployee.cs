@@ -16,6 +16,11 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        private DataTable _employeeCache = null;
+        private DateTime _employeeCacheTime;
+        private readonly TimeSpan _employeeCacheDuration = TimeSpan.FromMinutes(5); // cache 5 menit
+
+
         // Konstruktor UserControl
         public UcEmployee()
         {
@@ -29,17 +34,29 @@ namespace Barbershop
         }
 
         // Memuat data karyawan dari database ke DataGridView
-        private void LoadEmployees()
+        private void LoadEmployees(bool forceRefresh = false)
         {
+            // Jika cache masih valid dan tidak force refresh, gunakan cache
+            if (!forceRefresh && _employeeCache != null && (DateTime.Now - _employeeCacheTime) < _employeeCacheDuration)
+            {
+                dgvEmployees.DataSource = _employeeCache;
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "SELECT * FROM employees";
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                SqlDataAdapter da = new SqlDataAdapter("sp_employee_get_all", conn);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dgvEmployees.DataSource = dt;
+
+                // Simpan ke cache
+                _employeeCache = dt;
+                _employeeCacheTime = DateTime.Now;
             }
         }
+
 
         // Validasi input form agar tidak ada field yang kosong
         private bool IsInputValid()
@@ -72,28 +89,30 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "INSERT INTO employees (employee_id, first_name, last_name, phone_number, email) " +
-                               "VALUES (@id, @fname, @lname, @phone, @email)";
-                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand("sp_employee_add", conn, transaction);
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@id", txtID.Text);
-                cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
-                cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
-                cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
+                cmd.Parameters.AddWithValue("@employee_id", txtID.Text);
+                cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
+                cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
+                cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
                 cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
+
 
                 try
                 {
-                    conn.Open();
                     cmd.ExecuteNonQuery();
+                    transaction.Commit();
 
-                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadEmployees();
+                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon  .Information);
+                    LoadEmployees(forceRefresh: true);
                     ClearFields();
                 }
                 catch (SqlException ex)
                 {
-                    // Tangani error duplikat data (ID, email, atau nomor telepon)
+                    transaction.Rollback();
                     if (ex.Message.Contains("UNIQUE KEY") || ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal menambahkan! Data duplikat ditemukan (ID, email, atau nomor telepon mungkin sudah ada).",
@@ -106,6 +125,7 @@ namespace Barbershop
                 }
             }
         }
+
 
         // Event klik pada cell DataGridView (tidak digunakan)
         private void dgvEmployees_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -134,7 +154,6 @@ namespace Barbershop
                 return;
             }
 
-            // Konfirmasi sebelum update
             DialogResult confirmResult = MessageBox.Show("Apakah Anda yakin ingin memperbarui data karyawan ini?",
                                                          "Konfirmasi Update",
                                                          MessageBoxButtons.YesNo,
@@ -146,27 +165,30 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "UPDATE employees SET first_name=@fname, last_name=@lname, phone_number=@phone, email=@email " +
-                               "WHERE employee_id=@id";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", txtID.Text);
-                cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
-                cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
-                cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
+                SqlCommand cmd = new SqlCommand("sp_employee_update", conn, transaction);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@employee_id", txtID.Text);
+                cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
+                cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
+                cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
                 cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
+
 
                 try
                 {
-                    conn.Open();
                     cmd.ExecuteNonQuery();
+                    transaction.Commit();
 
                     MessageBox.Show("Data karyawan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadEmployees();
+                    LoadEmployees(forceRefresh: true);
                     ClearFields();
                 }
                 catch (SqlException ex)
                 {
-                    // Tangani error duplikat data (ID, email, atau nomor telepon)
+                    transaction.Rollback();
                     if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal update! ID, Nomor telepon atau email sudah digunakan.",
@@ -179,6 +201,7 @@ namespace Barbershop
                 }
             }
         }
+
 
         // Event klik tombol Delete, menghapus karyawan yang dipilih
         private void btnDelete_Click(object sender, EventArgs e)
@@ -194,23 +217,34 @@ namespace Barbershop
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
-                    string query = "DELETE FROM employees WHERE employee_id=@id";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", txtID.Text);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                    SqlTransaction transaction = conn.BeginTransaction();
+                    SqlCommand cmd = new SqlCommand("sp_employee_delete", conn, transaction);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@employee_id", txtID.Text);
 
-                MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadEmployees();
-                ClearFields();
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadEmployees(forceRefresh: true);
+                        ClearFields();
+                    }
+                    catch (SqlException ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
+
 
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadEmployees();
+            LoadEmployees(forceRefresh: true);
             ClearFields();
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
