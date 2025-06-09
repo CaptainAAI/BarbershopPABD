@@ -20,7 +20,6 @@ namespace Barbershop
         private DateTime _scheduleCacheTime;
         private readonly TimeSpan _scheduleCacheDuration = TimeSpan.FromMinutes(5); // cache 5 menit
 
-
         // Konstruktor UserControl
         public UcEmployeeSchedule()
         {
@@ -80,47 +79,59 @@ namespace Barbershop
             string empID = cmbNamaKaryawan.SelectedValue.ToString();
             string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-            // Loop untuk setiap hari, simpan atau hapus jadwal sesuai checkbox
-            foreach (string day in days)
+            using (SqlConnection conn = new SqlConnection(connString))
             {
-                CheckBox chk = FindControlRecursive(this, "chk" + day) as CheckBox;
-                ComboBox cmbFrom = FindControlRecursive(this, "cmbFrom" + day) as ComboBox;
-                ComboBox cmbTo = FindControlRecursive(this, "cmbTo" + day) as ComboBox;
-
-                int dayID = Array.IndexOf(days, day);
-                string scheduleID = empID + dayID;
-
-                if (chk != null && chk.Checked)
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
+                try
                 {
-                    // Validasi jam kerja
-                    if (cmbFrom.SelectedItem == null || cmbTo.SelectedItem == null)
+                    foreach (string day in days)
                     {
-                        MessageBox.Show($"Lengkapi jam kerja untuk hari {day}.");
-                        return;
+                        CheckBox chk = FindControlRecursive(this, "chk" + day) as CheckBox;
+                        ComboBox cmbFrom = FindControlRecursive(this, "cmbFrom" + day) as ComboBox;
+                        ComboBox cmbTo = FindControlRecursive(this, "cmbTo" + day) as ComboBox;
+
+                        int dayID = Array.IndexOf(days, day);
+                        string scheduleID = empID + dayID;
+
+                        if (chk != null && chk.Checked)
+                        {
+                            if (cmbFrom.SelectedItem == null || cmbTo.SelectedItem == null)
+                            {
+                                MessageBox.Show($"Lengkapi jam kerja untuk hari {day}.");
+                                transaction.Rollback();
+                                return;
+                            }
+
+                            TimeSpan from = TimeSpan.Parse(cmbFrom.SelectedItem.ToString());
+                            TimeSpan to = TimeSpan.Parse(cmbTo.SelectedItem.ToString());
+
+                            if (from >= to)
+                            {
+                                MessageBox.Show($"Jam mulai harus lebih awal dari jam selesai pada hari {day}.");
+                                transaction.Rollback();
+                                return;
+                            }
+
+                            // Simpan jadwal ke database dengan transaction
+                            SimpanJadwal(scheduleID, empID, dayID, from, to, conn, transaction);
+                        }
+                        else
+                        {
+                            // Hapus jadwal jika tidak dicentang dengan transaction
+                            HapusJadwal(empID, dayID, conn, transaction);
+                        }
                     }
-
-                    TimeSpan from = TimeSpan.Parse(cmbFrom.SelectedItem.ToString());
-                    TimeSpan to = TimeSpan.Parse(cmbTo.SelectedItem.ToString());
-
-                    if (from >= to)
-                    {
-                        MessageBox.Show($"Jam mulai harus lebih awal dari jam selesai pada hari {day}.");
-                        return;
-                    }
-
-                    // Simpan jadwal ke database
-                    SimpanJadwal(scheduleID, empID, dayID, from, to);
+                    transaction.Commit();
+                    MessageBox.Show("Jadwal berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadAllSchedules(forceRefresh: true);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Hapus jadwal jika tidak dicentang
-                    HapusJadwal(empID, dayID);
+                    transaction.Rollback();
+                    MessageBox.Show("Gagal memperbarui jadwal: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
-            MessageBox.Show("Jadwal berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            LoadAllSchedules(forceRefresh: true);
-
         }
 
         // Mencari kontrol secara rekursif berdasarkan nama
@@ -138,49 +149,30 @@ namespace Barbershop
             return null;
         }
 
-        // Menyimpan jadwal karyawan ke database (hapus dulu, lalu insert baru)
-        private void SimpanJadwal(string id, string empID, int dayID, TimeSpan from, TimeSpan to)
+        // Menyimpan jadwal karyawan ke database (dengan transaction)
+        private void SimpanJadwal(string id, string empID, int dayID, TimeSpan from, TimeSpan to, SqlConnection conn, SqlTransaction transaction)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_upsert", conn, transaction))
             {
-                try
-                {
-                    using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_upsert", conn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@id", id);
-                        cmd.Parameters.AddWithValue("@employee_id", empID);
-                        cmd.Parameters.AddWithValue("@day_id", dayID);
-                        cmd.Parameters.AddWithValue("@from_hour", from);
-                        cmd.Parameters.AddWithValue("@to_hour", to);
-
-                        conn.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Gagal menyimpan jadwal: " + ex.Message);
-                }
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@employee_id", empID);
+                cmd.Parameters.AddWithValue("@day_id", dayID);
+                cmd.Parameters.AddWithValue("@from_hour", from);
+                cmd.Parameters.AddWithValue("@to_hour", to);
+                cmd.ExecuteNonQuery();
             }
         }
 
-        // Menghapus jadwal karyawan untuk hari tertentu
-        private void HapusJadwal(string empID, int dayID)
+        // Menghapus jadwal karyawan untuk hari tertentu (dengan transaction)
+        private void HapusJadwal(string empID, int dayID, SqlConnection conn, SqlTransaction transaction)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_delete", conn, transaction))
             {
-                using (SqlCommand cmd = new SqlCommand("sp_employee_schedule_delete", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@employee_id", empID);
-                    cmd.Parameters.AddWithValue("@day_id", dayID);
-
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@employee_id", empID);
+                cmd.Parameters.AddWithValue("@day_id", dayID);
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -241,11 +233,10 @@ namespace Barbershop
             }
         }
 
-        private void btnTampilkanData_Click(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadAllSchedules();
         }
-
 
         // Event saat ComboBox karyawan berubah, load jadwal karyawan yang dipilih
         private void CmbNamaKaryawan_SelectedIndexChanged(object sender, EventArgs e)
@@ -267,7 +258,6 @@ namespace Barbershop
                 SqlCommand cmd = new SqlCommand("sp_employee_schedule_get_by_employee", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@employee_id", empID);
-
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -313,4 +303,3 @@ namespace Barbershop
         }
     }
 }
-
