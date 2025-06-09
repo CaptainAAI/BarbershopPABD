@@ -31,83 +31,90 @@ namespace Barbershop
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
 
-                // Loop setiap baris data yang di-preview
-                foreach (DataRow row in previewData.Rows)
+                try
                 {
-                    string empId = row["employee_id"].ToString().Trim();
-                    string empName = row["employee_name"].ToString().Trim();
-                    string svcName = row["service_name"].ToString().Trim();
-                    string svcPriceStr = row["service_price"].ToString().Trim();
-
-                    // Validasi harga layanan harus numerik
-                    if (!decimal.TryParse(svcPriceStr, out decimal svcPrice))
+                    foreach (DataRow row in previewData.Rows)
                     {
-                        MessageBox.Show($"Baris dengan harga tidak valid: {svcPriceStr}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                        string empId = row["employee_id"].ToString().Trim();
+                        string empName = row["employee_name"].ToString().Trim();
+                        string svcName = row["service_name"].ToString().Trim();
+                        string svcPriceStr = row["service_price"].ToString().Trim();
 
-                    // Validasi employee harus ada di database
-                    string empQuery = @"SELECT COUNT(*) FROM employees WHERE employee_id = @id AND first_name + ' ' + last_name = @name";
-                    using (SqlCommand cmd = new SqlCommand(empQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", empId);
-                        cmd.Parameters.AddWithValue("@name", empName);
-                        if ((int)cmd.ExecuteScalar() == 0)
+                        // Validasi harga layanan harus numerik
+                        if (!decimal.TryParse(svcPriceStr, out decimal svcPrice))
                         {
-                            MessageBox.Show($"Pegawai tidak ditemukan: {empId} - {empName}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            throw new Exception($"Baris dengan harga tidak valid: {svcPriceStr}");
+                        }
+
+                        // Validasi employee harus ada di database
+                        string empQuery = @"SELECT COUNT(*) FROM employees WHERE employee_id = @id AND first_name + ' ' + last_name = @name";
+                        using (SqlCommand cmd = new SqlCommand(empQuery, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@id", empId);
+                            cmd.Parameters.AddWithValue("@name", empName);
+                            if ((int)cmd.ExecuteScalar() == 0)
+                            {
+                                throw new Exception($"Pegawai tidak ditemukan: {empId} - {empName}");
+                            }
+                        }
+
+                        // Validasi service harus ada di database
+                        string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name AND service_price = @price";
+                        using (SqlCommand cmd = new SqlCommand(svcQuery, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@name", svcName);
+                            cmd.Parameters.AddWithValue("@price", svcPrice);
+                            if ((int)cmd.ExecuteScalar() == 0)
+                            {
+                                throw new Exception($"Layanan tidak valid: {svcName} - {svcPriceStr}");
+                            }
+                        }
+
+                        // Insert data ke tabel transaction_history
+                        string insertQuery = @"
+                    INSERT INTO transaction_history (
+                        appointment_id, client_name, phone_number,
+                        employee_id, employee_name, service_name, service_price,
+                        appointment_date, start_time, end_time, status, cancellation_reason, recorded_at
+                    )
+                    VALUES (
+                        NULL, @client_name, @phone_number, @employee_id, @employee_name,
+                        @service_name, @service_price, @appointment_date, @start_time,
+                        @end_time, @status, @cancellation_reason, GETDATE()
+                    )";
+
+                        using (SqlCommand cmd = new SqlCommand(insertQuery, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@client_name", row["client_name"]);
+                            cmd.Parameters.AddWithValue("@phone_number", row["phone_number"]);
+                            cmd.Parameters.AddWithValue("@employee_id", empId);
+                            cmd.Parameters.AddWithValue("@employee_name", empName);
+                            cmd.Parameters.AddWithValue("@service_name", svcName);
+                            cmd.Parameters.AddWithValue("@service_price", svcPrice);
+                            cmd.Parameters.AddWithValue("@appointment_date", DateTime.Parse(row["appointment_date"].ToString()));
+                            cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString()));
+                            cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString()));
+                            cmd.Parameters.AddWithValue("@status", row["status"]);
+                            // Kolom cancellation_reason opsional
+                            cmd.Parameters.AddWithValue("@cancellation_reason", row.Table.Columns.Contains("cancellation_reason") ? row["cancellation_reason"]?.ToString() : DBNull.Value.ToString());
+                            cmd.ExecuteNonQuery();
                         }
                     }
 
-                    // Validasi service harus ada di database
-                    string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name AND service_price = @price";
-                    using (SqlCommand cmd = new SqlCommand(svcQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@name", svcName);
-                        cmd.Parameters.AddWithValue("@price", svcPrice);
-                        if ((int)cmd.ExecuteScalar() == 0)
-                        {
-                            MessageBox.Show($"Layanan tidak valid: {svcName} - {svcPriceStr}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    // Insert data ke tabel transaction_history
-                    string insertQuery = @"
-                INSERT INTO transaction_history (
-                    appointment_id, client_name, phone_number,
-                    employee_id, employee_name, service_name, service_price,
-                    appointment_date, start_time, end_time, status, cancellation_reason, recorded_at
-                )
-                VALUES (
-                    NULL, @client_name, @phone_number, @employee_id, @employee_name,
-                    @service_name, @service_price, @appointment_date, @start_time,
-                    @end_time, @status, @cancellation_reason, GETDATE()
-                )";
-
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@client_name", row["client_name"]);
-                        cmd.Parameters.AddWithValue("@phone_number", row["phone_number"]);
-                        cmd.Parameters.AddWithValue("@employee_id", empId);
-                        cmd.Parameters.AddWithValue("@employee_name", empName);
-                        cmd.Parameters.AddWithValue("@service_name", svcName);
-                        cmd.Parameters.AddWithValue("@service_price", svcPrice);
-                        cmd.Parameters.AddWithValue("@appointment_date", DateTime.Parse(row["appointment_date"].ToString()));
-                        cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString()));
-                        cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString()));
-                        cmd.Parameters.AddWithValue("@status", row["status"]);
-                        // Kolom cancellation_reason opsional
-                        cmd.Parameters.AddWithValue("@cancellation_reason", row.Table.Columns.Contains("cancellation_reason") ? row["cancellation_reason"]?.ToString() : DBNull.Value.ToString());
-                        cmd.ExecuteNonQuery();
-                    }
+                    transaction.Commit();
+                    MessageBox.Show("Data berhasil diimport ke database.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close(); // Tutup form setelah selesai
                 }
-
-                MessageBox.Show("Data berhasil diimport ke database.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close(); // Tutup form setelah selesai
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Import data gagal: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
 
         // Event klik tombol Cancel, menutup form preview tanpa import
         private void btnCancel_Click(object sender, EventArgs e)

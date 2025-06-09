@@ -239,9 +239,187 @@ namespace Barbershop
         }
 
         // Event kosong untuk generate PDF (belum diimplementasi)
-        private void btnGenerateDataPdf_Click(object sender, EventArgs e) { }
+        private void btnGenerateDataPdf_Click(object sender, EventArgs e)
+        {
+            if (dgvTransactionHistory.DataSource == null || dgvTransactionHistory.Rows.Count == 0)
+            {
+                MessageBox.Show("Tidak ada data untuk diexport.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "PDF Files|*.pdf",
+                Title = "Simpan Data Transaksi ke PDF",
+                FileName = $"TransactionHistory_{DateTime.Now:yyyyMMdd_HHmmss}.pdf"
+            };
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            try
+            {
+                DataTable dt = (DataTable)dgvTransactionHistory.DataSource;
+                int servicePriceColIndex = dt.Columns.IndexOf("service_price");
+
+                using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var doc = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4.Rotate(), 20, 20, 20, 20);
+                    var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(doc, fs);
+                    doc.Open();
+
+                    // Judul
+                    var titleFont = iTextSharp.text.FontFactory.GetFont("Arial", 14, iTextSharp.text.Font.BOLD);
+                    doc.Add(new iTextSharp.text.Paragraph("Transaction History", titleFont));
+                    doc.Add(new iTextSharp.text.Paragraph(" "));
+
+                    // Tabel
+                    var table = new iTextSharp.text.pdf.PdfPTable(dt.Columns.Count)
+                    {
+                        WidthPercentage = 100
+                    };
+
+                    // Header
+                    foreach (DataColumn col in dt.Columns)
+                    {
+                        var cell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(col.ColumnName))
+                        {
+                            BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY
+                        };
+                        table.AddCell(cell);
+                    }
+
+                    // Data & hitung total
+                    double totalPendapatan = 0;
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        for (int j = 0; j < dt.Columns.Count; j++)
+                        {
+                            table.AddCell(dr[j]?.ToString() ?? "");
+                        }
+                        if (servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
+                        {
+                            totalPendapatan += price;
+                        }
+                    }
+
+                    // Baris kosong
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                        table.AddCell(" ");
+
+                    // Baris total pendapatan
+                    var totalCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase($"Total Pendapatan = Rp{totalPendapatan:N0}"))
+                    {
+                        Colspan = 2,
+                        Border = iTextSharp.text.Rectangle.NO_BORDER
+                    };
+                    table.AddCell(totalCell);
+
+                    // Sisanya kosong sampai kolom service_price
+                    for (int i = 2; i < servicePriceColIndex; i++)
+                        table.AddCell(new iTextSharp.text.pdf.PdfPCell { Border = iTextSharp.text.Rectangle.NO_BORDER });
+
+                    // Total di kolom service_price
+                    var totalValueCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase($"Rp{totalPendapatan:N0}"))
+                    {
+                        Border = iTextSharp.text.Rectangle.NO_BORDER
+                    };
+                    table.AddCell(totalValueCell);
+
+                    // Sisanya kosong
+                    for (int i = servicePriceColIndex + 1; i < dt.Columns.Count; i++)
+                        table.AddCell(new iTextSharp.text.pdf.PdfPCell { Border = iTextSharp.text.Rectangle.NO_BORDER });
+
+                    doc.Add(table);
+                    doc.Close();
+                }
+
+                MessageBox.Show("Export ke PDF berhasil!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal export ke PDF: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         // Event kosong untuk generate Excel (belum diimplementasi)
-        private void btnGenerateDataExcel_Click(object sender, EventArgs e) { }
+        private void btnGenerateDataExcel_Click(object sender, EventArgs e)
+        {
+            if (dgvTransactionHistory.DataSource == null || dgvTransactionHistory.Rows.Count == 0)
+            {
+                MessageBox.Show("Tidak ada data untuk diexport.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Excel Files|*.xlsx",
+                Title = "Simpan Data Transaksi ke Excel",
+                FileName = $"TransactionHistory_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+            };
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            try
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("Transaction History");
+
+                // Header
+                DataTable dt = ((DataTable)dgvTransactionHistory.DataSource);
+                IRow headerRow = sheet.CreateRow(0);
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    headerRow.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                }
+
+                // Data
+                double totalPendapatan = 0;
+                int rowIndex = 1;
+                int servicePriceColIndex = dt.Columns.IndexOf("transaction_id");
+
+                foreach (DataRow dr in dt.Rows)
+                {
+                    IRow row = sheet.CreateRow(rowIndex++);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        row.CreateCell(j).SetCellValue(dr[j]?.ToString() ?? "");
+                    }
+                    // Akumulasi total service_price
+                    if (servicePriceColIndex >= 0 && double.TryParse(dr[servicePriceColIndex]?.ToString(), out double price))
+                    {
+                        totalPendapatan += price;
+                    }
+                }
+
+                // Baris total pendapatan
+                IRow totalRow = sheet.CreateRow(rowIndex + 1);
+                totalRow.CreateCell(0).SetCellValue("Total Pendapatan = ");
+                if (servicePriceColIndex >= 0)
+                    totalRow.CreateCell(servicePriceColIndex).SetCellValue(totalPendapatan);
+
+                // Autosize kolom
+                for (int i = 0; i < dt.Columns.Count; i++)
+                    sheet.AutoSizeColumn(i);
+
+                // Simpan file
+                using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write))
+                {
+                    workbook.Write(fs);
+                }
+
+                MessageBox.Show("Export ke Excel berhasil!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal export ke Excel: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+
+
     }
 }
 
