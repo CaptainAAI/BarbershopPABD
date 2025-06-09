@@ -653,7 +653,9 @@ BEGIN
     DELETE FROM employees_schedule WHERE employee_id = @employee_id AND day_id = @day_id;
 END
 ---------------------------------------------------------------------------------------
-S
+select * from services
+select * from employees
+delete from transaction_history
 
 
 

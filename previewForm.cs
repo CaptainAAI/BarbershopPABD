@@ -71,24 +71,12 @@ namespace Barbershop
                             }
                         }
 
-
-                        // Insert data ke tabel transaction_history
-                        string insertQuery = @"
-                    INSERT INTO transaction_history (
-                        appointment_id, client_name, phone_number,
-                        employee_id, employee_name, service_name, service_price,
-                        appointment_date, start_time, end_time, status, cancellation_reason, recorded_at
-                    )
-                    VALUES (
-                        NULL, @client_name, @phone_number, @employee_id, @employee_name,
-                        @service_name, @service_price, @appointment_date, @start_time,
-                        @end_time, @status, @cancellation_reason, GETDATE()
-                    )";
-
-                        using (SqlCommand cmd = new SqlCommand(insertQuery, conn, transaction))
+                        // Panggil stored procedure untuk insert (otomatis tambah client jika belum ada)
+                        using (SqlCommand cmd = new SqlCommand("sp_add_manual_transaction", conn, transaction))
                         {
-                            cmd.Parameters.AddWithValue("@client_name", row["client_name"]);
-                            cmd.Parameters.AddWithValue("@phone_number", row["phone_number"]);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@client_name", row["client_name"].ToString().Trim());
+                            cmd.Parameters.AddWithValue("@phone_number", row["phone_number"].ToString().Trim());
                             cmd.Parameters.AddWithValue("@employee_id", empId);
                             cmd.Parameters.AddWithValue("@employee_name", empName);
                             cmd.Parameters.AddWithValue("@service_name", svcName);
@@ -96,9 +84,13 @@ namespace Barbershop
                             cmd.Parameters.AddWithValue("@appointment_date", DateTime.Parse(row["appointment_date"].ToString()));
                             cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString()));
                             cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString()));
-                            cmd.Parameters.AddWithValue("@status", row["status"]);
+                            cmd.Parameters.AddWithValue("@status", row["status"].ToString());
                             // Kolom cancellation_reason opsional
-                            cmd.Parameters.AddWithValue("@cancellation_reason", row.Table.Columns.Contains("cancellation_reason") ? row["cancellation_reason"]?.ToString() : DBNull.Value.ToString());
+                            if (row.Table.Columns.Contains("cancellation_reason"))
+                                cmd.Parameters.AddWithValue("@cancellation_reason", row["cancellation_reason"]?.ToString() ?? (object)DBNull.Value);
+                            else
+                                cmd.Parameters.AddWithValue("@cancellation_reason", DBNull.Value);
+
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -114,6 +106,7 @@ namespace Barbershop
                 }
             }
         }
+
 
 
         // Event klik tombol Cancel, menutup form preview tanpa import
