@@ -1,56 +1,51 @@
-﻿using System;
+﻿using System; // Namespace untuk tipe data dasar dan utilitas
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
+using System.Data; // Namespace untuk DataTable dan data ADO.NET
+using System.Data.SqlClient; // Namespace untuk SQL Server
 using System.Drawing;
-using System.IO;
+using System.IO; // Untuk operasi file (baca/tulis)
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using NPOI.SS.UserModel;
+using System.Windows.Forms; // Untuk komponen UI Windows Forms
+using NPOI.SS.UserModel; // Untuk operasi file Excel (NPOI)
 using NPOI.XSSF.UserModel;
 
 namespace Barbershop
 {
-
-
-
     public partial class UcTransactionHistory : UserControl
     {
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        // Caching untuk data transaksi
+        // Variabel cache untuk data transaksi
         private DataTable cachedTransactionData = null;
         private DateTime cacheTimestamp = DateTime.MinValue;
-        private readonly TimeSpan cacheDuration = TimeSpan.FromMinutes(20);
+        private readonly TimeSpan cacheDuration = TimeSpan.FromMinutes(20); // Durasi cache 20 menit
 
         // Konstruktor UserControl
         public UcTransactionHistory()
         {
-            InitializeComponent();
+            InitializeComponent(); // Inisialisasi komponen UI
         }
 
         // Event handler saat UserControl dimuat
         private void UcTransactionHistory_Load(object sender, EventArgs e)
         {
-            EnsureTransactionHistoryIndexes(); // Pastikan index IDX sudah ada
-            LoadTransactionData(); // Memuat data transaksi
-            LoadComboBoxes();      // Memuat data ke ComboBox filter
-            dtpDateFrom.Value = DateTime.Today.AddDays(-7); // Set default tanggal filter dari
-            dtpDateUntil.Value = DateTime.Today;             // Set default tanggal filter sampai
+            EnsureTransactionHistoryIndexes(); // Pastikan index pada tabel transaksi sudah ada
+            LoadTransactionData(); // Muat data transaksi ke DataGridView
+            LoadComboBoxes(); // Muat data ke ComboBox filter
+            dtpDateFrom.Value = DateTime.Today.AddDays(-7); // Set default tanggal filter dari 7 hari lalu
+            dtpDateUntil.Value = DateTime.Today; // Set default tanggal filter sampai hari ini
         }
-
 
         // Memuat data transaksi ke DataGridView, dengan filter opsional
         private void LoadTransactionData(string filterQuery = "")
         {
-            // Hanya cache untuk data tanpa filter
+            // Jika tanpa filter, gunakan cache jika masih valid
             if (string.IsNullOrEmpty(filterQuery))
             {
-                // Jika cache masih valid, gunakan cache
                 if (cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
                 {
                     dgvTransactionHistory.DataSource = cachedTransactionData.Copy();
@@ -58,6 +53,7 @@ namespace Barbershop
                 }
             }
 
+            // Query data transaksi dari database
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = @"
@@ -82,8 +78,8 @@ namespace Barbershop
 
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
-                da.Fill(dt);
-                dgvTransactionHistory.DataSource = dt;
+                da.Fill(dt); // Isi DataTable dengan hasil query
+                dgvTransactionHistory.DataSource = dt; // Tampilkan ke DataGridView
 
                 // Simpan ke cache jika tanpa filter
                 if (string.IsNullOrEmpty(filterQuery))
@@ -94,6 +90,7 @@ namespace Barbershop
             }
         }
 
+        // Pastikan index pada tabel transaction_history sudah ada
         private void EnsureTransactionHistoryIndexes()
         {
             var indexes = new[]
@@ -132,8 +129,6 @@ namespace Barbershop
             }
         }
 
-
-
         // Memuat data ke ComboBox tertentu dari query SQL
         private void LoadComboBox(string query, ComboBox cmb, string displayMember, string valueMember)
         {
@@ -141,10 +136,10 @@ namespace Barbershop
             {
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
-                da.Fill(dt);
-                cmb.DataSource = dt;
-                cmb.DisplayMember = displayMember;
-                cmb.ValueMember = valueMember;
+                da.Fill(dt); // Isi DataTable dengan hasil query
+                cmb.DataSource = dt; // Set data source ComboBox
+                cmb.DisplayMember = displayMember; // Kolom yang ditampilkan
+                cmb.ValueMember = valueMember; // Kolom nilai
                 cmb.SelectedIndex = -1; // Tidak ada yang dipilih secara default
             }
         }
@@ -224,13 +219,13 @@ namespace Barbershop
         // Event klik tombol Import Data, membaca file Excel dan preview data
         private void btnImportData_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Excel Files|*.xlsx;*.xls";
+            OpenFileDialog openFileDialog = new OpenFileDialog(); // Dialog untuk memilih file
+            openFileDialog.Filter = "Excel Files|*.xlsx;*.xls"; // Filter hanya file Excel
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                string filePath = openFileDialog.FileName;
-                DataTable dt = ReadExcelToDataTable(filePath);
+                string filePath = openFileDialog.FileName; // Ambil path file
+                DataTable dt = ReadExcelToDataTable(filePath); // Baca file Excel ke DataTable
 
                 if (dt == null || dt.Rows.Count == 0)
                 {
@@ -269,10 +264,10 @@ namespace Barbershop
             {
                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    IWorkbook workbook = new XSSFWorkbook(fs);
+                    IWorkbook workbook = new XSSFWorkbook(fs); // Buka workbook Excel
                     ISheet sheet = workbook.GetSheetAt(0); // Ambil sheet pertama
 
-                    IRow headerRow = sheet.GetRow(0);
+                    IRow headerRow = sheet.GetRow(0); // Baris header
                     int columnCount = headerRow.LastCellNum;
 
                     // Tambah kolom ke datatable
@@ -475,6 +470,7 @@ namespace Barbershop
 
         }
 
+        // Event klik tombol Analyze, menjalankan query statistik SQL
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
             string sqlQuery = @"
@@ -498,6 +494,8 @@ namespace Barbershop
             ";
             AnalyzeQuery(sqlQuery);
         }
+
+        // Menjalankan query statistik SQL dan menampilkan info statistik
         private void AnalyzeQuery(string sqlQuery)
         {
             using (var conn = new SqlConnection(connString))
@@ -516,8 +514,5 @@ namespace Barbershop
                 }
             }
         }
-
-
     }
 }
-

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using System; 
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
+using System.Data; 
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Data.SqlClient;
-//done
+using System.Windows.Forms; 
+using System.Data.SqlClient; 
+
 namespace Barbershop
 {
     public partial class UcEmployee : UserControl
@@ -16,15 +16,15 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Variabel cache untuk data karyawan
         private DataTable _employeeCache = null;
         private DateTime _employeeCacheTime;
-        private readonly TimeSpan _employeeCacheDuration = TimeSpan.FromMinutes(5); // cache 5 menit
-
+        private readonly TimeSpan _employeeCacheDuration = TimeSpan.FromMinutes(5); // Durasi cache 5 menit
 
         // Konstruktor UserControl
         public UcEmployee()
         {
-            InitializeComponent();
+            InitializeComponent(); // Inisialisasi komponen UI
         }
 
         // Event saat UserControl dimuat
@@ -39,17 +39,18 @@ namespace Barbershop
             // Jika cache masih valid dan tidak force refresh, gunakan cache
             if (!forceRefresh && _employeeCache != null && (DateTime.Now - _employeeCacheTime) < _employeeCacheDuration)
             {
-                dgvEmployees.DataSource = _employeeCache;
+                dgvEmployees.DataSource = _employeeCache; // Tampilkan data dari cache
                 return;
             }
 
+            // Query data karyawan dari database
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                SqlDataAdapter da = new SqlDataAdapter("sp_employee_get_all", conn);
+                SqlDataAdapter da = new SqlDataAdapter("sp_employee_get_all", conn); // Pakai stored procedure
                 da.SelectCommand.CommandType = CommandType.StoredProcedure;
                 DataTable dt = new DataTable();
-                da.Fill(dt);
-                dgvEmployees.DataSource = dt;
+                da.Fill(dt); // Isi DataTable dengan hasil query
+                dgvEmployees.DataSource = dt; // Tampilkan ke DataGridView
 
                 // Simpan ke cache
                 _employeeCache = dt;
@@ -57,10 +58,10 @@ namespace Barbershop
             }
         }
 
-
         // Validasi input form agar tidak ada field yang kosong
         private bool IsInputValid()
         {
+            // Pastikan semua field input terisi
             return !string.IsNullOrWhiteSpace(txtID.Text)
                 && !string.IsNullOrWhiteSpace(txtFirstName.Text)
                 && !string.IsNullOrWhiteSpace(txtLastName.Text)
@@ -81,38 +82,41 @@ namespace Barbershop
         // Event klik tombol Add, menambah karyawan baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            // Validasi input
             if (!IsInputValid())
             {
                 MessageBox.Show("Semua data harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Proses insert data karyawan baru
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                conn.Open();
-                SqlTransaction transaction = conn.BeginTransaction();
-                SqlCommand cmd = new SqlCommand("sp_employee_add", conn, transaction);
+                conn.Open(); // Buka koneksi
+                SqlTransaction transaction = conn.BeginTransaction(); // Mulai transaksi SQL
+                SqlCommand cmd = new SqlCommand("sp_employee_add", conn, transaction); // Pakai stored procedure
                 cmd.CommandType = CommandType.StoredProcedure;
 
+                // Tambahkan parameter ke stored procedure
                 cmd.Parameters.AddWithValue("@employee_id", txtID.Text);
                 cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
                 cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
                 cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
 
-
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    cmd.ExecuteNonQuery(); // Eksekusi perintah insert
+                    transaction.Commit(); // Commit transaksi
 
-                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon  .Information);
-                    LoadEmployees(forceRefresh: true);
-                    ClearFields();
+                    MessageBox.Show("Karyawan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadEmployees(forceRefresh: true); // Refresh data
+                    ClearFields(); // Kosongkan input
                 }
                 catch (SqlException ex)
                 {
-                    transaction.Rollback();
+                    transaction.Rollback(); // Rollback jika gagal
+                    // Cek error duplikat data
                     if (ex.Message.Contains("UNIQUE KEY") || ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal menambahkan! Data duplikat ditemukan (ID, email, atau nomor telepon mungkin sudah ada).",
@@ -125,7 +129,6 @@ namespace Barbershop
                 }
             }
         }
-
 
         // Event klik pada cell DataGridView (tidak digunakan)
         private void dgvEmployees_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -142,18 +145,21 @@ namespace Barbershop
         // Event klik tombol Update, memperbarui data karyawan yang dipilih
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            // Validasi ID harus terisi
             if (string.IsNullOrWhiteSpace(txtID.Text))
             {
                 MessageBox.Show("Pilih data yang ingin diedit!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Validasi input
             if (!IsInputValid())
             {
                 MessageBox.Show("Semua data harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Konfirmasi update data
             DialogResult confirmResult = MessageBox.Show("Apakah Anda yakin ingin memperbarui data karyawan ini?",
                                                          "Konfirmasi Update",
                                                          MessageBoxButtons.YesNo,
@@ -163,6 +169,7 @@ namespace Barbershop
                 return;
             }
 
+            // Proses update data karyawan
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -170,25 +177,25 @@ namespace Barbershop
                 SqlCommand cmd = new SqlCommand("sp_employee_update", conn, transaction);
                 cmd.CommandType = CommandType.StoredProcedure;
 
+                // Tambahkan parameter ke stored procedure
                 cmd.Parameters.AddWithValue("@employee_id", txtID.Text);
                 cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
                 cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
                 cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
                 cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
 
-
                 try
                 {
-                    cmd.ExecuteNonQuery();
-                    transaction.Commit();
+                    cmd.ExecuteNonQuery(); // Eksekusi update
+                    transaction.Commit(); // Commit transaksi
 
                     MessageBox.Show("Data karyawan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadEmployees(forceRefresh: true);
-                    ClearFields();
+                    LoadEmployees(forceRefresh: true); // Refresh data
+                    ClearFields(); // Kosongkan input
                 }
                 catch (SqlException ex)
                 {
-                    transaction.Rollback();
+                    transaction.Rollback(); // Rollback jika gagal
                     if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal update! ID, Nomor telepon atau email sudah digunakan.",
@@ -202,16 +209,17 @@ namespace Barbershop
             }
         }
 
-
         // Event klik tombol Delete, menghapus karyawan yang dipilih
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            // Validasi ID harus terisi
             if (string.IsNullOrWhiteSpace(txtID.Text))
             {
                 MessageBox.Show("Pilih data yang ingin dihapus!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Konfirmasi hapus data
             var confirm = MessageBox.Show("Yakin ingin menghapus data ini?", "Konfirmasi Hapus", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -225,34 +233,33 @@ namespace Barbershop
 
                     try
                     {
-                        cmd.ExecuteNonQuery();
-                        transaction.Commit();
+                        cmd.ExecuteNonQuery(); // Eksekusi delete
+                        transaction.Commit(); // Commit transaksi
                         MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LoadEmployees(forceRefresh: true);
-                        ClearFields();
+                        LoadEmployees(forceRefresh: true); // Refresh data
+                        ClearFields(); // Kosongkan input
                     }
                     catch (SqlException ex)
                     {
-                        transaction.Rollback();
+                        transaction.Rollback(); // Rollback jika gagal
                         MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadEmployees(forceRefresh: true);
-            ClearFields();
+            LoadEmployees(forceRefresh: true); // Refresh data dari database
+            ClearFields(); // Kosongkan input
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Event klik pada baris DataGridView, load data ke form input
         private void dgvEmployees_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            if (e.RowIndex >= 0) // Pastikan baris valid
             {
                 DataGridViewRow row = dgvEmployees.Rows[e.RowIndex];
                 txtID.Text = row.Cells["employee_id"].Value.ToString();
@@ -276,4 +283,3 @@ namespace Barbershop
         private void label4_Click(object sender, EventArgs e) { }
     }
 }
-

@@ -12,6 +12,15 @@ namespace Barbershop
 {
     public partial class MainForm : Form
     {
+        // UI Caching: Simpan instance UserControl agar tidak dibuat ulang setiap navigasi
+        private UcClients _ucClients;
+        private UcAppointments _ucAppointments;
+        private UcServices _ucServices;
+        private UcEmployee _ucEmployee;
+        private UcEmployeeSchedule _ucEmployeeSchedule;
+        private UcServiceCategories _ucServiceCategories;
+        private UcTransactionHistory _ucTransactionHistory;
+
         public MainForm()
         {
             InitializeComponent();
@@ -21,7 +30,7 @@ namespace Barbershop
         {
 
         }
-        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
 
@@ -29,7 +38,10 @@ namespace Barbershop
 
         private void button4_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcClients());
+            // Clients
+            if (_ucClients == null)
+                _ucClients = new UcClients();
+            LoadUserControl(_ucClients);
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -52,43 +64,63 @@ namespace Barbershop
 
         }
 
+        // Optimasi: Jangan load ulang UserControl yang sama
         private void LoadUserControl(UserControl uc)
         {
-            panelContent.Controls.Clear(); // Hapus isi sebelumnya
-            uc.Dock = DockStyle.Fill;      // Isi penuh panel
-            panelContent.Controls.Add(uc); // Tambah yang baru
+            if (panelContent.Controls.Count > 0 && panelContent.Controls[0] == uc)
+                return;
+
+            panelContent.Controls.Clear();
+            uc.Dock = DockStyle.Fill;
+            panelContent.Controls.Add(uc);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcAppointments());
+            // Appointments
+            if (_ucAppointments == null)
+                _ucAppointments = new UcAppointments();
+            LoadUserControl(_ucAppointments);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcServices());
+            // Services
+            if (_ucServices == null)
+                _ucServices = new UcServices();
+            LoadUserControl(_ucServices);
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcEmployee());
+            // Employee
+            if (_ucEmployee == null)
+                _ucEmployee = new UcEmployee();
+            LoadUserControl(_ucEmployee);
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcEmployeeSchedule());
+            // Employee Schedule
+            if (_ucEmployeeSchedule == null)
+                _ucEmployeeSchedule = new UcEmployeeSchedule();
+            LoadUserControl(_ucEmployeeSchedule);
         }
-
-        
 
         private void button2_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcServiceCategories());
+            // Service Categories
+            if (_ucServiceCategories == null)
+                _ucServiceCategories = new UcServiceCategories();
+            LoadUserControl(_ucServiceCategories);
         }
 
         private void btnLaporanOperasional_Click(object sender, EventArgs e)
         {
-            LoadUserControl(new UcTransactionHistory());
+            // Transaction History
+            if (_ucTransactionHistory == null)
+                _ucTransactionHistory = new UcTransactionHistory();
+            LoadUserControl(_ucTransactionHistory);
         }
     }
 }

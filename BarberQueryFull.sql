@@ -657,6 +657,9 @@ select * from services
 select * from employees
 delete from transaction_history
 
+SET STATISTICS TIME ON
+SELECT * FROM transaction_history
+
 
 
 
