@@ -16,6 +16,11 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Caching for ComboBox data
+        private static DataTable cachedClients;
+        private static DataTable cachedEmployees;
+        private static DataTable cachedServices;
+
         // Konstruktor UserControl
         public UcAppointments()
         {
@@ -35,9 +40,17 @@ namespace Barbershop
         // Load data ke ComboBox client, employee, service, dan status booking
         private void LoadComboBoxes()
         {
-            LoadComboBox("SELECT client_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM clients", cmbClientID);
-            LoadComboBox("SELECT employee_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM employees", cmbEmployeeID);
-            LoadComboBox("SELECT service_id, service_name FROM services", cmbServiceID);
+            cmbClientID.DataSource = GetClients();
+            cmbClientID.ValueMember = "client_id";
+            cmbClientID.DisplayMember = "name";
+
+            cmbEmployeeID.DataSource = GetEmployees();
+            cmbEmployeeID.ValueMember = "employee_id";
+            cmbEmployeeID.DisplayMember = "name";
+
+            cmbServiceID.DataSource = GetServices();
+            cmbServiceID.ValueMember = "service_id";
+            cmbServiceID.DisplayMember = "service_name";
 
             cmbClientID.SelectedIndex = -1;
             cmbEmployeeID.SelectedIndex = -1;
@@ -50,18 +63,54 @@ namespace Barbershop
             cmbStatusBooking.SelectedIndex = -1;
         }
 
-        // Helper untuk load data ke ComboBox dari query SQL
-        private void LoadComboBox(string query, ComboBox comboBox)
+        // Caching helpers
+        private DataTable GetClients()
+        {
+            if (cachedClients == null)
+            {
+                string query = "SELECT client_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM clients";
+                cachedClients = QueryToDataTable(query);
+            }
+            return cachedClients.Copy();
+        }
+
+        private DataTable GetEmployees()
+        {
+            if (cachedEmployees == null)
+            {
+                string query = "SELECT employee_id, phone_number + ' - ' + first_name + ' ' + last_name AS name FROM employees";
+                cachedEmployees = QueryToDataTable(query);
+            }
+            return cachedEmployees.Copy();
+        }
+
+        private DataTable GetServices()
+        {
+            if (cachedServices == null)
+            {
+                string query = "SELECT service_id, service_name FROM services";
+                cachedServices = QueryToDataTable(query);
+            }
+            return cachedServices.Copy();
+        }
+
+        private DataTable QueryToDataTable(string query)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
             {
                 DataTable dt = new DataTable();
                 da.Fill(dt);
-                comboBox.DataSource = dt;
-                comboBox.ValueMember = dt.Columns[0].ColumnName;
-                comboBox.DisplayMember = dt.Columns[1].ColumnName;
+                return dt;
             }
+        }
+
+        // Invalidate cache after any data change
+        private void InvalidateComboBoxCache()
+        {
+            cachedClients = null;
+            cachedEmployees = null;
+            cachedServices = null;
         }
 
         // Load pilihan jam mulai (05:00 - 23:59, tiap menit)
@@ -78,69 +127,20 @@ namespace Barbershop
             cmbStartTime.SelectedIndex = -1;
         }
 
-        // Load data appointment ke DataGridView, sekaligus maintenance data
+        // Load data appointment ke DataGridView menggunakan stored procedure
         private void LoadAppointments()
         {
             using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand("sp_get_appointments", conn))
             {
-                conn.Open();
-
-                // Hapus appointment yang lebih dari 3 bulan lalu
-                string deleteOldQuery = @"
-            DELETE FROM appointments
-            WHERE start_time < DATEADD(MONTH, -3, GETDATE())";
-
-                using (SqlCommand deleteCmd = new SqlCommand(deleteOldQuery, conn))
+                cmd.CommandType = CommandType.StoredProcedure;
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                 {
-                    deleteCmd.ExecuteNonQuery();
-                }
-
-                // Update status booking otomatis berdasarkan waktu
-                string updateStatusQuery = @"
-            UPDATE appointments
-            SET StatusBooking = 
-            CASE
-                WHEN StatusBooking = 'Need Approval' AND GETDATE() >= start_time THEN 'Canceled'
-                WHEN GETDATE() >= end_time_expected AND StatusBooking != 'Canceled' THEN 'Completed'
-                WHEN GETDATE() >= start_time AND GETDATE() < end_time_expected AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Ongoing'
-                WHEN GETDATE() < start_time AND StatusBooking NOT IN ('Need Approval', 'Canceled') THEN 'Pending'
-                ELSE StatusBooking
-            END";
-
-                using (SqlCommand updateCmd = new SqlCommand(updateStatusQuery, conn))
-                {
-                    updateCmd.ExecuteNonQuery();
-                }
-
-                // Load data appointment ke grid
-                SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM appointments", conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dataGridView1.DataSource = dt;
-            }
-        }
-
-        // Generate ID appointment baru dengan format AIxxxxxx
-        private string GenerateAppointmentID()
-        {
-            string prefix = "AI";
-            string newID = "AI000001";
-            string query = "SELECT TOP 1 appointment_id FROM appointments WHERE appointment_id LIKE 'AI%' ORDER BY appointment_id DESC";
-
-            using (SqlConnection conn = new SqlConnection(connString))
-            using (SqlCommand cmd = new SqlCommand(query, conn))
-            {
-                conn.Open();
-                var result = cmd.ExecuteScalar();
-                if (result != null)
-                {
-                    string lastID = result.ToString();
-                    int number = int.Parse(lastID.Substring(2)) + 1;
-                    newID = prefix + number.ToString("D6");
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    dataGridView1.DataSource = dt;
                 }
             }
-
-            return newID;
         }
 
         // Ambil durasi layanan (dalam menit) berdasarkan service_id
@@ -162,57 +162,58 @@ namespace Barbershop
             return duration;
         }
 
-        // Event klik tombol Add, menambah appointment baru ke database
+        // Event klik tombol Add, menambah appointment baru ke database via stored procedure
         private void btnAdd_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
                 try
                 {
-                    conn.Open();
-                    string query = @"
-                        INSERT INTO appointments
-                        (appointment_id, client_id, employee_id, service_id, start_time, end_time_expected, cancellation_reason, StatusBooking)
-                        VALUES
-                        (@id, @client, @employee, @service, @start, @end, @reason, @status)";
+                    using (SqlCommand cmd = new SqlCommand("sp_insert_appointment", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                        string client = cmbClientID.SelectedValue.ToString();
+                        string employee = cmbEmployeeID.SelectedValue?.ToString();
+                        string service = cmbServiceID.SelectedValue.ToString();
 
-                    string id = GenerateAppointmentID();
-                    string client = cmbClientID.SelectedValue.ToString();
-                    string employee = cmbEmployeeID.SelectedValue?.ToString();
-                    string service = cmbServiceID.SelectedValue.ToString();
+                        DateTime tanggal = dtpTanggal.Value.Date;
+                        TimeSpan jamMulai = TimeSpan.Parse(cmbStartTime.SelectedItem.ToString());
+                        DateTime start = tanggal + jamMulai;
+                        int durasi = GetServiceDuration(service);
+                        DateTime end = start.AddMinutes(durasi);
 
-                    DateTime tanggal = dtpTanggal.Value.Date;
-                    TimeSpan jamMulai = TimeSpan.Parse(cmbStartTime.SelectedItem.ToString());
-                    DateTime start = tanggal + jamMulai;
-                    int durasi = GetServiceDuration(service);
-                    DateTime end = start.AddMinutes(durasi);
+                        string status = cmbStatusBooking.SelectedItem?.ToString();
 
-                    string status = cmbStatusBooking.SelectedItem?.ToString() ?? "Need Approval";
+                        cmd.Parameters.AddWithValue("@client_id", client);
+                        cmd.Parameters.AddWithValue("@employee_id", string.IsNullOrEmpty(employee) ? (object)DBNull.Value : employee);
+                        cmd.Parameters.AddWithValue("@service_id", service);
+                        cmd.Parameters.AddWithValue("@start_time", start);
+                        cmd.Parameters.AddWithValue("@end_time_expected", end);
+                        cmd.Parameters.AddWithValue("@cancellation_reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? (object)DBNull.Value : txtCancellationReason.Text);
+                        cmd.Parameters.AddWithValue("@StatusBooking", string.IsNullOrEmpty(status) ? (object)DBNull.Value : status);
 
-                    cmd.Parameters.AddWithValue("@id", id);
-                    cmd.Parameters.AddWithValue("@client", client);
-                    cmd.Parameters.AddWithValue("@employee", string.IsNullOrEmpty(employee) ? DBNull.Value : (object)employee);
-                    cmd.Parameters.AddWithValue("@service", service);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    cmd.Parameters.AddWithValue("@end", end);
-                    cmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? DBNull.Value : (object)txtCancellationReason.Text);
-                    cmd.Parameters.AddWithValue("@status", status);
-
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Appointment berhasil ditambahkan!");
+                        var result = cmd.ExecuteScalar();
+                        transaction.Commit();
+                        MessageBox.Show("Appointment berhasil ditambahkan! ID: " + result?.ToString());
+                    }
                     LoadAppointments();
+                    InvalidateComboBoxCache();
+                    LoadComboBoxes();
                     ClearForm();
                 }
                 catch (Exception ex)
                 {
+                    transaction.Rollback();
                     MessageBox.Show("Gagal menambahkan: " + ex.Message);
                 }
             }
         }
 
-        // Event klik tombol Update, memperbarui data appointment yang dipilih
+
+        // Event klik tombol Update, memperbarui data appointment yang dipilih via stored procedure
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null) return;
@@ -230,58 +231,57 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
                 try
                 {
-                    conn.Open();
-                    string query = @"
-                UPDATE appointments SET 
-                    client_id = @client,
-                    employee_id = @employee,
-                    service_id = @service,
-                    start_time = @start,
-                    end_time_expected = @end,
-                    cancellation_reason = @reason,
-                    StatusBooking = @status
-                WHERE appointment_id = @id";
+                    using (SqlCommand cmd = new SqlCommand("sp_update_appointment", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
+                        string client = cmbClientID.SelectedValue.ToString();
+                        string employee = cmbEmployeeID.SelectedValue?.ToString();
+                        string service = cmbServiceID.SelectedValue.ToString();
+                        DateTime tanggal = dtpTanggal.Value.Date;
+                        TimeSpan jamMulai = TimeSpan.Parse(cmbStartTime.SelectedItem.ToString());
+                        DateTime start = tanggal + jamMulai;
+                        int durasi = GetServiceDuration(service);
+                        DateTime end = start.AddMinutes(durasi);
 
-                    string client = cmbClientID.SelectedValue.ToString();
-                    string employee = cmbEmployeeID.SelectedValue?.ToString();
-                    string service = cmbServiceID.SelectedValue.ToString();
-                    DateTime tanggal = dtpTanggal.Value.Date;
-                    TimeSpan jamMulai = TimeSpan.Parse(cmbStartTime.SelectedItem.ToString());
-                    DateTime start = tanggal + jamMulai;
-                    int durasi = GetServiceDuration(service);
-                    DateTime end = start.AddMinutes(durasi);
+                        string status = cmbStatusBooking.SelectedItem?.ToString();
 
-                    string status = cmbStatusBooking.SelectedItem?.ToString() ?? "Need Approval";
+                        cmd.Parameters.AddWithValue("@appointment_id", id);
+                        cmd.Parameters.AddWithValue("@client_id", client);
+                        cmd.Parameters.AddWithValue("@employee_id", string.IsNullOrEmpty(employee) ? (object)DBNull.Value : employee);
+                        cmd.Parameters.AddWithValue("@service_id", service);
+                        cmd.Parameters.AddWithValue("@start_time", start);
+                        cmd.Parameters.AddWithValue("@end_time_expected", end);
+                        cmd.Parameters.AddWithValue("@cancellation_reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? (object)DBNull.Value : txtCancellationReason.Text);
+                        cmd.Parameters.AddWithValue("@StatusBooking", string.IsNullOrEmpty(status) ? (object)DBNull.Value : status);
 
-                    cmd.Parameters.AddWithValue("@id", id);
-                    cmd.Parameters.AddWithValue("@client", client);
-                    cmd.Parameters.AddWithValue("@employee", string.IsNullOrEmpty(employee) ? DBNull.Value : (object)employee);
-                    cmd.Parameters.AddWithValue("@service", service);
-                    cmd.Parameters.AddWithValue("@start", start);
-                    cmd.Parameters.AddWithValue("@end", end);
-                    cmd.Parameters.AddWithValue("@reason", string.IsNullOrEmpty(txtCancellationReason.Text) ? DBNull.Value : (object)txtCancellationReason.Text);
-                    cmd.Parameters.AddWithValue("@status", status);
-
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Appointment berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                        MessageBox.Show("Appointment berhasil diperbarui!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                     LoadAppointments();
+                    InvalidateComboBoxCache();
+                    LoadComboBoxes();
                     ClearForm();
                 }
                 catch (Exception ex)
                 {
+                    transaction.Rollback();
                     MessageBox.Show("Gagal update: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
+
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadAppointments();
+            InvalidateComboBoxCache(); // Invalidate cache on refresh
             LoadComboBoxes();
             LoadStartTimeCombo();
             ClearForm();
