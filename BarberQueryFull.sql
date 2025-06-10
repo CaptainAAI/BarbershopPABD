@@ -660,6 +660,59 @@ delete from transaction_history
 SET STATISTICS TIME ON
 SELECT * FROM transaction_history
 
+CREATE PROCEDURE sp_client_book_appointment
+    @phone_number VARCHAR(13),
+    @service_id CHAR(8),
+    @start_time DATETIME,
+    @end_time DATETIME,
+    @appointment_id CHAR(8) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Cek client
+        DECLARE @client_id CHAR(8);
+        SELECT @client_id = client_id FROM clients WHERE phone_number = @phone_number;
+        IF @client_id IS NULL
+        BEGIN
+            RAISERROR('Client tidak ditemukan.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- Cek bentrok jadwal
+        IF EXISTS (
+            SELECT 1 FROM appointments
+            WHERE client_id = @client_id
+              AND ((@start_time < end_time_expected AND @end_time > start_time)
+                   OR (start_time = @start_time))
+              AND StatusBooking NOT IN ('Canceled')
+        )
+        BEGIN
+            RAISERROR('Jadwal bentrok dengan appointment lain.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- Generate appointment_id baru
+        SELECT @appointment_id = 'AI' + RIGHT('000000' + 
+            CAST(ISNULL(MAX(CAST(SUBSTRING(appointment_id, 3, 6) AS INT)), 0) + 1 AS VARCHAR), 6)
+        FROM appointments WHERE appointment_id LIKE 'AI%';
+
+        -- Insert appointment
+        INSERT INTO appointments (appointment_id, client_id, service_id, start_time, end_time_expected, StatusBooking)
+        VALUES (@appointment_id, @client_id, @service_id, @start_time, @end_time, 'Need Approval');
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        DECLARE @msg NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@msg, 16, 1);
+    END CATCH
+END
 
 
 

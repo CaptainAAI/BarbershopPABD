@@ -16,12 +16,17 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
+        // Caching layanan
+        private DataTable _layananCache = null;
+        private DateTime _layananCacheTime;
+        private readonly TimeSpan _layananCacheDuration = TimeSpan.FromMinutes(10);
+
         // Konstruktor Form
         public FormClientAppointments()
         {
             InitializeComponent();
             UpdateDateRange(); // Set range tanggal booking
-            LoadLayanan();     // Load data layanan ke ComboBox
+            LoadLayanan();     // Load data layanan ke ComboBox (pakai cache)
             LoadJam();         // Load pilihan jam ke ComboBox
         }
 
@@ -68,7 +73,7 @@ namespace Barbershop
             }
         }
 
-        // Event klik tombol Book, menambah data booking appointment baru
+        // Event klik tombol Book, menambah data booking appointment baru (pakai SP, transaksi, error handling)
         private void btnBook_Click(object sender, EventArgs e)
         {
             string phone = txtPhoneBooking.Text.Trim();
@@ -95,36 +100,48 @@ namespace Barbershop
 
             DateTime end = start.AddMinutes(GetServiceDuration(serviceId));
 
-            string clientId = GetClientIdByPhone(phone);
-            if (clientId == null)
+            try
             {
-                MessageBox.Show("Nomor tidak ditemukan. Silakan daftar terlebih dahulu.");
+                using (SqlConnection conn = new SqlConnection(connString))
+                using (SqlCommand cmd = new SqlCommand("sp_client_book_appointment", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@phone_number", phone);
+                    cmd.Parameters.AddWithValue("@service_id", serviceId);
+                    cmd.Parameters.AddWithValue("@start_time", start);
+                    cmd.Parameters.AddWithValue("@end_time", end);
+
+                    var appointmentIdParam = new SqlParameter("@appointment_id", SqlDbType.Char, 8)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(appointmentIdParam);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    string appointmentId = appointmentIdParam.Value?.ToString();
+                    MessageBox.Show("Booking berhasil, menunggu persetujuan admin.\nID: " + appointmentId);
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Gagal booking: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Memuat data layanan ke ComboBox (pakai cache)
+        private void LoadLayanan()
+        {
+            if (_layananCache != null && (DateTime.Now - _layananCacheTime) < _layananCacheDuration)
+            {
+                cmbLayanan.DataSource = _layananCache;
+                cmbLayanan.DisplayMember = "service_name";
+                cmbLayanan.ValueMember = "service_id";
+                cmbLayanan.SelectedIndex = -1;
                 return;
             }
 
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                string id = GenerateAppointmentID();
-                string query = @"INSERT INTO appointments (appointment_id, client_id, service_id, start_time, end_time_expected, StatusBooking)
-                         VALUES (@id, @client, @service, @start, @end, 'Need Approval')";
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.Parameters.AddWithValue("@client", clientId);
-                cmd.Parameters.AddWithValue("@service", serviceId);
-                cmd.Parameters.AddWithValue("@start", start);
-                cmd.Parameters.AddWithValue("@end", end);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
-
-            MessageBox.Show("Booking berhasil, menunggu persetujuan admin.");
-        }
-
-        // Memuat data layanan ke ComboBox
-        private void LoadLayanan()
-        {
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 string query = "SELECT service_id, service_name, service_price FROM services";
@@ -135,6 +152,10 @@ namespace Barbershop
                 cmbLayanan.DisplayMember = "service_name";
                 cmbLayanan.ValueMember = "service_id";
                 cmbLayanan.SelectedIndex = -1;
+
+                // Simpan ke cache
+                _layananCache = dt;
+                _layananCacheTime = DateTime.Now;
             }
         }
 
@@ -174,26 +195,18 @@ namespace Barbershop
             return newID;
         }
 
-        // Generate ID appointment baru dengan format AIxxxxxx
-        private string GenerateAppointmentID()
+        // Mendapatkan durasi layanan (dalam menit) berdasarkan service_id
+        private int GetServiceDuration(string serviceID)
         {
-            string newID = "AI000001";
-            string query = "SELECT TOP 1 appointment_id FROM appointments WHERE appointment_id LIKE 'AI%' ORDER BY appointment_id DESC";
-
+            string query = "SELECT service_duration FROM services WHERE service_id = @id";
             using (SqlConnection conn = new SqlConnection(connString))
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
+                cmd.Parameters.AddWithValue("@id", serviceID);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
-                if (result != null)
-                {
-                    string lastID = result.ToString();
-                    int number = int.Parse(lastID.Substring(2)) + 1;
-                    newID = "AI" + number.ToString("D6");
-                }
+                return result != null ? Convert.ToInt32(result) : 30;
             }
-
-            return newID;
         }
 
         // Mendapatkan client_id berdasarkan nomor telepon
@@ -208,20 +221,6 @@ namespace Barbershop
                 conn.Open();
                 var result = cmd.ExecuteScalar();
                 return result?.ToString();
-            }
-        }
-
-        // Mendapatkan durasi layanan (dalam menit) berdasarkan service_id
-        private int GetServiceDuration(string serviceID)
-        {
-            string query = "SELECT service_duration FROM services WHERE service_id = @id";
-            using (SqlConnection conn = new SqlConnection(connString))
-            using (SqlCommand cmd = new SqlCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@id", serviceID);
-                conn.Open();
-                var result = cmd.ExecuteScalar();
-                return result != null ? Convert.ToInt32(result) : 30;
             }
         }
 
@@ -244,7 +243,7 @@ SELECT
     c.phone_number AS client_phone,
     a.employee_id, 
     a.service_id,
-    s.service_name,          -- tambahkan kolom service_name
+    s.service_name,
     a.start_time, 
     a.end_time_expected, 
     a.StatusBooking,
@@ -269,8 +268,6 @@ ORDER BY a.date_created DESC";
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
 
-                // Hilangkan kolom cancellation_reason karena sudah dihapus dari query
-
                 dgvStatusBooking.DataSource = dt;
 
                 // Format tanggal dan waktu
@@ -293,7 +290,7 @@ ORDER BY a.date_created DESC";
                     }
                 }
 
-                txtTotalHarga.Text = "Rp " + totalHarga.ToString("N2"); // Format dengan 2 desimal
+                txtTotalHarga.Text = "Rp " + totalHarga.ToString("N2");
             }
         }
 
@@ -342,4 +339,3 @@ ORDER BY a.date_created DESC";
         }
     }
 }
-
