@@ -16,7 +16,9 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        // Konstruktor UserControl
+        // Caching untuk data kategori layanan
+        private static DataTable cachedCategories = null;
+
         public UcServiceCategories()
         {
             InitializeComponent();
@@ -25,23 +27,35 @@ namespace Barbershop
         // Event saat UserControl dimuat
         private void UcKategoriLayanan_Load(object sender, EventArgs e)
         {
-            LoadData();           // Memuat data kategori layanan ke DataGridView
-            txtID.ReadOnly = true; // ID kategori tidak bisa diubah manual
+            LoadData();
+            txtID.ReadOnly = true;
         }
 
-        // Memuat data kategori layanan dari database ke DataGridView
+        // Memuat data kategori layanan dari database ke DataGridView (pakai cache)
         private void LoadData()
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            if (cachedCategories == null)
             {
-                SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM service_categories", conn);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-                dgvKategoriLayanan.DataSource = dt;
+                using (SqlConnection conn = new SqlConnection(connString))
+                using (SqlCommand cmd = new SqlCommand("sp_get_service_categories", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    cachedCategories = dt;
+                }
             }
+            dgvKategoriLayanan.DataSource = cachedCategories.Copy();
         }
 
-        // Event klik tombol Add, menambah kategori layanan baru ke database
+        // Invalidate cache setiap ada perubahan data
+        private void InvalidateCategoryCache()
+        {
+            cachedCategories = null;
+        }
+
+        // Event klik tombol Add, menambah kategori layanan baru ke database (pakai stored procedure + transaksi)
         private void btnAdd_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNamaKategori.Text))
@@ -52,19 +66,31 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "INSERT INTO service_categories (category_name) VALUES (@nama)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@nama", txtNamaKategori.Text);
                 conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-                LoadData();
-                ClearFields();
-                MessageBox.Show("Kategori berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SqlTransaction transaction = conn.BeginTransaction();
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_insert_service_category", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@category_name", txtNamaKategori.Text);
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+                    InvalidateCategoryCache();
+                    LoadData();
+                    ClearFields();
+                    MessageBox.Show("Kategori berhasil ditambahkan.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Gagal menambahkan kategori: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        // Event klik tombol Update, memperbarui data kategori layanan yang dipilih
+        // Event klik tombol Update, memperbarui data kategori layanan yang dipilih (pakai stored procedure + transaksi)
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text) || string.IsNullOrWhiteSpace(txtNamaKategori.Text))
@@ -73,7 +99,6 @@ namespace Barbershop
                 return;
             }
 
-            // Konfirmasi sebelum update kategori
             DialogResult confirm = MessageBox.Show($"Apakah Anda yakin ingin memperbarui kategori menjadi \"{txtNamaKategori.Text}\"?",
                                                    "Konfirmasi Update Kategori",
                                                    MessageBoxButtons.YesNo,
@@ -85,21 +110,32 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "UPDATE service_categories SET category_name = @nama WHERE category_id = @id";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", txtID.Text);
-                cmd.Parameters.AddWithValue("@nama", txtNamaKategori.Text);
                 conn.Open();
-                cmd.ExecuteNonQuery();
-                conn.Close();
-
-                LoadData();
-                ClearFields();
-                MessageBox.Show("Kategori berhasil diperbarui.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SqlTransaction transaction = conn.BeginTransaction();
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand("sp_update_service_category", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@category_id", Convert.ToInt32(txtID.Text));
+                        cmd.Parameters.AddWithValue("@category_name", txtNamaKategori.Text);
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+                    InvalidateCategoryCache();
+                    LoadData();
+                    ClearFields();
+                    MessageBox.Show("Kategori berhasil diperbarui.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Gagal update kategori: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        // Event klik tombol Delete, menghapus kategori layanan yang dipilih
+        // Event klik tombol Delete, menghapus kategori layanan yang dipilih (pakai stored procedure + transaksi)
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -113,15 +149,27 @@ namespace Barbershop
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
-                    string query = "DELETE FROM service_categories WHERE category_id = @id";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", txtID.Text);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                    LoadData();
-                    ClearFields();
-                    MessageBox.Show("Kategori berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    SqlTransaction transaction = conn.BeginTransaction();
+                    try
+                    {
+                        using (SqlCommand cmd = new SqlCommand("sp_delete_service_category", conn, transaction))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@category_id", Convert.ToInt32(txtID.Text));
+                            cmd.ExecuteNonQuery();
+                        }
+                        transaction.Commit();
+                        InvalidateCategoryCache();
+                        LoadData();
+                        ClearFields();
+                        MessageBox.Show("Kategori berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("Gagal menghapus kategori: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -129,6 +177,7 @@ namespace Barbershop
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            InvalidateCategoryCache();
             LoadData();
             ClearFields();
             MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -165,4 +214,3 @@ namespace Barbershop
         }
     }
 }
-

@@ -16,7 +16,9 @@ namespace Barbershop
         // String koneksi ke database SQL Azure
         private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        // Konstruktor UserControl
+        // Caching untuk data client
+        private static DataTable cachedClients = null;
+
         public UcClients()
         {
             InitializeComponent();
@@ -25,20 +27,38 @@ namespace Barbershop
         // Event saat UserControl dimuat
         private void UcPelanggan_Load(object sender, EventArgs e)
         {
-            LoadClient(); // Memuat data client ke DataGridView
+            try
+            {
+                LoadClient();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal memuat data client: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        // Memuat data client dari database ke DataGridView
+        // Memuat data client dari database ke DataGridView (pakai cache)
         private void LoadClient()
         {
-            using (SqlConnection conn = new SqlConnection(connString))
+            if (cachedClients == null)
             {
-                string query = "SELECT * FROM clients";
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dgvClient.DataSource = dt;
+                using (SqlConnection conn = new SqlConnection(connString))
+                using (SqlCommand cmd = new SqlCommand("sp_get_clients", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    cachedClients = dt;
+                }
             }
+            dgvClient.DataSource = cachedClients.Copy();
+        }
+
+        // Invalidate cache setiap ada perubahan data
+        private void InvalidateClientCache()
+        {
+            cachedClients = null;
         }
 
         // Validasi input form agar tidak ada field yang kosong (kecuali email)
@@ -60,7 +80,7 @@ namespace Barbershop
             txtEmail.Clear();
         }
 
-        // Event klik tombol Add, menambah client baru ke database
+        // Event klik tombol Add, menambah client baru ke database (pakai stored procedure + transaksi + error handling)
         private void btnAdd_Click(object sender, EventArgs e)
         {
             if (!IsInputValid())
@@ -71,27 +91,30 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
-                               "VALUES (@id, @fname, @lname, @phone, @email)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", txtID.Text);
-                cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
-                cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
-                cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
-
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
                 try
                 {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    using (SqlCommand cmd = new SqlCommand("sp_insert_client", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@client_id", txtID.Text);
+                        cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
+                        cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
+                        cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@client_email", string.IsNullOrEmpty(txtEmail.Text) ? (object)DBNull.Value : txtEmail.Text);
 
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
                     MessageBox.Show("Pelanggan berhasil ditambahkan!", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    InvalidateClientCache(); // Invalidate cache setelah insert
                     LoadClient();
                     ClearFields();
                 }
                 catch (SqlException ex)
                 {
-                    // Tangani error duplikat data (ID, phone, email)
+                    try { transaction.Rollback(); } catch { }
                     if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal menambahkan! ID, Nomor telepon atau email sudah digunakan.",
@@ -101,6 +124,11 @@ namespace Barbershop
                     {
                         MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                catch (Exception ex)
+                {
+                    try { transaction.Rollback(); } catch { }
+                    MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -117,7 +145,7 @@ namespace Barbershop
             // Bisa dihapus atau kosongkan jika tidak perlu
         }
 
-        // Event klik tombol Update, memperbarui data client yang dipilih
+        // Event klik tombol Update, memperbarui data client yang dipilih (pakai stored procedure + transaksi + error handling)
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -132,7 +160,6 @@ namespace Barbershop
                 return;
             }
 
-            // Konfirmasi sebelum update
             DialogResult result = MessageBox.Show("Apakah Anda yakin ingin memperbarui data pelanggan ini?", "Konfirmasi Update",
                                                   MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.No)
@@ -142,27 +169,30 @@ namespace Barbershop
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                string query = "UPDATE clients SET first_name=@fname, last_name=@lname, phone_number=@phone, client_email=@email " +
-                               "WHERE client_id=@id";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", txtID.Text);
-                cmd.Parameters.AddWithValue("@fname", txtFirstName.Text);
-                cmd.Parameters.AddWithValue("@lname", txtLastName.Text);
-                cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(txtEmail.Text) ? DBNull.Value : (object)txtEmail.Text);
-
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
                 try
                 {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
+                    using (SqlCommand cmd = new SqlCommand("sp_update_client", conn, transaction))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@client_id", txtID.Text);
+                        cmd.Parameters.AddWithValue("@first_name", txtFirstName.Text);
+                        cmd.Parameters.AddWithValue("@last_name", txtLastName.Text);
+                        cmd.Parameters.AddWithValue("@phone_number", txtPhone.Text);
+                        cmd.Parameters.AddWithValue("@client_email", string.IsNullOrEmpty(txtEmail.Text) ? (object)DBNull.Value : txtEmail.Text);
 
+                        cmd.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
                     MessageBox.Show("Data Pelanggan berhasil diperbarui!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    InvalidateClientCache(); // Invalidate cache setelah update
                     LoadClient();
                     ClearFields();
                 }
                 catch (SqlException ex)
                 {
-                    // Tangani error duplikat data (ID, phone, email)
+                    try { transaction.Rollback(); } catch { }
                     if (ex.Number == 2627 || ex.Number == 2601)
                     {
                         MessageBox.Show("Gagal update! ID, Nomor telepon atau email sudah digunakan.",
@@ -173,10 +203,15 @@ namespace Barbershop
                         MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+                catch (Exception ex)
+                {
+                    try { transaction.Rollback(); } catch { }
+                    MessageBox.Show("Terjadi kesalahan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        // Event klik tombol Delete, menghapus client yang dipilih
+        // Event klik tombol Delete, menghapus client yang dipilih (pakai stored procedure + transaksi + error handling)
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -190,38 +225,65 @@ namespace Barbershop
             {
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
-                    string query = "DELETE FROM clients WHERE client_id=@id";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", txtID.Text);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    SqlTransaction transaction = conn.BeginTransaction();
+                    try
+                    {
+                        using (SqlCommand cmd = new SqlCommand("sp_delete_client", conn, transaction))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@client_id", txtID.Text);
+                            cmd.ExecuteNonQuery();
+                        }
+                        transaction.Commit();
+                        MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        InvalidateClientCache(); // Invalidate cache setelah delete
+                        LoadClient();
+                        ClearFields();
+                    }
+                    catch (Exception ex)
+                    {
+                        try { transaction.Rollback(); } catch { }
+                        MessageBox.Show("Gagal menghapus data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-
-                MessageBox.Show("Data berhasil dihapus.", "Dihapus", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadClient();
-                ClearFields();
             }
         }
 
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadClient();
-            ClearFields();
-            MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                InvalidateClientCache(); // Invalidate cache saat refresh
+                LoadClient();
+                ClearFields();
+                MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Event klik pada baris DataGridView, load data ke form input
         private void dgvClient_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            try
             {
-                DataGridViewRow row = dgvClient.Rows[e.RowIndex];
-                txtID.Text = row.Cells["client_id"].Value.ToString();
-                txtFirstName.Text = row.Cells["first_name"].Value.ToString();
-                txtLastName.Text = row.Cells["last_name"].Value.ToString();
-                txtPhone.Text = row.Cells["phone_number"].Value.ToString();
-                txtEmail.Text = row.Cells["client_email"].Value.ToString();
+                if (e.RowIndex >= 0)
+                {
+                    DataGridViewRow row = dgvClient.Rows[e.RowIndex];
+                    txtID.Text = row.Cells["client_id"].Value.ToString();
+                    txtFirstName.Text = row.Cells["first_name"].Value.ToString();
+                    txtLastName.Text = row.Cells["last_name"].Value.ToString();
+                    txtPhone.Text = row.Cells["phone_number"].Value.ToString();
+                    txtEmail.Text = row.Cells["client_email"].Value.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal memuat data ke form: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
