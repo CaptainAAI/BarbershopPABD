@@ -113,11 +113,11 @@ namespace Barbershop
             cachedServices = null;
         }
 
-        // Load pilihan jam mulai (05:00 - 23:59, tiap menit)
+        // Load pilihan jam mulai (00:00 - 23:59, tiap menit)
         private void LoadStartTimeCombo()
         {
             cmbStartTime.Items.Clear();
-            for (int jam = 5; jam <= 23; jam++)
+            for (int jam = 0; jam <= 23; jam++)
             {
                 for (int menit = 0; menit < 60; menit += 1)
                 {
