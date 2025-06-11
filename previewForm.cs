@@ -104,11 +104,13 @@ namespace Barbershop
                         }
                     }
 
-                    transaction.Commit(); // Commit transaksi jika semua berhasil
-                    MessageBox.Show("Data berhasil diimport ke database.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close(); // Tutup form setelah selesai import
-                }
-                catch (Exception ex)
+					transaction.Commit(); // Commit transaksi jika semua berhasil
+					MessageBox.Show("Data berhasil diimport ke database.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					this.DialogResult = DialogResult.OK; // Penting! Agar parent form tahu import sukses
+					this.Close(); // Tutup form setelah selesai import
+
+				}
+				catch (Exception ex)
                 {
                     transaction.Rollback(); // Rollback transaksi jika ada error
                     MessageBox.Show("Import data gagal: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -201,14 +201,16 @@ namespace Barbershop
             LoadTransactionData(); // Muat ulang data tanpa filter
         }
 
-        // Event handler tombol Refresh, memuat ulang data transaksi
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            LoadTransactionData();
-        }
+		// Event handler tombol Refresh, memuat ulang data transaksi
+		private void btnRefresh_Click(object sender, EventArgs e)
+		{
+			cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
+			LoadTransactionData();
+		}
 
-        // Event kosong untuk DataGridView (bisa diisi jika ingin handle klik cell)
-        private void dgvTransactionHistory_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+
+		// Event kosong untuk DataGridView (bisa diisi jika ingin handle klik cell)
+		private void dgvTransactionHistory_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
         private void cmbStatus_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbClient_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbEmployee_SelectedIndexChanged(object sender, EventArgs e) { }
@@ -249,11 +251,17 @@ namespace Barbershop
                     }
                 }
 
-                // Tampilkan preview meskipun isi belum divalidasi
-                previewForm preview = new previewForm(dt); // Validasi dilakukan saat klik tombol Import di form preview
-                preview.ShowDialog();
-            }
-        }
+				// Tampilkan preview meskipun isi belum divalidasi
+				previewForm preview = new previewForm(dt); // Validasi dilakukan saat klik tombol Import di form preview
+				if (preview.ShowDialog() == DialogResult.OK)
+				{
+					// Setelah import berhasil, refresh data
+					cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
+					LoadTransactionData();
+				}
+
+			}
+		}
 
         // Membaca file Excel dan mengubahnya menjadi DataTable
         private DataTable ReadExcelToDataTable(string filePath)
