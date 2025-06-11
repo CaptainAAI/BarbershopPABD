@@ -33,12 +33,17 @@ namespace Barbershop
         // Event handler saat UserControl dimuat
         private void UcTransactionHistory_Load(object sender, EventArgs e)
         {
-            EnsureTransactionHistoryIndexes(); // Pastikan index pada tabel transaksi sudah ada
-            LoadTransactionDataSP();            // Muat data transaksi ke DataGridView
-            LoadComboBoxes(); // Muat data ke ComboBox filter
-            dtpDateFrom.Value = DateTime.Today.AddDays(-7); // Set default tanggal filter dari 7 hari lalu
-            dtpDateUntil.Value = DateTime.Today; // Set default tanggal filter sampai hari ini
+            EnsureTransactionHistoryIndexes();
+            dtpDateFrom.Value = DateTime.Today.AddYears(-7);
+            dtpDateUntil.Value = DateTime.Today;
+            LoadTransactionDataSP(
+                null, null, null, null,
+                dtpDateFrom.Value.Date,
+                dtpDateUntil.Value.Date
+            );
+            LoadComboBoxes();
         }
+
 
         private void LoadTransactionDataSP(
                 string clientName = null,
@@ -53,7 +58,7 @@ namespace Barbershop
                 && string.IsNullOrEmpty(employeeName)
                 && string.IsNullOrEmpty(serviceName)
                 && string.IsNullOrEmpty(status)
-                && (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddDays(-7).Date)
+                && (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddYears(-7).Date)
                 && (!dateUntil.HasValue || dateUntil.Value.Date == DateTime.Today.Date);
 
             if (useCache && cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
@@ -181,7 +186,7 @@ namespace Barbershop
             cmbEmployee.SelectedIndex = -1;
             cmbService.SelectedIndex = -1;
             cmbStatus.SelectedIndex = -1;
-            dtpDateFrom.Value = DateTime.Today.AddDays(-7);
+            dtpDateFrom.Value = DateTime.Today.AddYears(-7);
             dtpDateUntil.Value = DateTime.Today;
             LoadTransactionDataSP(); // Muat ulang data tanpa filter
         }

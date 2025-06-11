@@ -716,3 +716,39 @@ END
 
 
 
+CREATE PROCEDURE sp_FilterTransactionHistory
+    @ClientName NVARCHAR(100) = NULL,
+    @EmployeeName NVARCHAR(100) = NULL,
+    @ServiceName NVARCHAR(100) = NULL,
+    @Status NVARCHAR(50) = NULL,
+    @DateFrom DATE = NULL,
+    @DateUntil DATE = NULL
+AS
+BEGIN
+    SELECT 
+        transaction_id,
+        appointment_id,
+        client_name,
+        phone_number,
+        employee_id,
+        employee_name,
+        service_name,
+        service_price,
+        appointment_date,
+        start_time,
+        end_time,
+        status,
+        cancellation_reason,
+        recorded_at
+    FROM transaction_history
+    WHERE
+        (@ClientName IS NULL OR client_name LIKE '%' + @ClientName + '%')
+        AND (@EmployeeName IS NULL OR employee_name LIKE '%' + @EmployeeName + '%')
+        AND (@ServiceName IS NULL OR service_name LIKE '%' + @ServiceName + '%')
+        AND (@Status IS NULL OR status = @Status)
+        AND (appointment_date BETWEEN ISNULL(@DateFrom, '1900-01-01') AND ISNULL(@DateUntil, '2999-12-31'))
+    ORDER BY recorded_at DESC
+END
+
+delete from transaction_history
+where transaction_id = 5
