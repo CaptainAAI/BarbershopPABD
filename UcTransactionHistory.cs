@@ -34,61 +34,59 @@ namespace Barbershop
         private void UcTransactionHistory_Load(object sender, EventArgs e)
         {
             EnsureTransactionHistoryIndexes(); // Pastikan index pada tabel transaksi sudah ada
-            LoadTransactionData(); // Muat data transaksi ke DataGridView
+            LoadTransactionDataSP();            // Muat data transaksi ke DataGridView
             LoadComboBoxes(); // Muat data ke ComboBox filter
             dtpDateFrom.Value = DateTime.Today.AddDays(-7); // Set default tanggal filter dari 7 hari lalu
             dtpDateUntil.Value = DateTime.Today; // Set default tanggal filter sampai hari ini
         }
 
-        // Memuat data transaksi ke DataGridView, dengan filter opsional
-        private void LoadTransactionData(string filterQuery = "")
+        private void LoadTransactionDataSP(
+                string clientName = null,
+                string employeeName = null,
+                string serviceName = null,
+                string status = null,
+                DateTime? dateFrom = null,
+                DateTime? dateUntil = null)
         {
-            // Jika tanpa filter, gunakan cache jika masih valid
-            if (string.IsNullOrEmpty(filterQuery))
+            // Gunakan cache hanya jika semua filter kosong
+            bool useCache = string.IsNullOrEmpty(clientName)
+                && string.IsNullOrEmpty(employeeName)
+                && string.IsNullOrEmpty(serviceName)
+                && string.IsNullOrEmpty(status)
+                && (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddDays(-7).Date)
+                && (!dateUntil.HasValue || dateUntil.Value.Date == DateTime.Today.Date);
+
+            if (useCache && cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
             {
-                if (cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
-                {
-                    dgvTransactionHistory.DataSource = cachedTransactionData.Copy();
-                    return;
-                }
+                dgvTransactionHistory.DataSource = cachedTransactionData.Copy();
+                return;
             }
 
-            // Query data transaksi dari database
             using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand("sp_FilterTransactionHistory", conn))
             {
-                string query = @"
-            SELECT 
-                transaction_id,
-                appointment_id,
-                client_name,
-                phone_number,
-                employee_id,
-                employee_name,
-                service_name,
-                service_price,
-                appointment_date,
-                start_time,
-                end_time,
-                status,
-                cancellation_reason,
-                recorded_at
-            FROM transaction_history
-            WHERE 1=1 " + filterQuery + @"
-            ORDER BY recorded_at DESC";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ClientName", (object)clientName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@EmployeeName", (object)employeeName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ServiceName", (object)serviceName ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Status", (object)status ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@DateFrom", (object)dateFrom ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@DateUntil", (object)dateUntil ?? DBNull.Value);
 
-                SqlDataAdapter da = new SqlDataAdapter(query, conn);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
-                da.Fill(dt); // Isi DataTable dengan hasil query
-                dgvTransactionHistory.DataSource = dt; // Tampilkan ke DataGridView
+                da.Fill(dt);
+                dgvTransactionHistory.DataSource = dt;
 
                 // Simpan ke cache jika tanpa filter
-                if (string.IsNullOrEmpty(filterQuery))
+                if (useCache)
                 {
                     cachedTransactionData = dt.Copy();
                     cacheTimestamp = DateTime.Now;
                 }
             }
         }
+
 
         // Pastikan index pada tabel transaction_history sudah ada
         private void EnsureTransactionHistoryIndexes()
@@ -165,29 +163,16 @@ namespace Barbershop
         // Event handler tombol Filter, menerapkan filter ke data transaksi
         private void btnFilterData_Click(object sender, EventArgs e)
         {
-            string filter = "";
+            string clientName = cmbClient.SelectedValue != null ? cmbClient.Text.Split('-').Last().Trim() : null;
+            string employeeName = cmbEmployee.SelectedValue != null ? cmbEmployee.Text.Split('-').Last().Trim() : null;
+            string serviceName = cmbService.SelectedValue != null ? cmbService.Text.Split('-').Last().Trim() : null;
+            string status = !string.IsNullOrEmpty(cmbStatus.Text) ? cmbStatus.Text : null;
+            DateTime? dateFrom = dtpDateFrom.Value;
+            DateTime? dateUntil = dtpDateUntil.Value;
 
-            // Filter berdasarkan client
-            if (cmbClient.SelectedValue != null)
-                filter += $" AND client_name LIKE '%{cmbClient.Text.Split('-').Last().Trim()}%'";
-
-            // Filter berdasarkan employee
-            if (cmbEmployee.SelectedValue != null)
-                filter += $" AND employee_name LIKE '%{cmbEmployee.Text.Split('-').Last().Trim()}%'";
-
-            // Filter berdasarkan service
-            if (cmbService.SelectedValue != null)
-                filter += $" AND service_name LIKE '%{cmbService.Text.Split('-').Last().Trim()}%'";
-
-            // Filter berdasarkan status
-            if (!string.IsNullOrEmpty(cmbStatus.Text))
-                filter += $" AND status = '{cmbStatus.Text}'";
-
-            // Filter berdasarkan rentang tanggal
-            filter += $" AND appointment_date BETWEEN '{dtpDateFrom.Value:yyyy-MM-dd}' AND '{dtpDateUntil.Value:yyyy-MM-dd}'";
-
-            LoadTransactionData(filter); // Muat data dengan filter
+            LoadTransactionDataSP(clientName, employeeName, serviceName, status, dateFrom, dateUntil);
         }
+
 
         // Event handler tombol Reset Filter, mengembalikan filter ke default
         private void btnResetFilter_Click(object sender, EventArgs e)
@@ -198,19 +183,21 @@ namespace Barbershop
             cmbStatus.SelectedIndex = -1;
             dtpDateFrom.Value = DateTime.Today.AddDays(-7);
             dtpDateUntil.Value = DateTime.Today;
-            LoadTransactionData(); // Muat ulang data tanpa filter
+            LoadTransactionDataSP(); // Muat ulang data tanpa filter
         }
 
-		// Event handler tombol Refresh, memuat ulang data transaksi
-		private void btnRefresh_Click(object sender, EventArgs e)
+
+        // Event handler tombol Refresh, memuat ulang data transaksi
+        private void btnRefresh_Click(object sender, EventArgs e)
 		{
 			cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
-			LoadTransactionData();
-		}
+            LoadTransactionDataSP();
+
+        }
 
 
-		// Event kosong untuk DataGridView (bisa diisi jika ingin handle klik cell)
-		private void dgvTransactionHistory_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        // Event kosong untuk DataGridView (bisa diisi jika ingin handle klik cell)
+        private void dgvTransactionHistory_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
         private void cmbStatus_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbClient_SelectedIndexChanged(object sender, EventArgs e) { }
         private void cmbEmployee_SelectedIndexChanged(object sender, EventArgs e) { }
@@ -257,10 +244,11 @@ namespace Barbershop
 				{
 					// Setelah import berhasil, refresh data
 					cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
-					LoadTransactionData();
-				}
+                    LoadTransactionDataSP();
 
-			}
+                }
+
+            }
 		}
 
         // Membaca file Excel dan mengubahnya menjadi DataTable
