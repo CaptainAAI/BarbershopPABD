@@ -8,7 +8,7 @@ namespace Barbershop
     public partial class UcServices : UserControl
     {
         // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         // Caching untuk data layanan
         private static DataTable cachedServices = null;
@@ -191,22 +191,24 @@ namespace Barbershop
             }
         }
 
-        // Event klik tombol Refresh, reload data layanan (dengan error handling)
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                InvalidateServiceCache(); // Invalidate cache saat refresh
-                LoadData();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+		// Event klik tombol Refresh, reload data layanan (dengan error handling)
+		private void btnRefresh_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				InvalidateServiceCache(); // Invalidate cache saat refresh
+				LoadData();
+				MessageBox.Show("Data berhasil direfresh!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
 
-        // Event klik pada baris DataGridView, load data ke form input (dengan error handling)
-        private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
+
+		// Event klik pada baris DataGridView, load data ke form input (dengan error handling)
+		private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {

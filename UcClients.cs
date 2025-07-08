@@ -14,7 +14,7 @@ namespace Barbershop
     public partial class UcClients : UserControl
     {
         // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         // Caching untuk data client
         private static DataTable cachedClients = null;
@@ -22,7 +22,32 @@ namespace Barbershop
         public UcClients()
         {
             InitializeComponent();
+            txtID.ReadOnly = true;
+            GenerateClientID();
+
         }
+        private string GenerateClientID()
+        {
+            string newID = "CI000001";
+            string query = "SELECT TOP 1 client_id FROM clients WHERE client_id LIKE 'CI%' ORDER BY client_id DESC";
+
+            using (SqlConnection conn = new SqlConnection(connString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    string lastID = result.ToString();
+                    int number = int.Parse(lastID.Substring(2)) + 1;
+                    newID = "CI" + number.ToString("D6");
+                }
+            }
+
+            return newID;
+        }
+
+
 
         // Event saat UserControl dimuat
         private void UcPelanggan_Load(object sender, EventArgs e)
@@ -30,12 +55,15 @@ namespace Barbershop
             try
             {
                 LoadClient();
+                txtID.Text = GenerateClientID(); // Set ID saat load
+                txtID.ReadOnly = true; // Jadikan read-only
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Gagal memuat data client: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // Memuat data client dari database ke DataGridView (pakai cache)
         private void LoadClient()
@@ -111,6 +139,8 @@ namespace Barbershop
                     InvalidateClientCache(); // Invalidate cache setelah insert
                     LoadClient();
                     ClearFields();
+                    txtID.Text = GenerateClientID(); // ID baru setelah insert
+
                 }
                 catch (SqlException ex)
                 {
@@ -274,7 +304,7 @@ namespace Barbershop
                 if (e.RowIndex >= 0)
                 {
                     DataGridViewRow row = dgvClient.Rows[e.RowIndex];
-                    txtID.Text = row.Cells["client_id"].Value.ToString();
+                    //txtID.Text = row.Cells["client_id"].Value.ToString();
                     txtFirstName.Text = row.Cells["first_name"].Value.ToString();
                     txtLastName.Text = row.Cells["last_name"].Value.ToString();
                     txtPhone.Text = row.Cells["phone_number"].Value.ToString();

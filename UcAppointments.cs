@@ -8,7 +8,7 @@ namespace Barbershop
 {
     public partial class UcAppointments : UserControl
     {
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         private static DataTable cachedClients;
         private static DataTable cachedEmployees;
@@ -275,7 +275,10 @@ namespace Barbershop
             LoadComboBoxes();
             LoadStartTimeCombo();
             ClearForm();
+
+            MessageBox.Show("Data berhasil direfresh!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
 
         private void ClearForm()
         {
