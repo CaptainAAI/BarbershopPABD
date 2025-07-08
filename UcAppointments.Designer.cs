@@ -58,7 +58,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(195, 166);
+            this.label7.Location = new System.Drawing.Point(195, 165);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(138, 17);
@@ -86,7 +86,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(195, 133);
+            this.label4.Location = new System.Drawing.Point(196, 100);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(73, 17);
@@ -100,7 +100,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(195, 101);
+            this.label3.Location = new System.Drawing.Point(196, 72);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 17);
@@ -114,7 +114,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(195, 70);
+            this.label2.Location = new System.Drawing.Point(196, 128);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(87, 17);
@@ -140,7 +140,7 @@
             this.txtCancellationReason.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCancellationReason.Location = new System.Drawing.Point(349, 163);
+            this.txtCancellationReason.Location = new System.Drawing.Point(349, 162);
             this.txtCancellationReason.Margin = new System.Windows.Forms.Padding(2);
             this.txtCancellationReason.Name = "txtCancellationReason";
             this.txtCancellationReason.Size = new System.Drawing.Size(709, 20);
@@ -215,10 +215,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbServiceID.FormattingEnabled = true;
-            this.cmbServiceID.Location = new System.Drawing.Point(349, 97);
+            this.cmbServiceID.Location = new System.Drawing.Point(349, 68);
             this.cmbServiceID.Name = "cmbServiceID";
             this.cmbServiceID.Size = new System.Drawing.Size(707, 21);
             this.cmbServiceID.TabIndex = 57;
+            this.cmbServiceID.SelectedIndexChanged += new System.EventHandler(this.cmbServiceID_SelectedIndexChanged);
             // 
             // cmbEmployeeID
             // 
@@ -226,7 +227,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbEmployeeID.FormattingEnabled = true;
-            this.cmbEmployeeID.Location = new System.Drawing.Point(349, 66);
+            this.cmbEmployeeID.Location = new System.Drawing.Point(349, 128);
             this.cmbEmployeeID.Name = "cmbEmployeeID";
             this.cmbEmployeeID.Size = new System.Drawing.Size(707, 21);
             this.cmbEmployeeID.TabIndex = 58;
@@ -242,6 +243,7 @@
             this.cmbClientID.Name = "cmbClientID";
             this.cmbClientID.Size = new System.Drawing.Size(707, 21);
             this.cmbClientID.TabIndex = 59;
+            this.cmbClientID.SelectedIndexChanged += new System.EventHandler(this.cmbClientID_SelectedIndexChanged);
             // 
             // dtpTanggal
             // 
@@ -249,7 +251,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.dtpTanggal.CustomFormat = "dd/MM/yyyy ";
             this.dtpTanggal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.4F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dtpTanggal.Location = new System.Drawing.Point(349, 133);
+            this.dtpTanggal.Location = new System.Drawing.Point(349, 96);
             this.dtpTanggal.MinDate = new System.DateTime(2025, 5, 21, 0, 0, 0, 0);
             this.dtpTanggal.Name = "dtpTanggal";
             this.dtpTanggal.Size = new System.Drawing.Size(322, 20);
@@ -273,7 +275,7 @@
             this.cmbStartTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbStartTime.FormattingEnabled = true;
-            this.cmbStartTime.Location = new System.Drawing.Point(677, 132);
+            this.cmbStartTime.Location = new System.Drawing.Point(677, 96);
             this.cmbStartTime.Name = "cmbStartTime";
             this.cmbStartTime.Size = new System.Drawing.Size(379, 21);
             this.cmbStartTime.TabIndex = 62;

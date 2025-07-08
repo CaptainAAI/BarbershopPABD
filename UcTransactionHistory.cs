@@ -17,7 +17,7 @@ namespace Barbershop
     public partial class UcTransactionHistory : UserControl
     {
         // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         // Variabel cache untuk data transaksi
         private DataTable cachedTransactionData = null;
@@ -515,5 +515,43 @@ namespace Barbershop
                 }
             }
         }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim().ToLower();
+
+            if (cachedTransactionData == null)
+            {
+                LoadTransactionDataSP(); // Pastikan data terisi dulu
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                dgvTransactionHistory.DataSource = cachedTransactionData.Copy();
+                return;
+            }
+
+            DataTable filtered = cachedTransactionData.Clone();
+
+            foreach (DataRow row in cachedTransactionData.Rows)
+            {
+                string clientName = row["client_name"]?.ToString()?.ToLower() ?? "";
+                string employeeName = row["employee_name"]?.ToString()?.ToLower() ?? "";
+                string serviceName = row["service_name"]?.ToString()?.ToLower() ?? "";
+                string phoneNumber = row["phone_number"]?.ToString()?.ToLower() ?? "";
+
+                if (clientName.Contains(searchText) ||
+                    employeeName.Contains(searchText) ||
+                    serviceName.Contains(searchText) ||
+                    phoneNumber.Contains(searchText))
+                {
+                    filtered.ImportRow(row);
+                }
+            }
+
+            dgvTransactionHistory.DataSource = filtered;
+        }
+
     }
 }

@@ -14,7 +14,7 @@ namespace Barbershop
     public partial class UcEmployee : UserControl
     {
         // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         // Variabel cache untuk data karyawan
         private DataTable _employeeCache = null;
@@ -281,5 +281,30 @@ namespace Barbershop
         private void label2_Click(object sender, EventArgs e) { }
         private void label3_Click(object sender, EventArgs e) { }
         private void label4_Click(object sender, EventArgs e) { }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim().ToLower();
+
+            if (_employeeCache == null)
+                LoadEmployees(); // Jaga-jaga kalau belum ada data
+
+            DataTable filtered = _employeeCache.Clone(); // Buat struktur tabel kosong
+
+            foreach (DataRow row in _employeeCache.Rows)
+            {
+                string fullName = $"{row["first_name"]} {row["last_name"]}".ToLower();
+                string phone = row["phone_number"]?.ToString()?.ToLower() ?? "";
+                string email = row["email"]?.ToString()?.ToLower() ?? "";
+
+                if (fullName.Contains(searchText) || phone.Contains(searchText) || email.Contains(searchText))
+                {
+                    filtered.ImportRow(row);
+                }
+            }
+
+            dgvEmployees.DataSource = filtered;
+        }
+
     }
 }

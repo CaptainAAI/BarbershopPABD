@@ -14,7 +14,7 @@ namespace Barbershop
     public partial class UcClients : UserControl
     {
         // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
         // Caching untuk data client
         private static DataTable cachedClients = null;
@@ -286,5 +286,29 @@ namespace Barbershop
                 MessageBox.Show("Gagal memuat data ke form: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = txtSearch.Text.Trim().ToLower();
+
+            if (cachedClients == null)
+                LoadClient(); // Jaga-jaga
+
+            DataTable dtFiltered = cachedClients.Clone(); // Struktur sama
+
+            foreach (DataRow row in cachedClients.Rows)
+            {
+                string namaLengkap = $"{row["first_name"]} {row["last_name"]}".ToLower();
+                string noTelp = row["phone_number"]?.ToString()?.ToLower() ?? "";
+
+                if (namaLengkap.Contains(searchText) || noTelp.Contains(searchText))
+                {
+                    dtFiltered.ImportRow(row);
+                }
+            }
+
+            dgvClient.DataSource = dtFiltered;
+        }
+
     }
 }

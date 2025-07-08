@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
@@ -13,44 +8,51 @@ namespace Barbershop
 {
     public partial class UcAppointments : UserControl
     {
-        // String koneksi ke database SQL Azure
-        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=OmkegasOmkegas2  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
+        private string connString = "Server=tcp:barbershoppabd.database.windows.net,1433;Initial Catalog=Barbershop;Persist Security Info=False;User ID=LordAAI;Password=Omkegas  ;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30";
 
-        // Caching for ComboBox data
         private static DataTable cachedClients;
         private static DataTable cachedEmployees;
         private static DataTable cachedServices;
 
-        // Konstruktor UserControl
         public UcAppointments()
         {
             InitializeComponent();
-            UpdateDateRange(); // Set range tanggal appointment
-            txtAppointmentID.ReadOnly = true; // ID appointment tidak bisa diubah manual
+            UpdateDateRange();
+            txtAppointmentID.ReadOnly = true;
+            cmbClientID.TextUpdate += cmbClientID_TextUpdate;
+            cmbEmployeeID.TextUpdate += cmbEmployeeID_TextUpdate;
+            cmbServiceID.TextUpdate += cmbServiceID_TextUpdate;
         }
 
-        // Event saat UserControl dimuat
         private void UcDashboard_Load(object sender, EventArgs e)
         {
-            LoadAppointments();   // Load data appointment ke grid
-            LoadComboBoxes();     // Load data ke ComboBox
-            LoadStartTimeCombo(); // Load pilihan jam mulai
+            LoadAppointments();
+            LoadComboBoxes();
+            LoadStartTimeCombo();
         }
 
-        // Load data ke ComboBox client, employee, service, dan status booking
         private void LoadComboBoxes()
         {
             cmbClientID.DataSource = GetClients();
             cmbClientID.ValueMember = "client_id";
             cmbClientID.DisplayMember = "name";
+            cmbClientID.AutoCompleteMode = AutoCompleteMode.None;
+            cmbClientID.AutoCompleteSource = AutoCompleteSource.None;
+            cmbClientID.DropDownStyle = ComboBoxStyle.DropDown;
 
             cmbEmployeeID.DataSource = GetEmployees();
             cmbEmployeeID.ValueMember = "employee_id";
             cmbEmployeeID.DisplayMember = "name";
+            cmbEmployeeID.AutoCompleteMode = AutoCompleteMode.None;
+            cmbEmployeeID.AutoCompleteSource = AutoCompleteSource.None;
+            cmbEmployeeID.DropDownStyle = ComboBoxStyle.DropDown;
 
             cmbServiceID.DataSource = GetServices();
             cmbServiceID.ValueMember = "service_id";
             cmbServiceID.DisplayMember = "service_name";
+            cmbServiceID.AutoCompleteMode = AutoCompleteMode.None;
+            cmbServiceID.AutoCompleteSource = AutoCompleteSource.None;
+            cmbServiceID.DropDownStyle = ComboBoxStyle.DropDown;
 
             cmbClientID.SelectedIndex = -1;
             cmbEmployeeID.SelectedIndex = -1;
@@ -63,7 +65,6 @@ namespace Barbershop
             cmbStatusBooking.SelectedIndex = -1;
         }
 
-        // Caching helpers
         private DataTable GetClients()
         {
             if (cachedClients == null)
@@ -105,7 +106,6 @@ namespace Barbershop
             }
         }
 
-        // Invalidate cache after any data change
         private void InvalidateComboBoxCache()
         {
             cachedClients = null;
@@ -113,21 +113,19 @@ namespace Barbershop
             cachedServices = null;
         }
 
-        // Load pilihan jam mulai (00:00 - 23:59, tiap menit)
         private void LoadStartTimeCombo()
         {
             cmbStartTime.Items.Clear();
-            for (int jam = 0; jam <= 23; jam++)
+            for (int h = 0; h <= 23; h++)
             {
-                for (int menit = 0; menit < 60; menit += 1)
+                for (int m = 0; m < 60; m++)
                 {
-                    cmbStartTime.Items.Add(new TimeSpan(jam, menit, 0).ToString(@"hh\:mm"));
+                    cmbStartTime.Items.Add(new TimeSpan(h, m, 0).ToString(@"hh\:mm"));
                 }
             }
             cmbStartTime.SelectedIndex = -1;
         }
 
-        // Load data appointment ke DataGridView menggunakan stored procedure
         private void LoadAppointments()
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -143,12 +141,10 @@ namespace Barbershop
             }
         }
 
-        // Ambil durasi layanan (dalam menit) berdasarkan service_id
         private int GetServiceDuration(string serviceID)
         {
             int duration = 30;
             string query = "SELECT service_duration FROM services WHERE service_id = @id";
-
             using (SqlConnection conn = new SqlConnection(connString))
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
@@ -158,11 +154,9 @@ namespace Barbershop
                 if (result != null)
                     duration = Convert.ToInt32(result);
             }
-
             return duration;
         }
 
-        // Event klik tombol Add, menambah appointment baru ke database via stored procedure
         private void btnAdd_Click(object sender, EventArgs e)
         {
             using (SqlConnection conn = new SqlConnection(connString))
@@ -212,8 +206,6 @@ namespace Barbershop
             }
         }
 
-
-        // Event klik tombol Update, memperbarui data appointment yang dipilih via stored procedure
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null) return;
@@ -276,18 +268,15 @@ namespace Barbershop
             }
         }
 
-
-        // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadAppointments();
-            InvalidateComboBoxCache(); // Invalidate cache on refresh
+            InvalidateComboBoxCache();
             LoadComboBoxes();
             LoadStartTimeCombo();
             ClearForm();
         }
 
-        // Reset semua input form ke default
         private void ClearForm()
         {
             txtAppointmentID.Clear();
@@ -300,7 +289,6 @@ namespace Barbershop
             dtpTanggal.Value = DateTime.Now;
         }
 
-        // Event klik pada DataGridView, load data ke form input
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || dataGridView1.Rows[e.RowIndex].IsNewRow)
@@ -319,7 +307,7 @@ namespace Barbershop
             if (empValue != DBNull.Value && empValue != null)
                 cmbEmployeeID.SelectedValue = empValue.ToString();
             else
-                cmbEmployeeID.SelectedIndex = -1; // kosongkan pilihan jika null
+                cmbEmployeeID.SelectedIndex = -1;
 
             cmbServiceID.SelectedValue = row.Cells["service_id"].Value?.ToString();
 
@@ -334,23 +322,63 @@ namespace Barbershop
             cmbStatusBooking.SelectedItem = row.Cells["StatusBooking"].Value?.ToString();
         }
 
-        // Event perubahan tanggal appointment (belum diimplementasi)
-        private void dtpTanggal_ValueChanged(object sender, EventArgs e)
-        {
+        private void dtpTanggal_ValueChanged(object sender, EventArgs e) { }
 
-        }
-
-        // Set range tanggal appointment (3 bulan sebelum dan sesudah hari ini)
         private void UpdateDateRange()
         {
             dtpTanggal.MinDate = DateTime.Today.AddMonths(-3);
             dtpTanggal.MaxDate = DateTime.Today.AddMonths(3);
         }
 
-        // Event perubahan pilihan employee (belum diimplementasi)
-        private void cmbEmployeeID_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        private void cmbEmployeeID_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void cmbClientID_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void cmbServiceID_SelectedIndexChanged(object sender, EventArgs e) { }
 
+        // ComboBox filter (search-as-you-type)
+        private void cmbClientID_TextUpdate(object sender, EventArgs e)
+        {
+            FilterComboBox(cmbClientID, GetClients(), "name", "client_id");
         }
+
+        private void cmbEmployeeID_TextUpdate(object sender, EventArgs e)
+        {
+            FilterComboBox(cmbEmployeeID, GetEmployees(), "name", "employee_id");
+        }
+
+        private void cmbServiceID_TextUpdate(object sender, EventArgs e)
+        {
+            FilterComboBox(cmbServiceID, GetServices(), "service_name", "service_id");
+        }
+
+        private void FilterComboBox(ComboBox combo, DataTable dt, string displayMember, string valueMember)
+        {
+            string searchText = combo.Text.Trim().ToLower();
+            DataTable filtered;
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                var rows = dt.AsEnumerable()
+                    .Where(r => r.Field<string>(displayMember).ToLower().Contains(searchText));
+                filtered = rows.Any() ? rows.CopyToDataTable() : dt.Clone();
+            }
+            else
+            {
+                filtered = dt;
+            }
+
+            string currentText = combo.Text;
+
+            combo.DataSource = filtered;
+            combo.DisplayMember = displayMember;
+            combo.ValueMember = valueMember;
+            combo.DroppedDown = true;
+
+            combo.Text = currentText;
+            combo.SelectionStart = currentText.Length;
+            combo.SelectionLength = 0;
+        }
+
+
+
     }
 }

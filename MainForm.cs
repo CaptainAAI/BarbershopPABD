@@ -33,8 +33,35 @@ namespace Barbershop
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            // Inisialisasi semua UserControl
+            _ucClients = new UcClients();
+            _ucAppointments = new UcAppointments();
+            _ucServices = new UcServices();
+            _ucEmployee = new UcEmployee();
+            _ucEmployeeSchedule = new UcEmployeeSchedule();
+            _ucServiceCategories = new UcServiceCategories();
+            _ucTransactionHistory = new UcTransactionHistory();
 
+            // Tambahkan semua ke panelContent
+            panelContent.Controls.Add(_ucClients);
+            panelContent.Controls.Add(_ucAppointments);
+            panelContent.Controls.Add(_ucServices);
+            panelContent.Controls.Add(_ucEmployee);
+            panelContent.Controls.Add(_ucEmployeeSchedule);
+            panelContent.Controls.Add(_ucServiceCategories);
+            panelContent.Controls.Add(_ucTransactionHistory);
+
+            foreach (Control ctrl in panelContent.Controls)
+            {
+                ctrl.Dock = DockStyle.Fill;
+                ctrl.Visible = false; // sembunyikan dulu semuanya
+            }
+
+            // Tampilkan Appointments sebagai default
+            LoadUserControl(_ucAppointments);
         }
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -67,13 +94,12 @@ namespace Barbershop
         // Optimasi: Jangan load ulang UserControl yang sama
         private void LoadUserControl(UserControl uc)
         {
-            if (panelContent.Controls.Count > 0 && panelContent.Controls[0] == uc)
-                return;
-
-            panelContent.Controls.Clear();
-            uc.Dock = DockStyle.Fill;
-            panelContent.Controls.Add(uc);
+            foreach (Control ctrl in panelContent.Controls)
+            {
+                ctrl.Visible = (ctrl == uc);
+            }
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
