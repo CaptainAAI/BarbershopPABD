@@ -129,17 +129,37 @@ namespace Barbershop
         private void LoadAppointments()
         {
             using (SqlConnection conn = new SqlConnection(connString))
-            using (SqlCommand cmd = new SqlCommand("sp_get_appointments", conn))
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                conn.Open();
+
+                // ✅ 1️⃣ HAPUS data appointment yg lebih dari 3 bulan lalu
+                using (SqlCommand cmdDelete = new SqlCommand(
+                    "DELETE FROM appointments WHERE start_time < DATEADD(MONTH, -3, GETDATE())", conn))
                 {
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dataGridView1.DataSource = dt;
+                    cmdDelete.ExecuteNonQuery();
+                }
+
+                // ✅ 2️⃣ UPDATE status booking (yang sudah kamu punya)
+                using (SqlCommand cmdUpdate = new SqlCommand("sp_update_status_booking", conn))
+                {
+                    cmdUpdate.CommandType = CommandType.StoredProcedure;
+                    cmdUpdate.ExecuteNonQuery();
+                }
+
+                // ✅ 3️⃣ AMBIL DATA appointment
+                using (SqlCommand cmd = new SqlCommand("sp_get_appointments", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+                        dataGridView1.DataSource = dt;
+                    }
                 }
             }
         }
+
 
         private int GetServiceDuration(string serviceID)
         {

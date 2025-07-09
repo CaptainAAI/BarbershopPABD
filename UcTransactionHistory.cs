@@ -192,8 +192,18 @@ namespace Barbershop
             DateTime? dateFrom = dtpDateFrom.Value;
             DateTime? dateUntil = dtpDateUntil.Value;
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             LoadTransactionDataSP(clientName, employeeName, serviceName, status, dateFrom, dateUntil);
+
+            sw.Stop();
+            MessageBox.Show($"Data berhasil difilter.\nWaktu eksekusi: {sw.ElapsedMilliseconds} ms",
+                            "Info",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
         }
+
 
 
         // Event handler tombol Reset Filter, mengembalikan filter ke default

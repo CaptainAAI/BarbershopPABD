@@ -91,10 +91,11 @@ namespace Barbershop
             TimeSpan jam = TimeSpan.Parse(jamStr);
             DateTime start = tanggal + jam;
 
-            // Validasi waktu booking tidak boleh di masa lalu
-            if (start < DateTime.Now)
+            // ✅ Validasi: minimal 1 jam dari sekarang
+            if (start < DateTime.Now.AddHours(1))
             {
-                MessageBox.Show("Waktu booking tidak boleh di masa lalu. Silakan pilih waktu yang valid.", "Waktu Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Booking hanya bisa dilakukan minimal 1 jam dari sekarang. Silakan pilih waktu lain.",
+                                "Waktu Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -129,6 +130,7 @@ namespace Barbershop
                 MessageBox.Show("Gagal booking: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // Memuat data layanan ke ComboBox (pakai cache)
         private void LoadLayanan()

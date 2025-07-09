@@ -58,7 +58,7 @@ namespace Barbershop
 
                 if (count == 1)
                 {
-                    MessageBox.Show("Login successful!", "Welcome", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Login successful!, Please wait few second", "Welcome", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.Hide();
                     // Ganti MainForm ke form utama admin kamu
                     MainForm dashboard = new MainForm();
