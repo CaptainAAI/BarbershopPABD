@@ -165,9 +165,21 @@ namespace Barbershop
                 MessageBox.Show("Silakan pilih Client terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (cmbServiceID.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Service terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (cmbStartTime.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Jam terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
+
+
                 conn.Open();
                 SqlTransaction transaction = conn.BeginTransaction();
                 try
@@ -217,7 +229,17 @@ namespace Barbershop
         {
             if (cmbClientID.SelectedIndex == -1)
             {
-                MessageBox.Show("Silakan pilih Client terlebih dahulu sebelum update!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Silakan pilih Client terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (cmbServiceID.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Service terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (cmbStartTime.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Jam terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -396,10 +418,14 @@ namespace Barbershop
             combo.ValueMember = valueMember;
             combo.DroppedDown = true;
 
+            // Jangan set ke 0, selalu -1 agar tidak error
+            combo.SelectedIndex = -1;
+
             combo.Text = currentText;
             combo.SelectionStart = currentText.Length;
             combo.SelectionLength = 0;
         }
+
 
 
 

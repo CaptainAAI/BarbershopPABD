@@ -32,36 +32,39 @@ namespace Barbershop
         }
 
         // Event handler saat UserControl dimuat
+        // Event Load pertama kali → JANGAN panggil LoadTransactionDataSP
         private void UcTransactionHistory_Load(object sender, EventArgs e)
         {
             EnsureTransactionHistoryIndexes();
             dtpDateFrom.Value = DateTime.Today.AddYears(-7);
             dtpDateUntil.Value = DateTime.Today;
-            LoadTransactionDataSP(
-                null, null, null, null,
-                dtpDateFrom.Value.Date,
-                dtpDateUntil.Value.Date
-            );
             LoadComboBoxes();
+
+            // Kosongkan datagrid secara eksplisit
+            dgvTransactionHistory.DataSource = null;
         }
 
 
+
+        // Tambahkan di atas:
+        private bool forceNoCache = false;
+
         private void LoadTransactionDataSP(
-    string clientName = null,
-    string employeeName = null,
-    string serviceName = null,
-    string status = null,
-    DateTime? dateFrom = null,
-    DateTime? dateUntil = null)
+            string clientName = null,
+            string employeeName = null,
+            string serviceName = null,
+            string status = null,
+            DateTime? dateFrom = null,
+            DateTime? dateUntil = null)
         {
-            // Cache hanya dipakai jika filter kosong & range date default & sampai hari ini (GETDATE)
             bool useCache =
-                string.IsNullOrEmpty(clientName)
-                && string.IsNullOrEmpty(employeeName)
-                && string.IsNullOrEmpty(serviceName)
-                && string.IsNullOrEmpty(status)
-                && (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddYears(-7).Date)
-                && (!dateUntil.HasValue || dateUntil.Value.Date >= DateTime.Today);
+                !forceNoCache &&  // Paksa skip cache kalau flag nyala
+                string.IsNullOrEmpty(clientName) &&
+                string.IsNullOrEmpty(employeeName) &&
+                string.IsNullOrEmpty(serviceName) &&
+                string.IsNullOrEmpty(status) &&
+                (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddYears(-7).Date) &&
+                (!dateUntil.HasValue || dateUntil.Value.Date >= DateTime.Today);
 
             if (useCache && cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
             {
@@ -82,6 +85,11 @@ namespace Barbershop
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
+
+                // Invalidate dulu
+                cachedTransactionData = null;
+                cacheTimestamp = DateTime.MinValue;
+
                 da.Fill(dt);
                 dgvTransactionHistory.DataSource = dt;
 
@@ -91,7 +99,13 @@ namespace Barbershop
                     cacheTimestamp = DateTime.Now;
                 }
             }
+
+            // Reset flag biar next load normal lagi
+            forceNoCache = false;
         }
+
+
+
 
 
 
@@ -258,16 +272,17 @@ namespace Barbershop
 
 				// Tampilkan preview meskipun isi belum divalidasi
 				previewForm preview = new previewForm(dt); // Validasi dilakukan saat klik tombol Import di form preview
-				if (preview.ShowDialog() == DialogResult.OK)
-				{
-					// Setelah import berhasil, refresh data
-					cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
+                if (preview.ShowDialog() == DialogResult.OK)
+                {
+                    // Kosongkan cache & paksa load fresh
+                    forceNoCache = true;
+                    cachedTransactionData = null;
                     LoadTransactionDataSP();
-
                 }
 
+
             }
-		}
+        }
 
         // Membaca file Excel dan mengubahnya menjadi DataTable
         private DataTable ReadExcelToDataTable(string filePath)

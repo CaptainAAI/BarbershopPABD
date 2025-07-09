@@ -16,7 +16,20 @@ namespace Barbershop
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-          Application.Run(new LoginForm());
+
+            // Tangkap semua unhandled exception di thread UI
+            Application.ThreadException += (sender, args) =>
+            {
+                MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            };
+
+            // Tangkap unhandled exception di luar thread UI
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            };
+
+            Application.Run(new LoginForm());
         }
     }
 }
