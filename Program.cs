@@ -20,13 +20,32 @@ namespace Barbershop
             // Tangkap semua unhandled exception di thread UI
             Application.ThreadException += (sender, args) =>
             {
-                MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (args.Exception is System.Data.SqlClient.SqlException ||
+                    args.Exception.Message.ToLower().Contains("network") ||
+                    args.Exception.Message.ToLower().Contains("timeout"))
+                {
+                    MessageBox.Show("Koneksi ke server gagal. Periksa jaringan Anda.", "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             };
 
             // Tangkap unhandled exception di luar thread UI
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
-                MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                var ex = args.ExceptionObject as Exception;
+                if (ex is System.Data.SqlClient.SqlException ||
+                    ex?.Message.ToLower().Contains("network") == true ||
+                    ex?.Message.ToLower().Contains("timeout") == true)
+                {
+                    MessageBox.Show("Koneksi ke server gagal. Periksa jaringan Anda.", "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Isi dengan benar", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             };
 
             Application.Run(new LoginForm());
