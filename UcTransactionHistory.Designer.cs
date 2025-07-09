@@ -48,7 +48,6 @@
             this.cmbService = new System.Windows.Forms.ComboBox();
             this.dtpDateFrom = new System.Windows.Forms.DateTimePicker();
             this.dtpDateUntil = new System.Windows.Forms.DateTimePicker();
-            this.btnAnalyze = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTransactionHistory)).BeginInit();
@@ -270,17 +269,6 @@
             this.dtpDateUntil.Size = new System.Drawing.Size(318, 26);
             this.dtpDateUntil.TabIndex = 21;
             // 
-            // btnAnalyze
-            // 
-            this.btnAnalyze.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAnalyze.Location = new System.Drawing.Point(339, 644);
-            this.btnAnalyze.Name = "btnAnalyze";
-            this.btnAnalyze.Size = new System.Drawing.Size(162, 53);
-            this.btnAnalyze.TabIndex = 22;
-            this.btnAnalyze.Text = "Analyze";
-            this.btnAnalyze.UseVisualStyleBackColor = true;
-            this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
-            // 
             // txtSearch
             // 
             this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -309,7 +297,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.btnAnalyze);
             this.Controls.Add(this.dtpDateUntil);
             this.Controls.Add(this.dtpDateFrom);
             this.Controls.Add(this.cmbService);
@@ -361,7 +348,6 @@
         private System.Windows.Forms.ComboBox cmbService;
         private System.Windows.Forms.DateTimePicker dtpDateFrom;
         private System.Windows.Forms.DateTimePicker dtpDateUntil;
-        private System.Windows.Forms.Button btnAnalyze;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Label label7;
     }

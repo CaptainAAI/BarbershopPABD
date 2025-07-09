@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms; // Untuk komponen UI Windows Forms
 using NPOI.SS.UserModel; // Untuk operasi file Excel (NPOI)
 using NPOI.XSSF.UserModel;
+using System.Diagnostics;
 
 namespace Barbershop
 {
@@ -46,20 +47,21 @@ namespace Barbershop
 
 
         private void LoadTransactionDataSP(
-                string clientName = null,
-                string employeeName = null,
-                string serviceName = null,
-                string status = null,
-                DateTime? dateFrom = null,
-                DateTime? dateUntil = null)
+    string clientName = null,
+    string employeeName = null,
+    string serviceName = null,
+    string status = null,
+    DateTime? dateFrom = null,
+    DateTime? dateUntil = null)
         {
-            // Gunakan cache hanya jika semua filter kosong
-            bool useCache = string.IsNullOrEmpty(clientName)
+            // Cache hanya dipakai jika filter kosong & range date default & sampai hari ini (GETDATE)
+            bool useCache =
+                string.IsNullOrEmpty(clientName)
                 && string.IsNullOrEmpty(employeeName)
                 && string.IsNullOrEmpty(serviceName)
                 && string.IsNullOrEmpty(status)
                 && (!dateFrom.HasValue || dateFrom.Value.Date == DateTime.Today.AddYears(-7).Date)
-                && (!dateUntil.HasValue || dateUntil.Value.Date == DateTime.Today.Date);
+                && (!dateUntil.HasValue || dateUntil.Value.Date >= DateTime.Today);
 
             if (useCache && cachedTransactionData != null && (DateTime.Now - cacheTimestamp) < cacheDuration)
             {
@@ -83,7 +85,6 @@ namespace Barbershop
                 da.Fill(dt);
                 dgvTransactionHistory.DataSource = dt;
 
-                // Simpan ke cache jika tanpa filter
                 if (useCache)
                 {
                     cachedTransactionData = dt.Copy();
@@ -91,6 +92,8 @@ namespace Barbershop
                 }
             }
         }
+
+
 
 
         // Pastikan index pada tabel transaction_history sudah ada
@@ -194,10 +197,20 @@ namespace Barbershop
 
         // Event handler tombol Refresh, memuat ulang data transaksi
         private void btnRefresh_Click(object sender, EventArgs e)
-		{
-			cachedTransactionData = null; // Kosongkan cache agar data terbaru diambil dari database
-            LoadTransactionDataSP();
+        {
+            cachedTransactionData = null; // Kosongkan cache
 
+            Stopwatch sw = new Stopwatch(); // Buat stopwatch
+            sw.Start(); // Mulai stopwatch
+
+            LoadTransactionDataSP(); // Jalankan fungsi load
+
+            sw.Stop(); // Stop stopwatch
+
+            MessageBox.Show($"Data berhasil di-refresh.\nWaktu eksekusi: {sw.ElapsedMilliseconds} ms",
+                            "Info",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
         }
 
 

@@ -337,5 +337,13 @@ ORDER BY a.date_created DESC";
         {
 
         }
+
+        private void back_Click(object sender, EventArgs e)
+        {
+            LoginForm loginform = new LoginForm();
+            loginform.Show();
+            this.Close(); // Tutup form sekarang
+        }
+
     }
 }

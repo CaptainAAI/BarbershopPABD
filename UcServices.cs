@@ -76,6 +76,30 @@ namespace Barbershop
         // Event klik tombol Add, menambah layanan baru ke database (pakai stored procedure + transaksi + error handling)
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtID.Text))
+            {
+                MessageBox.Show("Service ID tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtServiceName.Text))
+            {
+                MessageBox.Show("Service Name tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrice.Text))
+            {
+                MessageBox.Show("Service Price tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDuration.Text))
+            {
+                MessageBox.Show("Service Duration tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (cmbCategoryName.SelectedValue == null)
             {
                 MessageBox.Show("Silakan pilih kategori!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -116,6 +140,30 @@ namespace Barbershop
         // Event klik tombol Update, memperbarui data layanan yang dipilih (pakai stored procedure + transaksi + error handling)
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtID.Text))
+            {
+                MessageBox.Show("Service ID tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtServiceName.Text))
+            {
+                MessageBox.Show("Service Name tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrice.Text))
+            {
+                MessageBox.Show("Service Price tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDuration.Text))
+            {
+                MessageBox.Show("Service Duration tidak boleh kosong!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (cmbCategoryName.SelectedValue == null)
             {
                 MessageBox.Show("Silakan pilih kategori!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);

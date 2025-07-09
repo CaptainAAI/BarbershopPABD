@@ -159,6 +159,13 @@ namespace Barbershop
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+
+            if (cmbClientID.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Client terlebih dahulu!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -191,7 +198,7 @@ namespace Barbershop
 
                         var result = cmd.ExecuteScalar();
                         transaction.Commit();
-                        MessageBox.Show("Appointment berhasil ditambahkan! ID: " + result?.ToString());
+                        MessageBox.Show("Appointment berhasil ditambahkan!");
                     }
                     LoadAppointments();
                     InvalidateComboBoxCache();
@@ -208,6 +215,12 @@ namespace Barbershop
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (cmbClientID.SelectedIndex == -1)
+            {
+                MessageBox.Show("Silakan pilih Client terlebih dahulu sebelum update!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (dataGridView1.CurrentRow == null) return;
 
             var result = MessageBox.Show(
@@ -294,12 +307,19 @@ namespace Barbershop
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || dataGridView1.Rows[e.RowIndex].IsNewRow)
+            if (e.RowIndex < 0)
+            {
+                // Klik header → biarkan saja
+                return;
+            }
+
+            if (dataGridView1.Rows[e.RowIndex].IsNewRow)
             {
                 MessageBox.Show("Data tidak valid atau kosong. Silakan pilih baris yang memiliki data.",
                                 "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
 
             DataGridViewRow row = dataGridView1.Rows[e.RowIndex];
 

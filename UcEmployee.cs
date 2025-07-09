@@ -61,13 +61,29 @@ namespace Barbershop
         // Validasi input form agar tidak ada field yang kosong
         private bool IsInputValid()
         {
-            // Pastikan semua field input terisi
-            return !string.IsNullOrWhiteSpace(txtID.Text)
-                && !string.IsNullOrWhiteSpace(txtFirstName.Text)
-                && !string.IsNullOrWhiteSpace(txtLastName.Text)
-                && !string.IsNullOrWhiteSpace(txtPhone.Text)
-                && !string.IsNullOrWhiteSpace(txtEmail.Text);
+            if (string.IsNullOrWhiteSpace(txtID.Text))
+            {
+                MessageBox.Show("ID Karyawan tidak boleh kosong!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (txtID.Text.Contains(" "))
+            {
+                MessageBox.Show("ID Karyawan tidak boleh mengandung spasi!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtLastName.Text) ||
+                string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                MessageBox.Show("Nama, Nomor Telepon, dan Email tidak boleh kosong!", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
         }
+
 
         // Mengosongkan semua field input
         private void ClearFields()
@@ -77,7 +93,9 @@ namespace Barbershop
             txtLastName.Clear();
             txtPhone.Clear();
             txtEmail.Clear();
+            txtID.ReadOnly = false; // Supaya bisa input ID baru
         }
+
 
         // Event klik tombol Add, menambah karyawan baru ke database
         private void btnAdd_Click(object sender, EventArgs e)
@@ -259,7 +277,7 @@ namespace Barbershop
         // Event klik pada baris DataGridView, load data ke form input
         private void dgvEmployees_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) // Pastikan baris valid
+            if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvEmployees.Rows[e.RowIndex];
                 txtID.Text = row.Cells["employee_id"].Value.ToString();
@@ -267,8 +285,10 @@ namespace Barbershop
                 txtLastName.Text = row.Cells["last_name"].Value.ToString();
                 txtPhone.Text = row.Cells["phone_number"].Value.ToString();
                 txtEmail.Text = row.Cells["email"].Value.ToString();
+                txtID.ReadOnly = true; // Pastikan ID terkunci setelah dipilih
             }
         }
+
 
         // Event-event berikut belum diimplementasikan (bisa dikosongkan)
         private void label6_Click(object sender, EventArgs e) { }

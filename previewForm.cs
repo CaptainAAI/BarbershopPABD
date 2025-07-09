@@ -2,6 +2,8 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Diagnostics;
+
 
 namespace Barbershop
 {
@@ -30,93 +32,87 @@ namespace Barbershop
         // Event klik tombol Import, validasi dan simpan data ke database
         private void btnImport_Click(object sender, EventArgs e)
         {
-            // Membuka koneksi ke database
+            var stopwatch = new System.Diagnostics.Stopwatch(); // Timer untuk mengukur waktu
+            stopwatch.Start(); // Mulai stopwatch
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                conn.Open(); // Buka koneksi
-                SqlTransaction transaction = conn.BeginTransaction(); // Mulai transaksi SQL
+                conn.Open();
+                SqlTransaction transaction = conn.BeginTransaction();
 
                 try
                 {
-                    // Loop setiap baris data hasil import
                     foreach (DataRow row in previewData.Rows)
                     {
-                        // Ambil data dari kolom yang diperlukan
                         string empId = row["employee_id"].ToString().Trim();
                         string empName = row["employee_name"].ToString().Trim();
                         string svcName = row["service_name"].ToString().Trim();
                         string svcPriceStr = row["service_price"].ToString().Trim();
 
-                        // Validasi harga layanan harus numerik dan >= 0
                         if (!decimal.TryParse(svcPriceStr, out decimal svcPrice) || svcPrice < 0)
-                        {
-                            // Jika tidak valid, lempar exception
                             throw new Exception($"Baris dengan harga tidak valid (harus >= 0): {svcPriceStr}");
-                        }
 
-                        // Validasi employee harus ada di database
                         string empQuery = @"SELECT COUNT(*) FROM employees WHERE employee_id = @id AND first_name + ' ' + last_name = @name";
                         using (SqlCommand cmd = new SqlCommand(empQuery, conn, transaction))
                         {
-                            cmd.Parameters.AddWithValue("@id", empId); // Parameter ID pegawai
-                            cmd.Parameters.AddWithValue("@name", empName); // Parameter nama pegawai
+                            cmd.Parameters.AddWithValue("@id", empId);
+                            cmd.Parameters.AddWithValue("@name", empName);
                             if ((int)cmd.ExecuteScalar() == 0)
-                            {
-                                // Jika pegawai tidak ditemukan, lempar exception
                                 throw new Exception($"Pegawai tidak ditemukan: {empId} - {empName}");
-                            }
                         }
 
-                        // Validasi service harus ada di database (hanya berdasarkan nama)
                         string svcQuery = @"SELECT COUNT(*) FROM services WHERE service_name = @name";
                         using (SqlCommand cmd = new SqlCommand(svcQuery, conn, transaction))
                         {
-                            cmd.Parameters.AddWithValue("@name", svcName); // Parameter nama layanan
+                            cmd.Parameters.AddWithValue("@name", svcName);
                             if ((int)cmd.ExecuteScalar() == 0)
-                            {
-                                // Jika layanan tidak ditemukan, lempar exception
                                 throw new Exception($"Layanan tidak valid: {svcName}");
-                            }
                         }
 
-                        // Panggil stored procedure untuk insert (otomatis tambah client jika belum ada)
                         using (SqlCommand cmd = new SqlCommand("sp_add_manual_transaction", conn, transaction))
                         {
-                            cmd.CommandType = CommandType.StoredProcedure; // Tipe command SP
-                            cmd.Parameters.AddWithValue("@client_name", row["client_name"].ToString().Trim()); // Nama client
-                            cmd.Parameters.AddWithValue("@phone_number", row["phone_number"].ToString().Trim()); // Nomor telepon client
-                            cmd.Parameters.AddWithValue("@employee_id", empId); // ID pegawai
-                            cmd.Parameters.AddWithValue("@employee_name", empName); // Nama pegawai
-                            cmd.Parameters.AddWithValue("@service_name", svcName); // Nama layanan
-                            cmd.Parameters.AddWithValue("@service_price", svcPrice); // Harga layanan
-                            cmd.Parameters.AddWithValue("@appointment_date", DateTime.Parse(row["appointment_date"].ToString())); // Tanggal appointment
-                            cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString())); // Jam mulai
-                            cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString())); // Jam selesai
-                            cmd.Parameters.AddWithValue("@status", row["status"].ToString()); // Status appointment
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@client_name", row["client_name"].ToString().Trim());
+                            cmd.Parameters.AddWithValue("@phone_number", row["phone_number"].ToString().Trim());
+                            cmd.Parameters.AddWithValue("@employee_id", empId);
+                            cmd.Parameters.AddWithValue("@employee_name", empName);
+                            cmd.Parameters.AddWithValue("@service_name", svcName);
+                            cmd.Parameters.AddWithValue("@service_price", svcPrice);
+                            cmd.Parameters.AddWithValue("@appointment_date", DateTime.Parse(row["appointment_date"].ToString()));
+                            cmd.Parameters.AddWithValue("@start_time", TimeSpan.Parse(row["start_time"].ToString()));
+                            cmd.Parameters.AddWithValue("@end_time", TimeSpan.Parse(row["end_time"].ToString()));
+                            cmd.Parameters.AddWithValue("@status", row["status"].ToString());
 
-                            // Kolom cancellation_reason opsional, cek apakah ada di data
                             if (row.Table.Columns.Contains("cancellation_reason"))
                                 cmd.Parameters.AddWithValue("@cancellation_reason", row["cancellation_reason"]?.ToString() ?? (object)DBNull.Value);
                             else
                                 cmd.Parameters.AddWithValue("@cancellation_reason", DBNull.Value);
 
-                            cmd.ExecuteNonQuery(); // Eksekusi SP untuk insert data
+                            cmd.ExecuteNonQuery();
                         }
                     }
 
-					transaction.Commit(); // Commit transaksi jika semua berhasil
-					MessageBox.Show("Data berhasil diimport ke database.", "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					this.DialogResult = DialogResult.OK; // Penting! Agar parent form tahu import sukses
-					this.Close(); // Tutup form setelah selesai import
+                    transaction.Commit();
+                    stopwatch.Stop(); // Stop stopwatch setelah berhasil
 
-				}
-				catch (Exception ex)
+                    MessageBox.Show(
+                        $"Data berhasil diimport ke database.\nWaktu proses: {stopwatch.ElapsedMilliseconds} ms",
+                        "Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                catch (Exception ex)
                 {
-                    transaction.Rollback(); // Rollback transaksi jika ada error
-                    MessageBox.Show("Import data gagal: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    stopwatch.Stop(); // Tetap stop stopwatch walaupun gagal
+                    transaction.Rollback();
+                    MessageBox.Show(
+                        $"Import data gagal: {ex.Message}\nWaktu proses sebelum gagal: {stopwatch.ElapsedMilliseconds} ms",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+
 
         // Event klik tombol Cancel, menutup form preview tanpa import
         private void btnCancel_Click(object sender, EventArgs e)

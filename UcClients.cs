@@ -90,18 +90,38 @@ namespace Barbershop
         }
 
         // Validasi input form agar tidak ada field yang kosong (kecuali email)
+        // Validasi input form agar setiap field (kecuali email) harus diisi dan tampilkan pesan spesifik
         private bool IsInputValid()
         {
-            return !string.IsNullOrWhiteSpace(txtID.Text)
-                && !string.IsNullOrWhiteSpace(txtFirstName.Text)
-                && !string.IsNullOrWhiteSpace(txtLastName.Text)
-                && !string.IsNullOrWhiteSpace(txtPhone.Text);
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
+            {
+                MessageBox.Show("Nama depan harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtFirstName.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtLastName.Text))
+            {
+                MessageBox.Show("Nama belakang harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtLastName.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                MessageBox.Show("Nomor telepon harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPhone.Focus();
+                return false;
+            }
+
+            return true; // Semua OK
         }
+
 
         // Mengosongkan semua field input
         private void ClearFields()
         {
-            txtID.Clear();
+            
             txtFirstName.Clear();
             txtLastName.Clear();
             txtPhone.Clear();
@@ -113,9 +133,9 @@ namespace Barbershop
         {
             if (!IsInputValid())
             {
-                MessageBox.Show("Semua data harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                return; // Pesan sudah di-handle
             }
+
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -186,9 +206,9 @@ namespace Barbershop
 
             if (!IsInputValid())
             {
-                MessageBox.Show("Semua data harus diisi!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                return; // Pesan sudah muncul di dalam IsInputValid
             }
+
 
             DialogResult result = MessageBox.Show("Apakah Anda yakin ingin memperbarui data pelanggan ini?", "Konfirmasi Update",
                                                   MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -285,9 +305,10 @@ namespace Barbershop
         {
             try
             {
-                InvalidateClientCache(); // Invalidate cache saat refresh
+                InvalidateClientCache();
                 LoadClient();
                 ClearFields();
+                txtID.Text = GenerateClientID(); // ID baru tiap refresh
                 MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -295,6 +316,7 @@ namespace Barbershop
                 MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // Event klik pada baris DataGridView, load data ke form input
         private void dgvClient_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -304,7 +326,7 @@ namespace Barbershop
                 if (e.RowIndex >= 0)
                 {
                     DataGridViewRow row = dgvClient.Rows[e.RowIndex];
-                    //txtID.Text = row.Cells["client_id"].Value.ToString();
+                    txtID.Text = row.Cells["client_id"].Value.ToString();
                     txtFirstName.Text = row.Cells["first_name"].Value.ToString();
                     txtLastName.Text = row.Cells["last_name"].Value.ToString();
                     txtPhone.Text = row.Cells["phone_number"].Value.ToString();
