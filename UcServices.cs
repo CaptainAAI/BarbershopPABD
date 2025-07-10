@@ -106,7 +106,20 @@ namespace Barbershop
                 return;
             }
 
-            using (SqlConnection conn = new SqlConnection(connString))
+			if (!decimal.TryParse(txtPrice.Text, out decimal price) || price <= 0)
+			{
+				MessageBox.Show("Service Price harus berupa angka dan lebih dari 0!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
+			if (!int.TryParse(txtDuration.Text, out int duration) || duration <= 0)
+			{
+				MessageBox.Show("Service Duration harus berupa angka dan lebih dari 0!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
+
+			using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
                 SqlTransaction transaction = conn.BeginTransaction();
@@ -170,7 +183,19 @@ namespace Barbershop
                 return;
             }
 
-            DialogResult confirm = MessageBox.Show($"Apakah Anda yakin ingin memperbarui layanan \"{txtServiceName.Text}\"?",
+            if (!decimal.TryParse(txtPrice.Text, out decimal price) || price <= 0)
+            {
+                MessageBox.Show("Service Price harus berupa angka dan lebih dari 0!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+			if (!int.TryParse(txtDuration.Text, out int duration) || duration <= 0)
+			{
+				MessageBox.Show("Service Duration harus berupa angka dan lebih dari 0!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
+			DialogResult confirm = MessageBox.Show($"Apakah Anda yakin ingin memperbarui layanan \"{txtServiceName.Text}\"?",
                                                    "Konfirmasi Update Layanan",
                                                    MessageBoxButtons.YesNo,
                                                    MessageBoxIcon.Question);
