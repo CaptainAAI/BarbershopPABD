@@ -73,7 +73,14 @@ namespace Barbershop
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+			if (!txtPhone.Text.All(char.IsDigit))
+			{
+				MessageBox.Show("Nomor telepon harus berupa angka!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				txtPhone.Focus();
+				return false;
+			}
+
+			if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
                 string.IsNullOrWhiteSpace(txtLastName.Text) ||
                 string.IsNullOrWhiteSpace(txtPhone.Text))
             {

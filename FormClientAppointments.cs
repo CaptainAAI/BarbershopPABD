@@ -30,64 +30,82 @@ namespace Barbershop
             LoadJam();         // Load pilihan jam ke ComboBox
         }
 
-        // Event klik tombol Register, menambah client baru ke database
-        private void btnRegister_Click(object sender, EventArgs e)
-        {
-            string clientId = GenerateClientID();
-            string firstName = txtFirstName.Text.Trim();
-            string lastName = txtLastName.Text.Trim();
-            string phone = txtPhone.Text.Trim();
-            string email = txtEmail.Text.Trim();
+		// Event klik tombol Register, menambah client baru ke database
+		private void btnRegister_Click(object sender, EventArgs e)
+		{
+			string clientId = GenerateClientID();
+			string firstName = txtFirstName.Text.Trim();
+			string lastName = txtLastName.Text.Trim();
+			string phone = txtPhone.Text.Trim();
+			string email = txtEmail.Text.Trim();
 
-            // 🛡️ Validasi wajib
-            if (string.IsNullOrWhiteSpace(firstName) ||
-                string.IsNullOrWhiteSpace(lastName) ||
-                string.IsNullOrWhiteSpace(phone))
-            {
-                MessageBox.Show("Mohon isi nama depan, nama belakang, dan nomor telepon.",
-                                "Data Tidak Lengkap",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                return;
-            }
+			// 🛡️ Validasi wajib
+			if (string.IsNullOrWhiteSpace(firstName) ||
+				string.IsNullOrWhiteSpace(lastName) ||
+				string.IsNullOrWhiteSpace(phone))
+			{
+				MessageBox.Show("Mohon isi nama depan, nama belakang, dan nomor telepon.",
+								"Data Tidak Lengkap",
+								MessageBoxButtons.OK,
+								MessageBoxIcon.Warning);
+				return;
+			}
 
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connString))
-                {
-                    string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
-                                   "VALUES (@id, @first, @last, @phone, @mail)";
+			// 🛡️ Validasi nomor telepon harus angka
+			if (!phone.All(char.IsDigit))
+			{
+				MessageBox.Show("Nomor telepon hanya boleh berisi angka.",
+								"Format Tidak Valid",
+								MessageBoxButtons.OK,
+								MessageBoxIcon.Warning);
+				txtPhone.Focus();
+				return;
+			}
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@id", clientId);
-                    cmd.Parameters.AddWithValue("@first", firstName);
-                    cmd.Parameters.AddWithValue("@last", lastName);
-                    cmd.Parameters.AddWithValue("@phone", phone);
-                    cmd.Parameters.AddWithValue("@mail", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email);
+			try
+			{
+				using (SqlConnection conn = new SqlConnection(connString))
+				{
+					string query = "INSERT INTO clients (client_id, first_name, last_name, phone_number, client_email) " +
+								   "VALUES (@id, @first, @last, @phone, @mail)";
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
+					SqlCommand cmd = new SqlCommand(query, conn);
+					cmd.Parameters.AddWithValue("@id", clientId);
+					cmd.Parameters.AddWithValue("@first", firstName);
+					cmd.Parameters.AddWithValue("@last", lastName);
+					cmd.Parameters.AddWithValue("@phone", phone);
+					cmd.Parameters.AddWithValue("@mail", string.IsNullOrEmpty(email) ? DBNull.Value : (object)email);
 
-                MessageBox.Show("Registrasi berhasil. Silakan lanjut isi data booking di bawah.");
-            }
-            catch (SqlException ex)
-            {
-                // Tangani error duplikat nomor telepon
-                if (ex.Number == 2627 || ex.Number == 2601)
-                {
-                    MessageBox.Show("Nomor telepon sudah terdaftar. Gunakan nomor lain atau lanjutkan booking.", "Duplicate Entry", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    MessageBox.Show("Terjadi kesalahan saat registrasi: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
+					conn.Open();
+					cmd.ExecuteNonQuery();
+				}
+
+				MessageBox.Show("Registrasi berhasil. Silakan lanjut isi data booking di bawah.");
+			}
+			catch (SqlException ex)
+			{
+				// Tangani error duplikat nomor telepon
+				if (ex.Number == 2627 || ex.Number == 2601)
+				{
+					MessageBox.Show("Nomor telepon sudah terdaftar. Gunakan nomor lain atau lanjutkan booking.",
+									"Duplicate Entry",
+									MessageBoxButtons.OK,
+									MessageBoxIcon.Warning);
+				}
+				else
+				{
+					MessageBox.Show("Terjadi kesalahan saat registrasi: " + ex.Message,
+									"Error",
+									MessageBoxButtons.OK,
+									MessageBoxIcon.Error);
+				}
+			}
+		}
 
 
-        // Event klik tombol Book, menambah data booking appointment baru (pakai SP, transaksi, error handling)
-        private void btnBook_Click(object sender, EventArgs e)
+
+		// Event klik tombol Book, menambah data booking appointment baru (pakai SP, transaksi, error handling)
+		private void btnBook_Click(object sender, EventArgs e)
         {
             string phone = txtPhoneBooking.Text.Trim();
             string serviceId = cmbLayanan.SelectedValue?.ToString();

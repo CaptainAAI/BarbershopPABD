@@ -113,8 +113,14 @@ namespace Barbershop
                 txtPhone.Focus();
                 return false;
             }
+			if (!txtPhone.Text.All(char.IsDigit))
+			{
+				MessageBox.Show("Nomor telepon harus berupa angka!", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				txtPhone.Focus();
+				return false;
+			}
 
-            return true; // Semua OK
+			return true; // Semua OK
         }
 
 
