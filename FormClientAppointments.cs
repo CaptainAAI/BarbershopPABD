@@ -39,6 +39,18 @@ namespace Barbershop
             string phone = txtPhone.Text.Trim();
             string email = txtEmail.Text.Trim();
 
+            // 🛡️ Validasi wajib
+            if (string.IsNullOrWhiteSpace(firstName) ||
+                string.IsNullOrWhiteSpace(lastName) ||
+                string.IsNullOrWhiteSpace(phone))
+            {
+                MessageBox.Show("Mohon isi nama depan, nama belakang, dan nomor telepon.",
+                                "Data Tidak Lengkap",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connString))
@@ -72,6 +84,7 @@ namespace Barbershop
                 }
             }
         }
+
 
         // Event klik tombol Book, menambah data booking appointment baru (pakai SP, transaksi, error handling)
         private void btnBook_Click(object sender, EventArgs e)
@@ -212,19 +225,7 @@ namespace Barbershop
         }
 
         // Mendapatkan client_id berdasarkan nomor telepon
-        private string GetClientIdByPhone(string phone)
-        {
-            string query = "SELECT client_id FROM clients WHERE phone_number = @phone";
-
-            using (SqlConnection conn = new SqlConnection(connString))
-            using (SqlCommand cmd = new SqlCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@phone", phone);
-                conn.Open();
-                var result = cmd.ExecuteScalar();
-                return result?.ToString();
-            }
-        }
+        
 
         // Memuat status booking berdasarkan nomor telepon client
         private void LoadStatusBookingByPhone()

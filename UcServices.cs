@@ -239,24 +239,32 @@ namespace Barbershop
             }
         }
 
-		// Event klik tombol Refresh, reload data layanan (dengan error handling)
-		private void btnRefresh_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				InvalidateServiceCache(); // Invalidate cache saat refresh
-				LoadData();
-				MessageBox.Show("Data berhasil direfresh!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
+        // Event klik tombol Refresh, reload data layanan (dengan error handling)
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                InvalidateServiceCache(); // Kosongkan cache
+                LoadData(); // Coba ambil data baru
+
+                if (dgvLayanan.DataSource != null && ((DataTable)dgvLayanan.DataSource).Rows.Count > 0)
+                {
+                    MessageBox.Show("Data berhasil direfresh!", "Berhasil", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Tidak ada data yang ditemukan.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
-		// Event klik pada baris DataGridView, load data ke form input (dengan error handling)
-		private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
+        // Event klik pada baris DataGridView, load data ke form input (dengan error handling)
+        private void dgvLayanan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {

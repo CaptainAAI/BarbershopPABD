@@ -177,11 +177,25 @@ namespace Barbershop
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            InvalidateCategoryCache();
-            LoadData();
-            ClearFields();
-            MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                InvalidateCategoryCache();
+                LoadData(); // jika gagal, lompat ke catch
+                ClearFields();
+                MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Gagal memuat data kategori dari server. Periksa koneksi Anda.\n\n" + ex.Message,
+                    "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Terjadi kesalahan saat refresh data:\n\n" + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         // Event klik pada cell DataGridView, load data ke form input
         private void dgvKategoriLayanan_CellContentClick(object sender, DataGridViewCellEventArgs e)

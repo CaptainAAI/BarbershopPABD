@@ -235,8 +235,23 @@ namespace Barbershop
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadAllSchedules();
+            try
+            {
+                LoadAllSchedules(); // ambil dari database, bisa gagal
+                MessageBox.Show("Data jadwal berhasil diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Gagal memuat data jadwal dari server. Periksa koneksi Anda.\n\n" + ex.Message,
+                    "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Terjadi kesalahan saat refresh data:\n\n" + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         // Event saat ComboBox karyawan berubah, load jadwal karyawan yang dipilih
         private void CmbNamaKaryawan_SelectedIndexChanged(object sender, EventArgs e)

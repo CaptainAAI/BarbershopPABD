@@ -306,14 +306,25 @@ namespace Barbershop
             try
             {
                 InvalidateClientCache();
-                LoadClient();
+
+                // Coba load data client
+                LoadClient(); // Kalau gagal, langsung lompat ke catch
+
                 ClearFields();
                 txtID.Text = GenerateClientID(); // ID baru tiap refresh
+
+                // Hanya ditampilkan jika semua langkah di atas berhasil
                 MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Gagal memuat data dari server. Periksa koneksi Anda.\n\n" + ex.Message,
+                    "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Gagal refresh data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Gagal refresh data:\n\n" + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

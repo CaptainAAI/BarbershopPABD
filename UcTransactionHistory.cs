@@ -556,7 +556,7 @@ namespace Barbershop
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            string searchText = txtSearch.Text.Trim().ToLower();
+            string searchText = txtSearch.Text.Trim();
 
             if (cachedTransactionData == null)
             {
@@ -574,15 +574,10 @@ namespace Barbershop
 
             foreach (DataRow row in cachedTransactionData.Rows)
             {
-                string clientName = row["client_name"]?.ToString()?.ToLower() ?? "";
-                string employeeName = row["employee_name"]?.ToString()?.ToLower() ?? "";
-                string serviceName = row["service_name"]?.ToString()?.ToLower() ?? "";
-                string phoneNumber = row["phone_number"]?.ToString()?.ToLower() ?? "";
-
-                if (clientName.Contains(searchText) ||
-                    employeeName.Contains(searchText) ||
-                    serviceName.Contains(searchText) ||
-                    phoneNumber.Contains(searchText))
+                if (string.Equals(row["client_name"]?.ToString() ?? "", searchText, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(row["employee_name"]?.ToString() ?? "", searchText, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(row["service_name"]?.ToString() ?? "", searchText, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(row["phone_number"]?.ToString() ?? "", searchText, StringComparison.OrdinalIgnoreCase))
                 {
                     filtered.ImportRow(row);
                 }
@@ -590,6 +585,7 @@ namespace Barbershop
 
             dgvTransactionHistory.DataSource = filtered;
         }
+
 
     }
 }

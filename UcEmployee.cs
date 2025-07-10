@@ -269,10 +269,25 @@ namespace Barbershop
         // Event klik tombol Refresh, reload data dan reset form
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadEmployees(forceRefresh: true); // Refresh data dari database
-            ClearFields(); // Kosongkan input
-            MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                LoadEmployees(forceRefresh: true); // Bisa lempar error
+                ClearFields();
+
+                MessageBox.Show("Data diperbarui.", "Refresh", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Gagal memuat data dari server. Periksa koneksi Anda.\n\n" + ex.Message,
+                    "Koneksi Terputus", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal refresh data:\n\n" + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         // Event klik pada baris DataGridView, load data ke form input
         private void dgvEmployees_CellClick(object sender, DataGridViewCellEventArgs e)

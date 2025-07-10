@@ -79,9 +79,10 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(14, 161);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(433, 15);
+            this.label2.Size = new System.Drawing.Size(698, 15);
             this.label2.TabIndex = 2;
-            this.label2.Text = "SILAHKAN ISI DATA BERIKUT JIKA SUDAH MENGISI UNTUK MEM-BOOKING";
+            this.label2.Text = "SILAHKAN REGISTER TERLEBIH DAHULU, APABILA SUDAH REGISTER, SILAHKAN ISI DATA DIBA" +
+    "WAH INI UNTUK BOOKING";
             // 
             // label5
             // 
@@ -144,7 +145,7 @@
             this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtEmail.Location = new System.Drawing.Point(111, 107);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(2);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(729, 20);
             this.txtEmail.TabIndex = 34;
@@ -154,7 +155,7 @@
             this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPhone.Location = new System.Drawing.Point(111, 86);
-            this.txtPhone.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPhone.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhone.Name = "txtPhone";
             this.txtPhone.Size = new System.Drawing.Size(729, 20);
             this.txtPhone.TabIndex = 33;
@@ -164,7 +165,7 @@
             this.txtLastName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLastName.Location = new System.Drawing.Point(111, 63);
-            this.txtLastName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtLastName.Margin = new System.Windows.Forms.Padding(2);
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(729, 20);
             this.txtLastName.TabIndex = 32;
@@ -174,7 +175,7 @@
             this.txtFirstName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFirstName.Location = new System.Drawing.Point(111, 39);
-            this.txtFirstName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtFirstName.Margin = new System.Windows.Forms.Padding(2);
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(729, 20);
             this.txtFirstName.TabIndex = 31;
@@ -221,7 +222,7 @@
             this.txtPhoneBooking.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPhoneBooking.Location = new System.Drawing.Point(111, 180);
-            this.txtPhoneBooking.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPhoneBooking.Margin = new System.Windows.Forms.Padding(2);
             this.txtPhoneBooking.Name = "txtPhoneBooking";
             this.txtPhoneBooking.Size = new System.Drawing.Size(729, 20);
             this.txtPhoneBooking.TabIndex = 41;
@@ -333,7 +334,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCheckStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCheckStatus.Location = new System.Drawing.Point(471, 291);
-            this.txtCheckStatus.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtCheckStatus.Margin = new System.Windows.Forms.Padding(2);
             this.txtCheckStatus.Name = "txtCheckStatus";
             this.txtCheckStatus.Size = new System.Drawing.Size(369, 29);
             this.txtCheckStatus.TabIndex = 70;
@@ -345,7 +346,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvStatusBooking.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvStatusBooking.Location = new System.Drawing.Point(17, 324);
-            this.dgvStatusBooking.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgvStatusBooking.Margin = new System.Windows.Forms.Padding(2);
             this.dgvStatusBooking.Name = "dgvStatusBooking";
             this.dgvStatusBooking.RowHeadersWidth = 62;
             this.dgvStatusBooking.RowTemplate.Height = 28;
@@ -383,7 +384,7 @@
             this.txtTotalHarga.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTotalHarga.Location = new System.Drawing.Point(665, 344);
-            this.txtTotalHarga.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtTotalHarga.Margin = new System.Windows.Forms.Padding(2);
             this.txtTotalHarga.Name = "txtTotalHarga";
             this.txtTotalHarga.ReadOnly = true;
             this.txtTotalHarga.Size = new System.Drawing.Size(175, 20);
